@@ -263,6 +263,75 @@ tr.row-expand td{border-top:none!important}
 </head>
 <body>
 
+<!-- ── Splash Screen ─────────────────────────────────────────────────────── -->
+<div id="splash-screen" style="position:fixed;inset:0;z-index:99999;background:#8b0000;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:all">
+  <div id="splash-content" style="display:flex;flex-direction:column;align-items:center;gap:24px;transform-origin:top left;transition:transform 2s cubic-bezier(.4,0,.2,1),opacity 2s cubic-bezier(.4,0,.2,1)">
+    <!-- Logo + title row -->
+    <div style="display:flex;align-items:center;gap:28px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" style="width:180px;height:180px;flex-shrink:0;filter:drop-shadow(0 4px 24px rgba(0,0,0,.35))" role="img">
+        <rect x="4" y="2" width="30" height="40" rx="3" fill="#fff" stroke="#c8d8ec" stroke-width="1.4"/>
+        <text x="19" y="13" text-anchor="middle" font-family="system-ui,sans-serif" font-size="6.5" font-weight="700" fill="#3d5470">EXAM</text>
+        <line x1="8" y1="19" x2="30" y2="19" stroke="#3d5470" stroke-width="1.1" stroke-linecap="round" opacity=".35"/>
+        <line x1="8" y1="25" x2="30" y2="25" stroke="#3d5470" stroke-width="1.1" stroke-linecap="round" opacity=".35"/>
+        <line x1="8" y1="31" x2="22" y2="31" stroke="#3d5470" stroke-width="1.1" stroke-linecap="round" opacity=".25"/>
+        <g transform="translate(16,35) rotate(-40)">
+          <rect x="0" y="0" width="5" height="15" rx="1" fill="#3d5470" opacity=".85"/>
+          <polygon points="0,15 5,15 2.5,21" fill="#1a2535"/>
+        </g>
+        <rect x="36" y="38" width="6" height="10" rx="1.4" fill="#fff" opacity=".4"/>
+        <rect x="43" y="30" width="6" height="18" rx="1.4" fill="#fff" opacity=".65"/>
+        <rect x="50" y="20" width="6" height="28" rx="1.4" fill="#fff" opacity=".9"/>
+        <polyline points="51,17 54,20 60,12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <div>
+        <div style="font-size:42px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.15;font-family:'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif">Exam Results</div>
+        <div style="font-size:42px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:-.5px;line-height:1.15;font-family:'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif">Analysis Tool</div>
+      </div>
+    </div>
+    <!-- Tagline below -->
+    <div style="font-size:13px;color:rgba(255,255,255,.4);letter-spacing:.3px;font-weight:500">MCQ Item Analysis &amp; DIF Reporting</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  if (window._splashShown) {
+    var s = document.getElementById('splash-screen');
+    if (s) s.style.display = 'none';
+    return;
+  }
+  window._splashShown = true;
+
+  // After 2.5s hold, run the 2s animation then remove
+  setTimeout(function() {
+    var screen = document.getElementById('splash-screen');
+    var content = document.getElementById('splash-content');
+    if (!screen || !content) return;
+
+    // Determine target: top-left corner
+    // Content is centred — we need to translate it up-left and shrink it
+    var rect = content.getBoundingClientRect();
+    var tx = -(rect.left) - rect.width * 0.5 * (1 - 0.08); // move left
+    var ty = -(rect.top) - rect.height * 0.5 * (1 - 0.08); // move up
+
+    // Animate content: shrink to ~8% and fly top-left
+    content.style.transition = 'transform 3.5s cubic-bezier(.4,0,.2,1), opacity 3.5s cubic-bezier(.4,0,.2,1)';
+    content.style.transform = 'translate(' + Math.round(tx) + 'px, ' + Math.round(ty) + 'px) scale(0.08)';
+    content.style.opacity = '0';
+
+    // Fade the background out simultaneously
+    screen.style.transition = 'background 3.5s cubic-bezier(.4,0,.2,1)';
+    screen.style.background = 'rgba(139,0,0,0)';
+
+    // Remove from DOM after animation completes
+    setTimeout(function() {
+      if (screen && screen.parentNode) screen.parentNode.removeChild(screen);
+    }, 3600);
+  }, 3500);
+})();
+</script>
+
+
 <div id="setup-panel" style="display:block">
   <!-- Setup screen header row: logo + hamburger -->
   <div id="header-logo" style="display:flex;align-items:flex-end;justify-content:space-between;padding:8px 0;margin-bottom:8px">
@@ -511,6 +580,7 @@ tr.row-expand td{border-top:none!important}
         </div>
         <input type="file" id="fi-main" accept=".xlsx,.xls,.csv">
         <div id="feedback-main" style="display:none;margin-top:10px;border-radius:6px;padding:9px 13px;font-size:12px;line-height:1.8"></div>
+        <div id="scantron-preview" style="display:none;margin-top:10px"></div>
         <div id="dbg-main" class="debug" style="display:none"></div>
       </div>
     </div>
@@ -631,7 +701,7 @@ tr.row-expand td{border-top:none!important}
   <!-- Stale results notice -->
   <div id="stale-bar" style="display:none;margin-bottom:10px;padding:9px 14px;background:#fff8e6;border:1.5px solid #e8a800;border-radius:7px;font-size:12px;color:#5a3a00;font-weight:500;display:flex;align-items:center;gap:10px">
     <span style="font-size:15px;flex-shrink:0">⚠</span>
-    <span>These results may be outdated — settings were changed after the last analysis was run.</span>
+    <span id="stale-bar-msg">These results may be outdated — settings were changed after the last analysis was run.</span>
     <button onclick="goToSetup()" style="margin-left:auto;padding:4px 12px;border-radius:5px;border:1.5px solid #b85c00;background:transparent;color:#b85c00;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">&#8592; Back to Setup</button>
   </div>
   </div><!-- /sticky-header -->
@@ -728,7 +798,7 @@ tr.row-expand td{border-top:none!important}
   </div>
 </div>
 <div id="tt"></div>
-<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
+<div id="settings-modal" onclick="if(event.target===this)cancelSettings()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
   <div style="width:90vw;max-width:580px;max-height:90vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column">
 
     <!-- Header -->
@@ -773,50 +843,231 @@ tr.row-expand td{border-top:none!important}
         <div style="font-size:10px;font-weight:700;color:#7a8590;text-transform:uppercase;letter-spacing:.5px">Analysis Thresholds</div>
         <div style="font-size:10px;color:#a0aab4;font-style:italic">Configurable in a future release</div>
       </div>
-      <div style="background:#f8f9fa;border-radius:8px;border:0.5px solid rgba(0,0,0,.09);overflow:hidden;opacity:.55;pointer-events:none">
-        <div style="padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:12px;font-weight:600;color:#1e2933">Difficult item — p-value threshold</div>
-            <div style="font-size:11px;color:#7a8590">Flag questions below this difficulty index</div>
+      <!-- Threshold controls -->
+      <div style="display:flex;flex-direction:column;gap:0;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden">
+
+        <!-- Header row -->
+        <div style="background:#f4f6f9;padding:10px 16px;border-bottom:1px solid #E5E7EB">
+          <div style="font-size:11px;font-weight:700;color:#3d4a54;text-transform:uppercase;letter-spacing:.5px">Analysis Thresholds</div>
+        </div>
+
+        <!-- Sub-header: MCQ Flagging -->
+        <div style="background:#f9f0f0;padding:7px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E5E7EB">
+          <div style="font-size:10px;font-weight:700;color:#a31515;text-transform:uppercase;letter-spacing:.5px">MCQ Item Flagging</div>
+          <button onclick="resetThresholdsMCQ()" style="font-size:10px;font-weight:600;color:#a31515;background:none;border:1px solid #f0c0c0;border-radius:5px;padding:2px 8px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#fef0f0'" onmouseout="this.style.background='none'">↺ Reset MCQ defaults</button>
+        </div>
+
+        <!-- Difficult -->
+        <div id="thresh-difficult" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">Difficult item — p-value threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Flag questions <em>below</em> this difficulty index</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-difficult" value="0.35" step="0.01" min="0.01" max="0.95"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('difficult',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-difficult-pct">35%</span>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <input type="number" value="0.35" step="0.01" min="0" max="1" disabled style="width:64px;padding:4px 8px;border-radius:5px;border:1px solid #dde1e5;font-size:12px;color:#3d4a54;background:#fff;text-align:center">
+          <input type="range" id="thr-difficult-slider" min="1" max="95" value="35" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('difficult',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">0.01</span>
+            <span style="font-size:10px;color:#c4c9d4">0.95</span>
           </div>
         </div>
-        <div style="padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:12px;font-weight:600;color:#1e2933">Too easy — p-value threshold</div>
-            <div style="font-size:11px;color:#7a8590">Flag questions above this difficulty index</div>
+
+        <!-- Too Easy -->
+        <div id="thresh-easy" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">Too easy — p-value threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Flag questions <em>above</em> this difficulty index</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-easy" value="0.96" step="0.01" min="0.50" max="1.00"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('easy',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-easy-pct">96%</span>
+            </div>
           </div>
-          <input type="number" value="0.96" step="0.01" min="0" max="1" disabled style="width:64px;padding:4px 8px;border-radius:5px;border:1px solid #dde1e5;font-size:12px;color:#3d4a54;background:#fff;text-align:center">
-        </div>
-        <div style="padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:12px;font-weight:600;color:#1e2933">Poor discrimination — rpbis threshold</div>
-            <div style="font-size:11px;color:#7a8590">Flag questions with discrimination below this value</div>
+          <input type="range" id="thr-easy-slider" min="50" max="100" value="96" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('easy',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">0.50</span>
+            <span style="font-size:10px;color:#c4c9d4">1.00</span>
           </div>
-          <input type="number" value="0.00" step="0.01" min="-1" max="1" disabled style="width:64px;padding:4px 8px;border-radius:5px;border:1px solid #dde1e5;font-size:12px;color:#3d4a54;background:#fff;text-align:center">
         </div>
-        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:12px;font-weight:600;color:#1e2933">DIF significance — p-value threshold</div>
-            <div style="font-size:11px;color:#7a8590">Flag items with DIF p-value below this threshold</div>
+
+        <!-- Poor Discrimination -->
+        <div id="thresh-disc" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">Poor discrimination — rpbis threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Flag questions with discrimination <em>below</em> this value (negative = red flag)</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-disc" value="0.00" step="0.01" min="-0.50" max="0.50"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('disc',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-disc-pct">0.00</span>
+            </div>
           </div>
-          <input type="number" value="0.01" step="0.001" min="0" max="0.1" disabled style="width:64px;padding:4px 8px;border-radius:5px;border:1px solid #dde1e5;font-size:12px;color:#3d4a54;background:#fff;text-align:center">
+          <input type="range" id="thr-disc-slider" min="-50" max="50" value="0" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('disc',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">−0.50</span>
+            <span style="font-size:10px;color:#c4c9d4">+0.50</span>
+          </div>
         </div>
+
+        <!-- Check Key p -->
+        <div id="thresh-checkp" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">Check Key — p-value sub-threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Triggers "Check Key" flag when p is <em>below</em> this <em>and</em> rpbis is also below its sub-threshold</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-checkp" value="0.25" step="0.01" min="0.01" max="0.50"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('checkp',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-checkp-pct">25%</span>
+            </div>
+          </div>
+          <input type="range" id="thr-checkp-slider" min="1" max="50" value="25" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('checkp',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">0.01</span>
+            <span style="font-size:10px;color:#c4c9d4">0.50</span>
+          </div>
+        </div>
+
+        <!-- Check Key rpbis -->
+        <div id="thresh-checkr" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">Check Key — rpbis sub-threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Triggers "Check Key" flag when rpbis is <em>below</em> this <em>and</em> p is also below its sub-threshold</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-checkr" value="0.15" step="0.01" min="0.00" max="0.40"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('checkr',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-checkr-pct">0.15</span>
+            </div>
+          </div>
+          <input type="range" id="thr-checkr-slider" min="0" max="40" value="15" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('checkr',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">0.00</span>
+            <span style="font-size:10px;color:#c4c9d4">0.40</span>
+          </div>
+        </div>
+
+        <!-- Sub-header: DIF -->
+        <div style="background:#f9f0f0;padding:7px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E5E7EB;border-top:1px solid #E5E7EB">
+          <div style="font-size:10px;font-weight:700;color:#a31515;text-transform:uppercase;letter-spacing:.5px">DIF Analysis</div>
+          <button onclick="resetThresholdsDIF()" style="font-size:10px;font-weight:600;color:#a31515;background:none;border:1px solid #f0c0c0;border-radius:5px;padding:2px 8px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#fef0f0'" onmouseout="this.style.background='none'">↺ Reset DIF defaults</button>
+        </div>
+
+        <!-- DIF significance -->
+        <div id="thresh-dif" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">DIF significance — p-value threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Flag DIF items with p-value <em>below</em> this threshold</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-dif" value="0.010" step="0.001" min="0.001" max="0.100"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('dif',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-dif-pct">1%</span>
+            </div>
+          </div>
+          <input type="range" id="thr-dif-slider" min="1" max="100" value="10" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('dif',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">0.001</span>
+            <span style="font-size:10px;color:#c4c9d4">0.100</span>
+          </div>
+        </div>
+
+        <!-- DIF gap amber -->
+        <div id="thresh-gapamber" class="thresh-row" style="padding:12px 16px;border-bottom:1px solid #E5E7EB;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">EN/FR gap — amber warning threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Highlight Δ Gap in amber when EN/FR correct-rate difference reaches this %</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-gapamber" value="8" step="1" min="2" max="30"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('gapamber',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-gapamber-pct">8%</span>
+            </div>
+          </div>
+          <input type="range" id="thr-gapamber-slider" min="2" max="30" value="8" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('gapamber',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">2%</span>
+            <span style="font-size:10px;color:#c4c9d4">30%</span>
+          </div>
+        </div>
+
+        <!-- DIF gap red -->
+        <div id="thresh-gapred" class="thresh-row" style="padding:12px 16px;background:#fff">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#1a1f24">EN/FR gap — red alert threshold</div>
+              <div style="font-size:11px;color:#6b7a86;margin-top:1px">Highlight Δ Gap in red when EN/FR correct-rate difference reaches this %</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:16px">
+              <input type="number" id="thr-gapred" value="15" step="1" min="5" max="50"
+                style="width:60px;padding:4px 6px;border-radius:5px;border:1px solid #C4C9D4;font-size:12px;color:#1a1f24;background:#fff;text-align:center;font-family:var(--font)"
+                oninput="syncSlider('gapred',this.value)">
+              <span style="font-size:11px;color:#9aa3ab;width:28px;text-align:right" id="thr-gapred-pct">15%</span>
+            </div>
+          </div>
+          <input type="range" id="thr-gapred-slider" min="5" max="50" value="15" step="1"
+            style="width:100%;accent-color:#a31515;cursor:pointer"
+            oninput="syncInput('gapred',this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:10px;color:#c4c9d4">5%</span>
+            <span style="font-size:10px;color:#c4c9d4">50%</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Re-run notice + reset all -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:8px">
+        <button onclick="resetThresholds()" style="font-size:11px;font-weight:600;color:#6b7a86;background:none;border:1px solid #C4C9D4;border-radius:5px;padding:3px 10px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#f7f8f9'" onmouseout="this.style.background='none'">↺ Reset all to defaults</button>
+      </div>
+      <div id="thresh-changed-notice" style="display:none;margin-top:8px;padding:9px 14px;background:#fff8e6;border-left:3px solid #e8a800;border-radius:6px;font-size:12px;color:#5a3a00;font-weight:500">
+        ⚠ Thresholds changed — re-run the analysis to apply.
       </div>
     </div>
 
-    <!-- Coming soon -->
-    <div style="background:#f2f4f6;border-radius:8px;padding:12px 14px;text-align:center;margin-bottom:18px">
-      <div style="font-size:11px;font-weight:600;color:#7a8590;margin-bottom:4px">More settings coming soon</div>
-      <div style="font-size:10.5px;color:#a0aab4;line-height:1.8">
-        Planned: stream code persistence &nbsp;&bull;&nbsp; default exam prefix &nbsp;&bull;&nbsp; configurable flagging thresholds &nbsp;&bull;&nbsp; export format preferences &nbsp;&bull;&nbsp; chart default view
+      <div style="background:#f2f4f6;border-radius:8px;padding:12px 14px;text-align:center;margin-bottom:18px">
+        <div style="font-size:11px;font-weight:600;color:#7a8590;margin-bottom:4px">More settings coming soon</div>
+        <div style="font-size:10.5px;color:#a0aab4;line-height:1.8">
+          Planned: stream code persistence &nbsp;&bull;&nbsp; default exam prefix &nbsp;&bull;&nbsp; export format preferences &nbsp;&bull;&nbsp; chart default view
+        </div>
       </div>
-    </div>
 
-    <div style="text-align:right;padding-top:4px">
-      <button onclick="document.getElementById('settings-modal').style.display='none'" class="btn-dl-secondary">Close</button>
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:4px">
+      <button onclick="cancelSettings()" style="font-size:13px;font-weight:600;padding:7px 18px;border-radius:6px;border:1px solid #C4C9D4;background:#fff;color:#3d4a54;cursor:pointer">Cancel</button>
+      <button onclick="saveSettings()" style="font-size:13px;font-weight:600;padding:7px 18px;border-radius:6px;border:none;background:#a31515;color:#fff;cursor:pointer">Save &amp; Close</button>
     </div>
 
     </div><!-- /content -->
@@ -838,11 +1089,11 @@ tr.row-expand td{border-top:none!important}
 "use strict";
 
 // ── App version — single source of truth ─────────────────────────────────
-var APP_VERSION     = '1.5';
-var APP_BUILD       = '20260618-02';
+var APP_VERSION     = '1.6';
+var APP_BUILD       = '20260620-01';
 var APP_FAQ_VERSION = '1.5';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'June 18, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'June 18, 2026'; // Update each version close
+var APP_RN_DATE     = 'June 20, 2026'; // Update each version close
 
 // ── Guide toggle ──────────────────────────────────────────────────────────
 function toggleGuide() {
@@ -980,13 +1231,179 @@ document.addEventListener('click', function(e) {
   if (modal && e.target === modal) closeDiagnosticsModal();
 });
 
+function _snapshotThresholds() {
+  var snap = {};
+  Object.keys(THRESH_DEFAULTS).forEach(function(id) { snap[id] = getThresh(id); });
+  return snap;
+}
+function _restoreThresholds(snap) {
+  Object.keys(snap).forEach(function(id) {
+    var el = document.getElementById('thr-'+id);
+    var d = THRESH_DEFAULTS;
+    var fmt = { difficult:'2', easy:'2', disc:'2', checkp:'2', checkr:'2', dif:'3', gapamber:'int', gapred:'int' };
+    var v = snap[id];
+    var fmtd = fmt[id] === '3' ? v.toFixed(3) : fmt[id] === 'int' ? String(v) : v.toFixed(2);
+    if (el) el.value = fmtd;
+    syncSlider(id, v);
+  });
+  _threshChanged = false;
+  var notice = document.getElementById('thresh-changed-notice');
+  if (notice) notice.style.display = 'none';
+}
+var _settingsSnapshot = null;
+function openSettings() {
+  _settingsSnapshot = _snapshotThresholds();
+  document.getElementById('settings-modal').style.display = 'flex';
+  closeHamburger();
+}
+function saveSettings() {
+  document.getElementById('settings-modal').style.display = 'none';
+  if (_threshChanged) {
+    _threshChanged = false;
+    var notice = document.getElementById('thresh-changed-notice');
+    if (notice) notice.style.display = 'none';
+    if (G._lastN) {
+      // Analysis exists — mark dirty and update stale-bar message
+      var msg = document.getElementById('stale-bar-msg');
+      if (msg) msg.textContent = 'Analysis thresholds changed — re-run the analysis to apply updated flagging.';
+      markDirty();
+    }
+  }
+  _settingsSnapshot = null;
+}
+function cancelSettings() {
+  if (_settingsSnapshot) { _restoreThresholds(_settingsSnapshot); }
+  _threshChanged = false;
+  var notice = document.getElementById('thresh-changed-notice');
+  if (notice) notice.style.display = 'none';
+  document.getElementById('settings-modal').style.display = 'none';
+  _settingsSnapshot = null;
+}
 function toggleDiagnostics() {
   openDiagnosticsModal();
   closeHamburger();
 }
 
 
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// ── Threshold slider/input sync ──────────────────────────────────────────
+var THRESH_DEFAULTS = {
+  difficult: 0.35,
+  easy:      0.96,
+  disc:      0.00,
+  checkp:    0.25,
+  checkr:    0.15,
+  dif:       0.010,
+  gapamber:  8,
+  gapred:    15
+};
+var _threshChanged = false;
+
+function getThresh(id) {
+  var el = document.getElementById('thr-'+id);
+  if (el) { var v = parseFloat(el.value); if (!isNaN(v)) return v; }
+  return THRESH_DEFAULTS[id];
+}
+
+function syncSlider(id, val) {
+  val = parseFloat(val);
+  if (isNaN(val)) return;
+  var slider = document.getElementById('thr-'+id+'-slider');
+  var pct    = document.getElementById('thr-'+id+'-pct');
+  if (id === 'difficult' || id === 'easy' || id === 'checkp') {
+    if (slider) slider.value = Math.round(val * 100);
+    if (pct) pct.textContent = Math.round(val * 100) + '%';
+  } else if (id === 'disc' || id === 'checkr') {
+    if (slider) slider.value = Math.round(val * 100);
+    if (pct) pct.textContent = val.toFixed(2);
+  } else if (id === 'dif') {
+    if (slider) slider.value = Math.round(val * 1000);
+    if (pct) pct.textContent = (val * 100).toFixed(1) + '%';
+  } else if (id === 'gapamber' || id === 'gapred') {
+    if (slider) slider.value = Math.round(val);
+    if (pct) pct.textContent = Math.round(val) + '%';
+  }
+  enforceGapConstraint(id);
+  markThreshChanged();
+}
+
+function syncInput(id, sliderVal) {
+  sliderVal = parseInt(sliderVal);
+  var input = document.getElementById('thr-'+id);
+  var pct   = document.getElementById('thr-'+id+'-pct');
+  var val;
+  if (id === 'difficult' || id === 'easy' || id === 'checkp') {
+    val = sliderVal / 100;
+    if (input) input.value = val.toFixed(2);
+    if (pct) pct.textContent = sliderVal + '%';
+  } else if (id === 'disc' || id === 'checkr') {
+    val = sliderVal / 100;
+    if (input) input.value = val.toFixed(2);
+    if (pct) pct.textContent = val.toFixed(2);
+  } else if (id === 'dif') {
+    val = sliderVal / 1000;
+    if (input) input.value = val.toFixed(3);
+    if (pct) pct.textContent = (val * 100).toFixed(1) + '%';
+  } else if (id === 'gapamber' || id === 'gapred') {
+    if (input) input.value = sliderVal;
+    if (pct) pct.textContent = sliderVal + '%';
+  }
+  enforceGapConstraint(id);
+  markThreshChanged();
+}
+
+function enforceGapConstraint(changedId) {
+  if (changedId !== 'gapamber' && changedId !== 'gapred') return;
+  var amberEl = document.getElementById('thr-gapamber');
+  var redEl   = document.getElementById('thr-gapred');
+  var aSlider = document.getElementById('thr-gapamber-slider');
+  var rSlider = document.getElementById('thr-gapred-slider');
+  var aPct    = document.getElementById('thr-gapamber-pct');
+  var rPct    = document.getElementById('thr-gapred-pct');
+  if (!amberEl || !redEl) return;
+  var a = parseInt(amberEl.value), r = parseInt(redEl.value);
+  if (changedId === 'gapamber' && a >= r) {
+    r = Math.min(a + 1, 50);
+    if (r === 50 && a >= 50) a = 49;
+    redEl.value = r; if (rSlider) rSlider.value = r; if (rPct) rPct.textContent = r + '%';
+    amberEl.value = a; if (aSlider) aSlider.value = a; if (aPct) aPct.textContent = a + '%';
+  } else if (changedId === 'gapred' && r <= a) {
+    a = Math.max(r - 1, 2);
+    if (a === 2 && r <= 2) r = 3;
+    amberEl.value = a; if (aSlider) aSlider.value = a; if (aPct) aPct.textContent = a + '%';
+    redEl.value = r; if (rSlider) rSlider.value = r; if (rPct) rPct.textContent = r + '%';
+  }
+}
+
+function markThreshChanged() {
+  _threshChanged = true;
+  var notice = document.getElementById('thresh-changed-notice');
+  if (notice) notice.style.display = 'block';
+}
+
+function _applyThreshReset(ids) {
+  var d = THRESH_DEFAULTS;
+  var fmt = { difficult:'2', easy:'2', disc:'2', checkp:'2', checkr:'2', dif:'3', gapamber:'int', gapred:'int' };
+  ids.forEach(function(id) {
+    var v = d[id];
+    var fmtd = fmt[id] === '3' ? v.toFixed(3) : fmt[id] === 'int' ? String(v) : v.toFixed(2);
+    var el = document.getElementById('thr-'+id); if (el) el.value = fmtd;
+    syncSlider(id, v);
+  });
+  var allDefault = Object.keys(THRESH_DEFAULTS).every(function(k) {
+    return Math.abs(getThresh(k) - THRESH_DEFAULTS[k]) < 0.0001;
+  });
+  if (allDefault) {
+    _threshChanged = false;
+    var notice = document.getElementById('thresh-changed-notice');
+    if (notice) notice.style.display = 'none';
+  }
+}
+
+function resetThresholdsMCQ() { _applyThreshReset(['difficult','easy','disc','checkp','checkr']); }
+function resetThresholdsDIF() { _applyThreshReset(['dif','gapamber','gapred']); }
+function resetThresholds()    { _applyThreshReset(Object.keys(THRESH_DEFAULTS)); _threshChanged=false; var n=document.getElementById('thresh-changed-notice'); if(n) n.style.display='none'; }
+
+
 function showDbg(id,msg){_dbgStore[id]=msg;} // kept for compatibility, no longer renders
 var TT = {
   el: null,
@@ -1078,9 +1495,14 @@ function markDirty() {
     vrbBtn.style.borderColor = '#b85c00';
     vrbBtn.style.color = '#b85c00';
   }
-  // Show dirty banner
+  // Show dirty banner (setup page)
   var dirtyBanner = document.getElementById('dirty-banner');
   if (dirtyBanner) dirtyBanner.style.display = 'block';
+  // Show stale bar immediately if already on analysis page
+  var staleBar = document.getElementById('stale-bar');
+  if (staleBar && document.getElementById('results-panel') && document.getElementById('results-panel').style.display !== 'none') {
+    staleBar.style.display = 'flex';
+  }
 }
 
 function clearDirty() {
@@ -1107,6 +1529,9 @@ function clearDirty() {
 }
 function setSource(src) {
   G_SOURCE = src;
+  // Clear scantron preview whenever source changes
+  var sp = document.getElementById('scantron-preview');
+  if (sp) { sp.style.display = 'none'; sp.innerHTML = ''; }
   var track   = document.getElementById('source-toggle-track');
   var pill    = document.getElementById('source-toggle-pill');
   var lblQM   = document.getElementById('src-label-qm');
@@ -1973,8 +2398,203 @@ function parseScantronResults(text) {
   }
 
   showFeedback('feedback-main', feedType, feedLines, dbgText);
+  renderScantronPreview(students, keyLetters, nQ, badRows);
   checkRunReady();
 }
+// ── Scantron parse preview panel ─────────────────────────────────────────
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderScantronPreview(students, keyLetters, nQ, badRows) {
+  var el = document.getElementById('scantron-preview');
+  if (!el) return;
+
+  var enCode = ((document.getElementById('scantron-en-code')||{value:''}).value||'').trim().toUpperCase();
+  var frCode = ((document.getElementById('scantron-fr-code')||{value:''}).value||'').trim().toUpperCase();
+
+  // Count streams
+  var nEN = 0, nFR = 0;
+  students.forEach(function(s) {
+    var cc = (s.courseCode||'').toUpperCase();
+    if (cc === enCode) nEN++;
+    else if (cc === frCode) nFR++;
+  });
+
+  // Key pills — first 10, with show-all toggle
+  var keyPillsHtml = keyLetters.slice(0, 10).map(function(k, i) {
+    return '<div style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;background:#f4f6f9;border:0.5px solid #dde1e5;border-radius:6px;padding:5px 9px;min-width:36px">' +
+      '<span style="font-size:10px;color:#6b7a86">Q'+(i+1)+'</span>' +
+      '<span style="font-size:13px;font-weight:600;color:#1a1f24">'+(k||'?')+'</span>' +
+      '</div>';
+  }).join('');
+  if (nQ > 10) {
+    keyPillsHtml += '<div style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;background:#f4f6f9;border:0.5px solid #dde1e5;border-radius:6px;padding:5px 9px;min-width:36px;opacity:.5">' +
+      '<span style="font-size:10px;color:#6b7a86">···</span>' +
+      '<span style="font-size:11px;color:#6b7a86">'+(nQ-10)+' more</span>' +
+      '</div>';
+  }
+
+  var allKeyPillsHtml = keyLetters.map(function(k, i) {
+    return '<div style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;background:#f4f6f9;border:0.5px solid #dde1e5;border-radius:6px;padding:5px 9px;min-width:36px">' +
+      '<span style="font-size:10px;color:#6b7a86">Q'+(i+1)+'</span>' +
+      '<span style="font-size:13px;font-weight:600;color:#1a1f24">'+(k||'?')+'</span>' +
+      '</div>';
+  }).join('');
+
+  // Student rows — first 5
+  var PREVIEW_N = 5;
+  var studentRowsHtml = students.slice(0, PREVIEW_N).map(function(s, idx) {
+    var cc = (s.courseCode||'').toUpperCase();
+    var isEN = cc === enCode, isFR = cc === frCode;
+    var isUnmatched = !isEN && !isFR && (enCode || frCode);
+    var streamBadge = isEN
+      ? '<span style="display:inline-block;font-size:10px;font-weight:600;color:#0c447c;background:#e6f1fb;border-radius:4px;padding:1px 7px">EN</span>'
+      : isFR
+        ? '<span style="display:inline-block;font-size:10px;font-weight:600;color:#3b6d11;background:#eaf3de;border-radius:4px;padding:1px 7px">FR</span>'
+        : '<span style="display:inline-block;font-size:10px;font-weight:600;color:#856404;background:#fff3cd;border-radius:4px;padding:1px 7px">? unmatched</span>';
+    var rowBg = isUnmatched ? 'background:#fffbf0' : '';
+    var first5 = s.outcomes ? s.outcomes.slice(0,5).map(function(a){ return a ? a.toUpperCase() : '—'; }).join(' ') : '—';
+    return '<tr style="'+rowBg+'">' +
+      '<td style="padding:7px 12px;border-bottom:0.5px solid #edf0f3;color:#6b7a86;font-size:12px">'+(idx+2)+'</td>' +
+      '<td style="padding:7px 12px;border-bottom:0.5px solid #edf0f3;font-size:12px">'+(s.id||'—')+'</td>' +
+      '<td style="padding:7px 12px;border-bottom:0.5px solid #edf0f3;font-size:12px">'+(s.name||'—')+'</td>' +
+      '<td style="padding:7px 12px;border-bottom:0.5px solid #edf0f3;font-family:monospace;font-size:12px">'+(s.courseCode||'—')+'</td>' +
+      '<td style="padding:7px 12px;border-bottom:0.5px solid #edf0f3;font-size:12px">'+streamBadge+'</td>' +
+      '<td style="padding:7px 12px;border-bottom:0.5px solid #edf0f3;font-family:monospace;font-size:12px">'+first5+'</td>' +
+      '</tr>';
+  }).join('');
+
+  var allStudentRowsHtml = students.map(function(s, idx) {
+    var cc = (s.courseCode||'').toUpperCase();
+    var isEN = cc === enCode, isFR = cc === frCode;
+    var isUnmatched = !isEN && !isFR && (enCode || frCode);
+    var streamBadge = isEN
+      ? '<span style="display:inline-block;font-size:10px;font-weight:600;color:#0c447c;background:#e6f1fb;border-radius:4px;padding:1px 7px">EN</span>'
+      : isFR
+        ? '<span style="display:inline-block;font-size:10px;font-weight:600;color:#3b6d11;background:#eaf3de;border-radius:4px;padding:1px 7px">FR</span>'
+        : '<span style="display:inline-block;font-size:10px;font-weight:600;color:#856404;background:#fff3cd;border-radius:4px;padding:1px 7px">? unmatched</span>';
+    var rowBg = isUnmatched ? 'background:#fffbf0' : '';
+    var first5 = s.outcomes ? s.outcomes.slice(0,5).map(function(a){ return a ? a.toUpperCase() : '—'; }).join(' ') : '—';
+    return '<tr style="'+rowBg+'">' +
+      '<td style="padding:5px 12px;border-bottom:0.5px solid #edf0f3;color:#6b7a86;font-size:12px">'+(idx+2)+'</td>' +
+      '<td style="padding:5px 12px;border-bottom:0.5px solid #edf0f3;font-size:12px">'+(s.id||'—')+'</td>' +
+      '<td style="padding:5px 12px;border-bottom:0.5px solid #edf0f3;font-size:12px">'+(s.name||'—')+'</td>' +
+      '<td style="padding:5px 12px;border-bottom:0.5px solid #edf0f3;font-family:monospace;font-size:12px">'+(s.courseCode||'—')+'</td>' +
+      '<td style="padding:5px 12px;border-bottom:0.5px solid #edf0f3;font-size:12px">'+streamBadge+'</td>' +
+      '<td style="padding:5px 12px;border-bottom:0.5px solid #edf0f3;font-family:monospace;font-size:12px">'+first5+'</td>' +
+      '</tr>';
+  }).join('');
+
+  var unmatchedWarning = badRows.length > 0
+    ? '<div style="padding:8px 14px;background:#fffbf0;border-top:0.5px solid #f0e0a0;font-size:11px;color:#856404">' +
+        '⚠ '+badRows.length+' unmatched course code'+(badRows.length>1?'s':'')+' detected. You can assign '+(badRows.length>1?'them':'it')+' to a stream when you run the analysis.' +
+      '</div>'
+    : '';
+
+  var filename = '';
+  var inp = document.getElementById('fi-main');
+  if (inp && inp.files && inp.files[0]) filename = inp.files[0].name;
+
+  var html =
+    '<div style="border:0.5px solid #dde1e5;border-radius:10px;overflow:hidden;font-family:var(--font)">' +
+    // Header
+    '<div style="background:#f4f6f9;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #dde1e5">' +
+      '<div style="font-size:13px;font-weight:600;color:#1a1f24">'+
+        (filename ? escHtml(filename)+' — ' : '') + 'Parse preview' +
+      '</div>' +
+      '<button onclick="document.getElementById(\'scantron-preview\').style.display=\'none\'" ' +
+        'style="background:none;border:none;cursor:pointer;font-size:18px;color:#6b7a86;line-height:1;padding:0 4px">✕</button>' +
+    '</div>' +
+    // KPI row
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:0.5px solid #dde1e5">' +
+      _previewKPI('Students', students.length, 'rows detected') +
+      _previewKPI('Questions', nQ, 'from MASTER row') +
+      _previewKPI('EN stream', nEN, enCode || '—', '#185fa5') +
+      _previewKPI('FR stream', nFR, frCode || '—', '#3b6d11') +
+    '</div>' +
+    // Key section
+    '<div style="border-bottom:0.5px solid #dde1e5">' +
+      '<div style="background:#f9fafb;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #edf0f3">' +
+        '<div style="font-size:11px;font-weight:600;color:#3d4a54">Answer key — MASTER row (Q1–Q'+Math.min(nQ,10)+' of '+nQ+')</div>' +
+        (nQ > 10 ? '<button id="sc-key-toggle" onclick="scToggle(\'key\')" style="font-size:11px;color:#185fa5;background:none;border:none;cursor:pointer;text-decoration:underline">Show all '+nQ+'</button>' : '') +
+      '</div>' +
+      '<div style="padding:12px 14px;display:flex;flex-wrap:wrap;gap:6px" id="sc-key-preview">'+keyPillsHtml+'</div>' +
+      '<div style="padding:12px 14px;display:flex;flex-wrap:wrap;gap:6px;display:none" id="sc-key-all">'+allKeyPillsHtml+'</div>' +
+    '</div>' +
+    // Student rows section
+    '<div>' +
+      '<div style="background:#f9fafb;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #edf0f3">' +
+        '<div style="font-size:11px;font-weight:600;color:#3d4a54">Student rows — first '+Math.min(PREVIEW_N, students.length)+' of '+students.length+' &nbsp;<span style="font-weight:400;font-style:italic;color:#6b7a86">Sample only — all '+students.length+' students are loaded and ready</span></div>' +
+        (students.length > PREVIEW_N ? '<button id="sc-students-toggle" onclick="scToggle(\'students\')" style="font-size:11px;color:#185fa5;background:none;border:none;cursor:pointer;text-decoration:underline;white-space:nowrap">Show all '+students.length+'</button>' : '') +
+      '</div>' +
+      '<div style="overflow-x:auto">' +
+        '<table id="sc-students-preview" style="width:100%;border-collapse:collapse">' +
+          '<thead><tr style="background:#f9fafb">' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Row</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Student ID</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Name</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Course code</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Stream</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Q1–Q5 answers</th>' +
+          '</tr></thead>' +
+          '<tbody>'+studentRowsHtml+'</tbody>' +
+        '</table>' +
+        '<table id="sc-students-all" style="width:100%;border-collapse:collapse;display:none">' +
+          '<thead><tr style="background:#f9fafb">' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Row</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Student ID</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Name</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Course code</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Stream</th>' +
+            '<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:#6b7a86;border-bottom:0.5px solid #dde1e5">Q1–Q5 answers</th>' +
+          '</tr></thead>' +
+          '<tbody>'+allStudentRowsHtml+'</tbody>' +
+        '</table>' +
+      '</div>' +
+      unmatchedWarning +
+    '</div>' +
+    // Action row
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f9fafb;border-top:0.5px solid #dde1e5">' +
+      '<span style="font-size:11px;color:#6b7a86">Preview only — all '+students.length+' students and '+nQ+' questions are loaded.</span>' +
+      '<div style="display:flex;gap:8px">' +
+        '<button onclick="document.getElementById(\'fi-main\').click()" ' +
+          'style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:0.5px solid #C4C9D4;background:#fff;color:#3d4a54;cursor:pointer">Re-upload</button>' +
+        '<button onclick="document.getElementById(\'scantron-preview\').style.display=\'none\'" ' +
+          'style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:none;background:#2e7d32;color:#fff;cursor:pointer">✓ Looks good</button>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
+
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+
+function _previewKPI(label, val, sub, valColor) {
+  return '<div style="padding:12px 16px;border-right:0.5px solid #dde1e5">' +
+    '<div style="font-size:11px;color:#6b7a86;margin-bottom:3px">'+label+'</div>' +
+    '<div style="font-size:20px;font-weight:600;color:'+(valColor||'#1a1f24')+'">'+val+'</div>' +
+    '<div style="font-size:11px;color:#9aa3ab;margin-top:1px">'+sub+'</div>' +
+  '</div>';
+}
+
+function scToggle(section) {
+  if (section === 'key') {
+    var preview = document.getElementById('sc-key-preview');
+    var all     = document.getElementById('sc-key-all');
+    var btn     = document.getElementById('sc-key-toggle');
+    var showing = all && all.style.display !== 'none';
+    if (preview) preview.style.display = showing ? 'flex' : 'none';
+    if (all)     all.style.display     = showing ? 'none' : 'flex';
+    if (btn)     btn.textContent = showing ? 'Show all '+G.nQ : 'Show fewer';
+  } else if (section === 'students') {
+    var prev2 = document.getElementById('sc-students-preview');
+    var all2  = document.getElementById('sc-students-all');
+    var btn2  = document.getElementById('sc-students-toggle');
+    var showing2 = all2 && all2.style.display !== 'none';
+    if (prev2) prev2.style.display = showing2 ? 'table' : 'none';
+    if (all2)  all2.style.display  = showing2 ? 'none'  : 'table';
+    if (btn2)  btn2.textContent = showing2 ? 'Show all '+G.students.length : 'Show fewer';
+  }
+}
+
 // ── End Scantron parser ───────────────────────────────────────────────────
 
 // ── Drag & drop handler ───────────────────────────────────────────────────
@@ -2080,7 +2700,7 @@ function _runAnalysis() {
 
     // Best students chose (top 27% who got it wrong, only when p<0.25 and rpbis<0.15)
     var topWrong='';
-    if (p<0.25&&rpbis<0.15) {
+    if (p<getThresh('checkp')&&rpbis<getThresh('checkr')) {
       var k27=Math.max(1,Math.round(0.27*n)), sp=[];
       for (j=0; j<n; j++) { sp.push({t:tots[j],j:j}); }
       sp.sort(function(a,b){return b.t-a.t;});
@@ -2095,13 +2715,13 @@ function _runAnalysis() {
 
     // Flag cascade — exact from MCQ manual, first match wins
     var flag='', rec='';
-    if (p>=0.96&&rpbis>=0) {
+    if (p>=getThresh('easy')&&rpbis>=0) {
       flag='Too easy'; rec='Report question (Too easy)';
-    } else if (p<0.35&&rpbis>0) {
+    } else if (p<getThresh('difficult')&&rpbis>0) {
       flag='Difficult item'; rec='Review Item';
     } else if (p<0.8&&rpbis<0) {
       flag='Poor discrimination'; rec='Review Item';
-    } else if (p<0.25&&rpbis<0.15) {
+    } else if (p<getThresh('checkp')&&rpbis<getThresh('checkr')) {
       flag='Poor discrimination / difficult item'; rec='Check Key';
     }
 
@@ -2946,7 +3566,7 @@ function renderMCQReport(avg, alpha) {
     else if(r.flag.indexOf('Poor')>=0&&r.rpbis<0&&r.p<0.35){comment=r.pct+'% of students answered correctly / Negative discrimination';}
     else if(r.flag.indexOf('Poor')>=0){comment='Negative discrimination';}
     else if(r.flag.indexOf('Low')>=0){comment='Low discrimination';}
-    var bw=(r.topWrong&&r.p<0.25)?'<b>'+r.topWrong+'</b>':'';
+    var bw=(r.topWrong&&r.p<getThresh('checkp'))?'<b>'+r.topWrong+'</b>':'';
     var color=r.flag.indexOf('Poor')>=0?'#880e4f':r.flag.indexOf('Difficult')>=0?'#e65100':'#f57f17';
     t1+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="color:'+color+';font-style:italic">'+r.flag+'</td><td>'+comment+'</td><td style="text-align:center">'+bw+'</td><td><b>'+r.rec+'</b></td></tr>';
   }
@@ -3036,7 +3656,7 @@ function renderFullReport(avg, alpha) {
     if(r.flag.indexOf('Difficult')>=0) comment=r.pct+'% of students answered correctly';
     else if(r.flag.indexOf('Poor')>=0&&r.rpbis<0&&r.p<0.35) comment=r.pct+'% of students answered correctly / Negative discrimination';
     else if(r.flag.indexOf('Poor')>=0) comment='Negative discrimination';
-    var bw=(r.topWrong&&r.p<0.25)?'<b>'+r.topWrong+'</b>':'';
+    var bw=(r.topWrong&&r.p<getThresh('checkp'))?'<b>'+r.topWrong+'</b>':'';
     var color=r.flag.indexOf('Poor')>=0?'#880e4f':r.flag.indexOf('Difficult')>=0?'#e65100':'#f57f17';
     t1+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="color:'+color+';font-style:italic">'+r.flag+'</td><td>'+comment+'</td><td style="text-align:center">'+bw+'</td><td><b>'+r.rec+'</b></td></tr>';
   }
@@ -3325,8 +3945,8 @@ function renderDIFTable() {
       var diff=r.ePct-r.fPct;
       var absDiff=Math.abs(diff);
       var higher=diff>0?'EN':diff<0?'FR':'';
-      var gapCol=absDiff>=15?'#a31515':absDiff>=8?'#8b5a00':'#7a8590';
-      var gapBg=absDiff>=15?'#fde8e8':absDiff>=8?'#fff8e0':'transparent';
+      var gapCol=absDiff>=getThresh('gapred')?'#a31515':absDiff>=getThresh('gapamber')?'#8b5a00':'#7a8590';
+      var gapBg=absDiff>=getThresh('gapred')?'#fde8e8':absDiff>=getThresh('gapamber')?'#fff8e0':'transparent';
       var gapBorder=absDiff>=8?'0.5px solid '+(absDiff>=15?'rgba(163,21,21,.2)':'rgba(139,90,0,.2)'):'none';
       var arrow=higher==='EN'?'↑ EN':higher==='FR'?'↑ FR':'—';
       var gapCell=absDiff>0
@@ -3763,7 +4383,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
         else if(r.flag.indexOf('Poor')>=0&&r.rpbis<0){comment='Negative discrimination';}
         else if(r.flag.indexOf('Poor')>=0){comment='Negative discrimination';}
         else if(r.flag.indexOf('Low')>=0){comment='Low discrimination';}
-        var bw=(r.topWrong&&r.p<0.25)?r.topWrong:'';
+        var bw=(r.topWrong&&r.p<getThresh('checkp'))?r.topWrong:'';
         t1rows.push([r.num, r.flag, comment, bw, r.rec]);
       }
       body += docxTable(['Question','Reason for flagging','Comments','Best students also chose','Recommendation'], t1rows, [800,2000,2000,1200,2713], {centreCols:[0,3]});
@@ -4010,6 +4630,7 @@ function resetAll() {
   document.getElementById('fi-key').value='';
   var dbgs=['dbg-main','dbg-key','feedback-main','feedback-key'], i;
   for(i=0;i<dbgs.length;i++){var el=document.getElementById(dbgs[i]);if(el){el.style.display='none';el.innerHTML='';el.textContent='';}}
+  var sp=document.getElementById('scantron-preview'); if(sp){sp.style.display='none';sp.innerHTML='';}
 }
 
 // ── DIF toggle ────────────────────────────────────────────────────────────
@@ -4172,7 +4793,7 @@ function toggleFAQ(qEl) {
   qEl.classList.toggle('open', !isOpen);
 }
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeFAQ(); closeAbout(); closeReleaseNotes(); closeExclusionsModal(); document.getElementById('settings-modal').style.display='none'; }
+  if (e.key === 'Escape') { closeFAQ(); closeAbout(); closeReleaseNotes(); closeExclusionsModal(); cancelSettings(); }
 });
 
 document.addEventListener('click', function(e) {
@@ -4240,6 +4861,38 @@ document.addEventListener('click', function(e) {
 
 // ── Release Notes ─────────────────────────────────────────────────────────
 var RELEASE_NOTES = [
+  {
+    version: '1.6',
+    builds: [
+      {
+        build: '20260619-01',
+        date:  'June 19, 2026',
+        notes: [
+          'Splash screen — logo and title now side by side, matching the setup page header layout',
+          'Settings modal — configurable analysis thresholds with sliders and manual input fields for: Difficult p-value, Too Easy p-value, Poor Discrimination rpbis, Check Key p-value and rpbis sub-thresholds, DIF significance p-value, and EN/FR gap amber and red alert levels',
+          'Settings modal — separate Reset MCQ and Reset DIF buttons, plus Reset All; Save & Close and Cancel buttons with snapshot/restore so changes only apply on Save',
+          'EN/FR gap amber and red sliders are linked — moving one past the other automatically adjusts to maintain a valid range',
+          'Changing thresholds and saving now marks results as stale: yellow banner appears on the setup page and on the analysis page if already open, with a threshold-specific message',
+          'Stale-bar now appears immediately on the analysis page when settings are changed from there, without requiring navigation back to setup',
+        ]
+      },
+      {
+        build: '20260619-02',
+        date:  'June 19, 2026',
+        notes: [
+          'Scantron upload validation panel — after a successful parse, a preview appears showing the filename, student/question counts, stream breakdown, first 10 answer key pills, and a sample of 5 student rows with course code and stream badge; unmatched course codes highlighted in amber; Show all toggles expand the full key and student list inline; Looks good / Re-upload action row at the bottom',
+          'Sample-only caveat shown explicitly in the panel header so users know all data is loaded',
+          'Panel clears automatically when switching source, re-uploading, or starting a new analysis',
+          'Fixed: escHtml not defined error when reading Scantron file or opening Diagnostics modal',
+        ]
+      },
+      {
+        build: '20260620-01',
+        date:  'June 20, 2026',
+        notes: []
+      }
+    ]
+  },
   {
     version: '1.5',
     builds: [
@@ -5234,7 +5887,7 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
     </a>
 
     <!-- Settings -->
-    <a href="#" onclick="document.getElementById('settings-modal').style.display='flex';closeHamburger();return false;"
+    <a href="#" onclick="openSettings();return false;"
       style="display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:12px;font-weight:600;color:#3d4a54;text-decoration:none;font-family:var(--font);transition:background .12s"
       onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background='transparent'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
