@@ -182,8 +182,11 @@ tr.row-expand td{border-top:none!important}
 
 /* ── Misc ── */
 .tbl-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;position:relative}
-.mcq-table{table-layout:fixed;min-width:600px}
-.dif-table{table-layout:fixed;min-width:680px}
+.col-resize-handle{position:absolute;right:0;top:0;height:100%;width:6px;cursor:col-resize;user-select:none;z-index:2}
+.col-resize-handle:hover,.col-resize-handle.resizing{background:rgba(163,21,21,.25)}
+th{position:relative;white-space:normal}
+.mcq-table{table-layout:auto;min-width:600px}
+.dif-table{table-layout:auto;min-width:680px}
 .debug{background:#1a1a1a;color:#d4d4d4;border-radius:6px;padding:10px;font-size:11px;margin-top:10px;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;display:none}
 .report-preview{font-family:var(--font);font-size:13px;line-height:1.75;padding:22px;border:1.5px solid rgba(0,0,0,.28);border-radius:8px;background:var(--c-surface);max-height:600px;overflow-y:auto}
 .report-preview h3{font-size:13px;text-align:center;margin-bottom:4px}
@@ -1089,7 +1092,7 @@ tr.row-expand td{border-top:none!important}
 "use strict";
 
 // ── App version — single source of truth ─────────────────────────────────
-var APP_VERSION     = '1.6';
+var APP_VERSION     = '1.7-dev';
 var APP_BUILD       = '20260620-01';
 var APP_FAQ_VERSION = '1.5';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'June 18, 2026'; // Update when FAQ content changes
@@ -2401,7 +2404,47 @@ function parseScantronResults(text) {
   renderScantronPreview(students, keyLetters, nQ, badRows);
   checkRunReady();
 }
-// ── Scantron parse preview panel ─────────────────────────────────────────
+// ── Resizable table columns ───────────────────────────────────────────────
+function makeTableResizable(tableId) {
+  var table = document.getElementById(tableId);
+  if (!table) return;
+  var ths = table.querySelectorAll('thead th');
+  ths.forEach(function(th) {
+    // Remove any existing handle
+    var old = th.querySelector('.col-resize-handle');
+    if (old) old.parentNode.removeChild(old);
+    // Set explicit width from current rendered width
+    th.style.width = th.offsetWidth + 'px';
+    // Add handle
+    var handle = document.createElement('div');
+    handle.className = 'col-resize-handle';
+    th.appendChild(handle);
+    var startX, startW;
+    handle.addEventListener('mousedown', function(e) {
+      startX = e.clientX;
+      startW = th.offsetWidth;
+      handle.classList.add('resizing');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      function onMove(e) {
+        var newW = Math.max(40, startW + (e.clientX - startX));
+        th.style.width = newW + 'px';
+      }
+      function onUp() {
+        handle.classList.remove('resizing');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  });
+}
+
+
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function renderScantronPreview(students, keyLetters, nQ, badRows) {
   var el = document.getElementById('scantron-preview');
@@ -3387,10 +3430,10 @@ function renderMCQTable(filter) {
   var html=
     '<thead><tr>'+
     '<th style="width:20px;text-align:center"><button id="btn-expand-all" onclick="toggleExpandAll()" data-tip="Click to expand or collapse distractor analysis for all questions." style="display:inline-flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;"><svg id="expand-all-arrow" width="11" height="11" viewBox="0 0 11 11" fill="none" style="transition:transform .2s"><polygon points="1,1 10,5.5 1,10" fill="#8b0000"/></svg></button></th>'+
-    '<th style="width:28px" data-tip="Question number as it appears in the results file.">#</th>'+
+    '<th data-tip="Question number as it appears in the results file.">#</th>'+
     '<th style="width:36px" data-tip="The correct answer letter from the answer key file. If an alternate key is set, shows as A (+D).">Key</th>'+
-    '<th style="width:80px" data-tip="Difficulty index (p-value): proportion of students who answered correctly. Ideal range 0.35–0.95. Below 0.35 = Difficult; 0.96 or above = Too easy.">Difficulty (p)</th>'+
-    '<th style="width:80px" data-tip="Discrimination index (point-biserial correlation): measures how well this question separates strong from weak students. Above 0.25 = good; 0.15–0.25 = acceptable; below 0.15 = low; negative = red flag (stronger students chose wrong answer).">Discrimination</th>'+
+    '<th data-tip="Difficulty index (p-value): proportion of students who answered correctly. Ideal range 0.35–0.95. Below 0.35 = Difficult; 0.96 or above = Too easy.">Difficulty (p)</th>'+
+    '<th data-tip="Discrimination index (point-biserial correlation): measures how well this question separates strong from weak students. Above 0.25 = good; 0.15–0.25 = acceptable; below 0.15 = low; negative = red flag (stronger students chose wrong answer).">Discrimination</th>'+
     '<th style="min-width:80px" data-tip="The reason this question was flagged based on UGME analysis thresholds. Possible values: Difficult, Poor discrimination, Low discrimination, Too easy, Check Key.">Reason for Flag</th>'+
     '<th style="min-width:48px;white-space:normal;line-height:1.3" data-tip="Most popular wrong answer among top-performing students. Only shown for items with difficulty below 0.25 and discrimination below 0.15 — suggests a possible key error or ambiguous question.">Best Students Chose</th>'+
     '<th style="min-width:90px" class="col-rec" data-tip="Suggested action for this question based on its statistical profile.">Recommendation</th>'+
@@ -3464,6 +3507,7 @@ function renderMCQTable(filter) {
       '</td></tr></tbody>';
   }
   document.getElementById('mcq-table').innerHTML=html;
+  setTimeout(function(){ makeTableResizable('mcq-table'); }, 50);
 }
 
 
@@ -3891,7 +3935,7 @@ function renderFullReport(avg, alpha) {
 function renderDIFTable() {
   var html=
     '<thead><tr>'+
-    '<th style="width:28px" data-tip="Question number.">#</th>'+
+    '<th data-tip="Question number.">#</th>'+
     '<th style="width:54px" data-tip="Chi-square from Block 1 (total score only).">B1 &#967;&sup2;</th>'+
     '<th style="width:48px" data-tip="Nagelkerke R-squared from Block 1.">B1 R&sup2;</th>'+
     '<th style="width:54px" data-tip="Chi-square from Block 3 (score + language + interaction).">B3 &#967;&sup2;</th>'+
@@ -3969,6 +4013,7 @@ function renderDIFTable() {
     return;
   }
   document.getElementById('dif-table').innerHTML=html;
+  setTimeout(function(){ makeTableResizable('dif-table'); }, 50);
 }
 
 // ── Render: DIF report ────────────────────────────────────────────────────
@@ -4861,6 +4906,16 @@ document.addEventListener('click', function(e) {
 
 // ── Release Notes ─────────────────────────────────────────────────────────
 var RELEASE_NOTES = [
+  {
+    version: '1.7-dev',
+    builds: [
+      {
+        build: '20260620-01',
+        date:  'June 20, 2026',
+        notes: []
+      }
+    ]
+  },
   {
     version: '1.6',
     builds: [
