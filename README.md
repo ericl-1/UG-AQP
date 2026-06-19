@@ -4,19 +4,21 @@ A self-contained, browser-based tool for analysing multiple-choice exam results.
 
 ## Features
 
-- Item analysis — difficulty (p-value), discrimination (rpbis), automatic flagging, and distractor breakdown per question
-- DIF analysis — differential item functioning between two student groups using logistic regression
-- Score distribution chart with per-group breakdown and average markers
-- Question Exceptions — credit or delete specific questions before analysis, with full recalculation of all stats
-- Alternate Key — accept one or more additional correct answers per question
-- Exports — Word reports (MCQ Report, DIF Report, Full Report) and CSV
-- Supports QuestionMark and Scantron data sources
+- **Item analysis** — difficulty (p-value), discrimination (rpbis), automatic flagging, and distractor breakdown per question
+- **DIF analysis** — differential item functioning between two student groups using logistic regression
+- **Score distribution chart** with per-group breakdown and average markers
+- **Question Exceptions** — credit or delete specific questions before analysis, with full recalculation of all stats
+- **Alternate Key** — accept one or more additional correct answers per question; stats recalculate automatically
+- **Configurable thresholds** — adjust flagging and DIF sensitivity from the Settings panel
+- **Scantron upload validation** — preview parsed key and student rows before running analysis
+- **Exports** — Word reports (MCQ Report, DIF Report, Full Report) and CSV
+- Supports **QuestionMark** and **Scantron** data sources
 
 ## How to use
 
 Open the tool at the link below — no download or login required:
 
-**[Launch Tool](https://YOUR-USERNAME.github.io/exam-results-analysis)**
+**[Launch Tool](https://ericl-1.github.io/exam-results-analysis)**
 
 Upload your exam files, configure streams if applicable, and run analysis. Everything is processed locally in your browser.
 
@@ -26,4 +28,4 @@ No data is transmitted or stored anywhere. Files you upload are processed entire
 
 ## Version
 
-Current release: **v1.4**
+Current release: **v1.6**
