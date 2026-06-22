@@ -1092,11 +1092,11 @@ th{position:relative;white-space:normal}
 "use strict";
 
 // ── App version — single source of truth ─────────────────────────────────
-var APP_VERSION     = '1.7-dev';
-var APP_BUILD       = '20260620-01';
+var APP_VERSION     = '1.8-dev';
+var APP_BUILD       = '20260622-01';
 var APP_FAQ_VERSION = '1.5';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'June 18, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'June 20, 2026'; // Update each version close
+var APP_RN_DATE     = 'June 22, 2026'; // Update each version close
 
 // ── Guide toggle ──────────────────────────────────────────────────────────
 function toggleGuide() {
@@ -1535,6 +1535,12 @@ function setSource(src) {
   // Clear scantron preview whenever source changes
   var sp = document.getElementById('scantron-preview');
   if (sp) { sp.style.display = 'none'; sp.innerHTML = ''; }
+  // Clear all upload feedback indicators when source changes
+  ['feedback-main','feedback-key'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.innerHTML = ''; }
+    delete _dbgStore[id];
+  });
   var track   = document.getElementById('source-toggle-track');
   var pill    = document.getElementById('source-toggle-pill');
   var lblQM   = document.getElementById('src-label-qm');
@@ -2444,6 +2450,64 @@ function makeTableResizable(tableId) {
   });
 }
 
+
+// ── Export Session Record (CSV) ───────────────────────────────────────────
+function exportSessionRecord() {
+  closeHamburger();
+  if (!G._lastN) { alert('No analysis to export — please run the analysis first.'); return; }
+  var now = new Date();
+  var ts = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var examTitle = (document.getElementById('exam-title')||{value:''}).value||'Untitled Exam';
+  var examDate  = (document.getElementById('exam-date')||{value:''}).value||'';
+  var source    = G_SOURCE==='scantron' ? 'Scantron' : 'QuestionMark';
+  var creditedCount   = G.mcq ? G.mcq.filter(function(r){return r.excluded==='credit';}).length : 0;
+  var deletedCount    = G.mcq ? G.mcq.filter(function(r){return r.excluded==='delete';}).length : 0;
+  var flaggedCount    = G.mcq ? G.mcq.filter(function(r){return r.flag&&!r.excluded;}).length : 0;
+  var difFlaggedCount = G.dif ? G.dif.filter(function(d){return d.important;}).length : 0;
+  var s1H = ['Export Version','Tool Version','Exported At','Source','Exam Title','Exam Date','Total Students','EN Students','FR Students','Total Questions','Effective Questions','Exam Avg %','EN Avg %','FR Avg %','Cronbach Alpha','Flagged Count','DIF Flagged Count','Credited Count','Deleted Count'];
+  var s1R = ['1.0',APP_VERSION,ts,source,examTitle,examDate,G._lastN,G._lastNE||'',G._lastNF||'',G.nQ,G.nQ-deletedCount,G._lastAvg,G._lastEAvg||'',G._lastFAvg||'',G._lastAlpha?(Math.round(G._lastAlpha*100)/100).toFixed(2):'',flaggedCount,difFlaggedCount,creditedCount,deletedCount];
+  var s2H = ['Q #','Elentra ID','Key','Alt Keys','Difficulty (p)','Discrimination (rpbis)','Flag','Disposition','Reason','EN % Correct','FR % Correct','EN-FR Gap %','DIF Flagged','DIF p-value','Comments'];
+  var s2R = (G.mcq||[]).map(function(r) {
+    var dif = (G.dif||[]).find(function(d){return d.qi===r.num-1;});
+    var isDel = r.excluded==='delete';
+    return [r.num,'',r.key||'',(r.altKeys&&r.altKeys.length)?r.altKeys.join('+'):'',
+      isDel?'':(r.p!=null?(Math.round(r.p*100)/100).toFixed(2):''),
+      isDel?'':(r.rpbis!=null?(Math.round(r.rpbis*100)/100).toFixed(2):''),
+      r.flag||'',r.excluded==='credit'?'Credit':isDel?'Delete':'Include',r.reason||'',
+      (isDel||!dif)?'':(dif.ePct!=null?dif.ePct:''),
+      (isDel||!dif)?'':(dif.fPct!=null?dif.fPct:''),
+      (isDel||!dif)?'':(dif.gap!=null?Math.abs(dif.gap):''),
+      (isDel||!dif)?'':(dif.important?'Yes':'No'),
+      (isDel||!dif)?'':(dif.pval!=null?dif.pval.toFixed(3):''),
+      r.reason&&r.excluded?'Reason: '+r.reason+(r.altReason?' | '+r.altReason:''):
+        (r.altKeys&&r.altKeys.length?'Alt. answer(s) accepted: '+r.altKeys.join(', ')+(r.altReason?' — '+r.altReason:''):'')
+    ];
+  });
+  var s3H = ['Difficult p','Easy p','Disc rpbis','Check Key p','Check Key rpbis','DIF p-value','Gap Amber %','Gap Red %'];
+  var s3R = [getThresh('difficult'),getThresh('easy'),getThresh('disc'),getThresh('checkp'),getThresh('checkr'),getThresh('dif'),getThresh('gapamber'),getThresh('gapred')];
+  function cr(arr){return arr.map(function(v){var s=String(v===null||v===undefined?'':v);if(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)s='"'+s.replace(/"/g,'""')+'"';return s;}).join(',');}
+  var lines=['EXAM SUMMARY',cr(s1H),cr(s1R),'','QUESTION RECORDS',cr(s2H)];
+  s2R.forEach(function(r){lines.push(cr(r));});
+  lines.push('','ANALYSIS THRESHOLDS',cr(s3H),cr(s3R));
+  var csv  = lines.join('\n');
+  var safeTitle = examTitle.replace(/[^a-zA-Z0-9\-_ ]/g,'').replace(/\s+/g,'-').substring(0,40);
+  var filename = safeTitle + (examDate ? '_'+examDate : '') + '_session-record.csv';
+  try {
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  } catch(e) {
+    // Fallback for sandboxed environments — open as data URI
+    var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    var a2  = document.createElement('a');
+    a2.href = uri; a2.download = filename; a2.style.display = 'none';
+    document.body.appendChild(a2); a2.click();
+    document.body.removeChild(a2);
+  }
+}
 
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function renderScantronPreview(students, keyLetters, nQ, badRows) {
@@ -4884,6 +4948,10 @@ function toggleHamburger(btn) {
   if (dd.style.display !== 'none' && dd._anchor === btn) {
     closeHamburger(); return;
   }
+  // Show Save Session Record only on analysis page
+  var srItem = document.getElementById('hm-session-record');
+  var onAnalysis = document.getElementById('results-panel') && document.getElementById('results-panel').style.display !== 'none';
+  if (srItem) srItem.style.display = (onAnalysis && G._lastN) ? 'flex' : 'none';
   var r = btn.getBoundingClientRect();
   dd.style.top  = (r.bottom + 6) + 'px';
   dd.style.left = 'auto';
@@ -4907,12 +4975,31 @@ document.addEventListener('click', function(e) {
 // ── Release Notes ─────────────────────────────────────────────────────────
 var RELEASE_NOTES = [
   {
-    version: '1.7-dev',
+    version: '1.8-dev',
+    builds: [
+      {
+        build: '20260622-01',
+        date:  'June 22, 2026',
+        notes: []
+      }
+    ]
+  },
+  {
+    version: '1.7',
     builds: [
       {
         build: '20260620-01',
         date:  'June 20, 2026',
-        notes: []
+        notes: [
+          'MCQ and DIF analysis tables now auto-size columns to fit content — no more clipped text in the Key or Flag columns',
+          'Column resize handles on all table headers — drag the right edge of any column header to widen or narrow it',
+          'Scantron upload validation panel — after a successful parse, a preview shows the filename, student and question counts, stream breakdown, answer key pills (Q1–10 with Show all toggle), and a sample of 5 student rows with stream badges; unmatched course codes highlighted in amber',
+          'Sample-only caveat shown clearly in the panel so users know all data is loaded',
+          'Save Session Record — available from the analysis page hamburger menu after an analysis is run; exports a structured CSV with three sections: Exam Summary, Question Records (one row per question with all stats), and Analysis Thresholds used',
+          'Session Record filename includes exam title and date for easy filing',
+          'Fixed: toggling from QM to Scantron (or back) now clears stale upload feedback indicators from the previous source',
+          'Fixed: escHtml not defined error when uploading a Scantron file or opening the Diagnostics modal',
+        ]
       }
     ]
   },
@@ -5914,6 +6001,14 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
       onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background='transparent'">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="1" width="10" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="9" width="10" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M3 7h10" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="8" r=".8" fill="currentColor"/></svg>
       Print / Save as PDF
+    </a>
+
+    <!-- Save Session Record -->
+    <a id="hm-session-record" href="#" onclick="exportSessionRecord();return false;"
+      style="display:none;align-items:center;gap:8px;padding:9px 16px;font-size:12px;font-weight:600;color:#3d4a54;text-decoration:none;font-family:var(--font);transition:background .12s"
+      onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background='transparent'">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 0 1 1-1h7l4 4v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3z" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 9h6M5 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Save Session Record
     </a>
 
     <!-- Release Notes -->
