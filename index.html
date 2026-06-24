@@ -15,12 +15,12 @@
   --font:'Aptos Display','Aptos',Calibri,'Segoe UI','Inter',Arial,sans-serif;
 
   /* ── Structural / brand tokens (theme-swappable) ── */
-  --c-primary:       #1a1f24;   /* darkest — nav bg, body text, headings */
+  --c-primary:       #6e0f0f;   /* darkest — nav bg, body text, headings */
   --c-secondary:     #3d4a54;   /* secondary text, sub-labels */
   --c-muted:         #6b7a86;   /* muted text, placeholders, icons */
   --c-faint:         #6b7a86;   /* alias for muted — footer, captions */
   --c-accent:        #a31515;   /* primary brand — buttons, active states */
-  --c-accent-dark:   #8b0000;   /* hover, h1, splash bg */
+  --c-accent-dark:   #9e1818;   /* hover, h1, splash bg */
   --c-accent-tint:   #f9f0f0;   /* section header bg, active tab bg */
   --c-bg:            #ffffff;   /* page / card background */
   --c-surface:       #f0f2f5;   /* light surface — table headers, button hover */
@@ -51,12 +51,12 @@
 
 /* ── Elentra theme overrides ─────────────────────────────────────────── */
 :root[data-theme="elentra"]{
-  --c-primary:       #2c1b43;
+  --c-primary:       #3d2660;
   --c-secondary:     #3d3650;
   --c-muted:         #7a7390;
   --c-faint:         #7a7390;
   --c-accent:        #6d5fa8;
-  --c-accent-dark:   #4a3d85;
+  --c-accent-dark:   #5c4ea0;
   --c-accent-tint:   #f0edf8;
   --c-bg:            #ffffff;
   --c-surface:       #f7f5fb;
@@ -322,10 +322,10 @@ th{position:relative;white-space:normal}
           <rect x="0" y="0" width="5" height="15" rx="1" fill="var(--c-accent)" opacity=".9"/>
           <polygon points="0,15 5,15 2.5,21" fill="var(--c-accent-dark)"/>
         </g>
-        <!-- Green bars — first overlaps paper, no checkmark -->
-        <rect x="28" y="36" width="6" height="10" rx="1.4" fill="var(--c-accent)" opacity=".45"/>
-        <rect x="35" y="28" width="6" height="18" rx="1.4" fill="var(--c-accent)" opacity=".68"/>
-        <rect x="42" y="18" width="6" height="28" rx="1.4" fill="var(--c-accent)" opacity=".92"/>
+        <!-- Bars: gold / white / green -->
+        <rect x="28" y="36" width="6" height="10" rx="1.4" fill="#e8a800" opacity=".92"/>
+        <rect x="35" y="28" width="6" height="18" rx="1.4" fill="#ffffff" opacity=".80"/>
+        <rect x="42" y="18" width="6" height="28" rx="1.4" fill="#6fb65d" opacity=".92"/>
       </svg>
       <div>
         <div style="font-size:42px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.15;font-family:'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif">Exam Results</div>
@@ -417,10 +417,10 @@ th{position:relative;white-space:normal}
             <rect x="0" y="0" width="4.5" height="14" rx=".8" fill="var(--c-accent)" opacity=".85"/>
             <polygon points="0,14 4.5,14 2.25,19" fill="var(--c-accent-dark)"/>
           </g>
-          <!-- Green bars — first overlaps paper, no checkmark -->
-          <rect x="28" y="30" width="5.5" height="9"  rx="1.2" fill="var(--c-accent)" opacity=".42"/>
-          <rect x="35" y="23" width="5.5" height="16" rx="1.2" fill="var(--c-accent)" opacity=".66"/>
-          <rect x="42" y="14" width="5.5" height="25" rx="1.2" fill="var(--c-accent)" opacity=".92"/>
+          <!-- Bars: gold / silver / green -->
+          <rect x="28" y="30" width="5.5" height="9"  rx="1.2" fill="#e8a800" opacity=".92"/>
+          <rect x="35" y="23" width="5.5" height="16" rx="1.2" fill="#b0b8c1" opacity=".92"/>
+          <rect x="42" y="14" width="5.5" height="25" rx="1.2" fill="#6fb65d" opacity=".92"/>
         </g>
         <text x="86" y="26" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="25" font-weight="700" fill="var(--c-primary)" letter-spacing="-.4">Exam Results</text>
         <text x="86" y="52" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="25" font-weight="700" fill="var(--c-muted)" letter-spacing="-.4">Analysis Tool</text>
@@ -735,10 +735,10 @@ th{position:relative;white-space:normal}
             <rect x="0" y="0" width="4.5" height="14" rx=".8" fill="var(--c-accent)" opacity=".85"/>
             <polygon points="0,14 4.5,14 2.25,19" fill="var(--c-accent-dark)"/>
           </g>
-          <!-- Green bars — first overlaps paper, no checkmark -->
-          <rect x="28" y="30" width="5.5" height="9"  rx="1.2" fill="var(--c-accent)" opacity=".42"/>
-          <rect x="35" y="23" width="5.5" height="16" rx="1.2" fill="var(--c-accent)" opacity=".66"/>
-          <rect x="42" y="14" width="5.5" height="25" rx="1.2" fill="var(--c-accent)" opacity=".92"/>
+          <!-- Bars: gold / silver / green -->
+          <rect x="28" y="30" width="5.5" height="9"  rx="1.2" fill="#e8a800" opacity=".92"/>
+          <rect x="35" y="23" width="5.5" height="16" rx="1.2" fill="#b0b8c1" opacity=".92"/>
+          <rect x="42" y="14" width="5.5" height="25" rx="1.2" fill="#6fb65d" opacity=".92"/>
         </g>
         </g>
         <text x="86" y="26" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="25" font-weight="700" fill="var(--c-primary)" letter-spacing="-.4">Exam Results</text>
@@ -850,10 +850,10 @@ th{position:relative;white-space:normal}
           <rect x="0" y="0" width="4.5" height="14" rx=".8" fill="var(--c-accent)" opacity=".85"/>
           <polygon points="0,14 4.5,14 2.25,19" fill="var(--c-accent-dark)"/>
         </g>
-        <!-- Green bars — first overlaps paper, no checkmark -->
-        <rect x="27" y="35" width="5" height="8"  rx="1.2" fill="var(--c-accent)" opacity=".42"/>
-        <rect x="33" y="29" width="5" height="14" rx="1.2" fill="var(--c-accent)" opacity=".66"/>
-        <rect x="39" y="22" width="5" height="21" rx="1.2" fill="var(--c-accent)" opacity=".92"/>
+        <!-- Bars: gold / silver / green -->
+        <rect x="27" y="35" width="5" height="8"  rx="1.2" fill="#e8a800" opacity=".92"/>
+        <rect x="33" y="29" width="5" height="14" rx="1.2" fill="#b0b8c1" opacity=".92"/>
+        <rect x="39" y="22" width="5" height="21" rx="1.2" fill="#6fb65d" opacity=".92"/>
       </svg>
     </div>
 
@@ -877,17 +877,17 @@ th{position:relative;white-space:normal}
   </div>
 </div>
 <div id="tt"></div>
-<div id="settings-modal" onclick="if(event.target===this)cancelSettings()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
+<div id="settings-modal" onclick="if(event.target===this)cancelSettings()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
   <div style="width:90vw;max-width:580px;max-height:90vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column">
 
     <!-- Header -->
-    <div style="background:var(--c-primary);padding:18px 28px 16px;border-bottom:1px solid #0d1720;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="background:var(--c-primary);padding:18px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--c-dist-bar);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">Configuration</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">Configuration</div>
           <div style="font-size:20px;font-weight:700;color:#fff;font-family:'Aptos Display','Aptos',Calibri,sans-serif;line-height:1">Settings</div>
         </div>
       </div>
@@ -1167,7 +1167,7 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '1.9';
-var APP_BUILD       = '20260623-02';
+var APP_BUILD       = '20260623-03';
 var APP_FAQ_VERSION = '1.9';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'June 23, 2026'; // Update when FAQ content changes
 var APP_RN_DATE     = 'June 23, 2026'; // Update each version close
@@ -5308,13 +5308,22 @@ var RELEASE_NOTES = [
     version: '1.9',
     builds: [
       {
+        build: '20260623-03',
+        date:  'June 23, 2026',
+        notes: [
+          'Release notes consolidated — internal build history cleaned up'
+        ]
+      },
+      {
         build: '20260623-02',
         date:  'June 23, 2026',
         notes: [
           'Colour theme selector added to Settings — choose between uOttawa Theme (garnet) and Elentra Theme (purple). Selection is saved and restored automatically across sessions',
           'All interface colours now use a CSS variable system, making the theme switch instant and reliable with no page reload required',
-          'App logo updated across all locations — splash screen, setup header, analysis header, footer, and About modal. New design features a repositioned pencil, green accent bars overlapping the exam paper, and no checkmark. Logo colours respond to the active theme',
-          'Splash screen progress bar and version string added'
+          'App logo refreshed across all five locations — new design features a repositioned pencil, three-colour bar chart (gold, silver/white, and green), and no checkmark. Logo colours adapt to the active theme',
+          'uOttawa theme nav bar and modal headers updated to deep garnet, consistent with the overall brand',
+          'Both themes lightened for a less heavy feel across nav bars, splash screen, and modal headers',
+          'Modal header text and overlay colours corrected — no longer appear blue in the uOttawa theme'
         ]
       },
       {
@@ -5890,11 +5899,11 @@ document.getElementById('fi-main').addEventListener('change', function(){ if(G._
 document.getElementById('fi-key').addEventListener('change',  function(){ if(G._lastN) markDirty(); });
 </script>
 <!-- ── About overlay ─────────────────────────────────────────────────── -->
-<div id="about-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:5vh 7.5vw">
+<div id="about-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:5vh 7.5vw">
   <div style="width:85vw;max-width:840px;max-height:90vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;position:relative;display:flex;flex-direction:column">
 
     <!-- Header -->
-    <div style="background:var(--c-primary);padding:24px 32px 20px;border-bottom:1px solid #0d1720">
+    <div style="background:var(--c-primary);padding:24px 32px 20px;border-bottom:1px solid rgba(0,0,0,0.25)">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:20px">
         <!-- Icon + title -->
         <div style="display:flex;align-items:center;gap:18px">
@@ -5910,10 +5919,10 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
               <rect x="0" y="0" width="4.5" height="14" rx=".8" fill="var(--c-accent)" opacity=".85"/>
               <polygon points="0,14 4.5,14 2.25,19" fill="var(--c-accent-dark)"/>
             </g>
-            <!-- Green bars — first overlaps paper, no checkmark -->
-            <rect x="30" y="40" width="5" height="8"  rx="1.2" fill="var(--c-accent)" opacity=".42"/>
-            <rect x="36" y="34" width="5" height="14" rx="1.2" fill="var(--c-accent)" opacity=".66"/>
-            <rect x="42" y="27" width="5" height="21" rx="1.2" fill="var(--c-accent)" opacity=".92"/>
+            <!-- Bars: gold / silver / green -->
+            <rect x="30" y="40" width="5" height="8"  rx="1.2" fill="#e8a800" opacity=".92"/>
+            <rect x="36" y="34" width="5" height="14" rx="1.2" fill="#b0b8c1" opacity=".92"/>
+            <rect x="42" y="27" width="5" height="21" rx="1.2" fill="#6fb65d" opacity=".92"/>
           </svg>
           <div>
             <div style="font-size:11px;font-weight:700;color:var(--c-dist-bar);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px">Faculty of Medicine · Undergraduate Medical Education</div>
@@ -5978,11 +5987,11 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
 </div>
 
 <!-- ── FAQ overlay ──────────────────────────────────────────────────────── -->
-<div id="faq-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
+<div id="faq-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
   <div style="width:90vw;max-width:920px;height:90vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;position:relative;display:flex;flex-direction:column">
 
     <!-- Header -->
-    <div style="background:var(--c-primary);padding:20px 32px 18px;border-bottom:1px solid #0d1720;flex-shrink:0">
+    <div style="background:var(--c-primary);padding:20px 32px 18px;border-bottom:1px solid rgba(0,0,0,0.25);flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:20px">
         <div style="display:flex;align-items:center;gap:14px">
           <div style="width:42px;height:42px;border-radius:10px;background:#fff;border:1.5px solid rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -5991,7 +6000,7 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
           <div>
             <div style="font-size:11px;font-weight:700;color:var(--c-dist-bar);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px">Help &amp; Support</div>
             <div style="font-size:22px;font-weight:700;color:#fff;font-family:'Aptos Display','Aptos',Calibri,sans-serif;line-height:1">Frequently Asked Questions</div>
-            <div style="font-size:11px;color:var(--c-dist-bar);margin-top:5px">Current as of <strong style="color:#a8c4da" data-faqversion></strong> &nbsp;·&nbsp; Updated <span data-faqdate></span></div>
+            <div style="font-size:11px;color:var(--c-dist-bar);margin-top:5px">Current as of <strong style="color:rgba(255,255,255,.9)" data-faqversion></strong> &nbsp;·&nbsp; Updated <span data-faqdate></span></div>
           </div>
         </div>
         <button onclick="closeFAQ()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s;align-self:flex-start" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
@@ -6489,15 +6498,15 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
 </div>
 
 <!-- ── Release Notes overlay ── -->
-<div id="rn-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
+<div id="rn-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
   <div style="background:#fff;border-radius:14px;width:85vw;max-width:720px;height:90vh;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)">
     <!-- Header -->
-    <div style="padding:20px 28px 16px;border-bottom:1px solid #0d1720;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;background:var(--c-primary)">
+    <div style="padding:20px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;background:var(--c-primary)">
       <div style="display:flex;align-items:center;gap:10px">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/><path d="M12 7v5l3 3" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/></svg>
         <div>
           <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:-.2px">Release Notes</div>
-          <div style="font-size:10.5px;color:var(--c-dist-bar);margin-top:2px">Latest: <strong style="color:#a8c4da" data-appversion></strong> &nbsp;·&nbsp; <span data-rndate></span></div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.6);margin-top:2px">Latest: <strong style="color:rgba(255,255,255,.9)" data-appversion></strong> &nbsp;·&nbsp; <span data-rndate></span></div>
         </div>
       </div>
       <button onclick="closeReleaseNotes()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
@@ -6514,7 +6523,7 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
 </div>
 
 <!-- ── Question Exceptions modal ── -->
-<div id="excl-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:16px">
+<div id="excl-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:16px">
   <div style="background:#fff;border-radius:12px;width:100%;max-width:1080px;height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden">
 
     <!-- Header -->
@@ -6572,7 +6581,7 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
 </div>
 
 <!-- Unmatched students modal -->
-<div id="unmatched-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
+<div id="unmatched-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">
   <div style="width:100%;max-width:640px;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.22);overflow:hidden">
 
     <!-- Header -->
@@ -6619,14 +6628,14 @@ document.getElementById('fi-key').addEventListener('change',  function(){ if(G._
 </div>
 
 <!-- ── Diagnostics Modal ─────────────────────────────────────────────── -->
-<div id="diag-modal" style="display:none;position:fixed;inset:0;z-index:2100;background:rgba(20,26,34,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:5vh 7.5vw">
+<div id="diag-modal" style="display:none;position:fixed;inset:0;z-index:2100;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:5vh 7.5vw">
   <div style="background:#fff;border-radius:14px;width:85vw;max-width:800px;height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden">
     <!-- Header -->
-    <div style="padding:20px 28px 16px;border-bottom:1px solid #0d1720;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--c-primary)">
+    <div style="padding:20px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--c-primary)">
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--c-dist-bar);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px">Diagnostics</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px">Diagnostics</div>
         <div style="font-size:20px;font-weight:700;color:#fff">Upload Diagnostics</div>
-        <div style="font-size:12px;color:var(--c-dist-bar);margin-top:3px">Detailed information about what was detected in each uploaded file.</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:3px">Detailed information about what was detected in each uploaded file.</div>
       </div>
       <button onclick="closeDiagnosticsModal()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
