@@ -1314,10 +1314,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '2.0';
-var APP_BUILD       = '20260629-01';
+var APP_BUILD       = '20260702-01';
 var APP_FAQ_VERSION = '2.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'June 29, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'June 29, 2026'; // Update each version close
+var APP_FAQ_DATE    = 'July 2, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 2, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -4513,7 +4513,7 @@ function renderFullReport(avg, alpha) {
 function renderDIFTable() {
   var html=
     '<thead><tr>'+
-    '<th data-tip="Question number.">#</th>'+
+    '<th style="width:36px" data-tip="Question number.">#</th>'+
     '<th style="width:54px" data-tip="Chi-square from Block 1 (total score only).">B1 &#967;&sup2;</th>'+
     '<th style="width:48px" data-tip="Nagelkerke R-squared from Block 1.">B1 R&sup2;</th>'+
     '<th style="width:54px" data-tip="Chi-square from Block 3 (score + language + interaction).">B3 &#967;&sup2;</th>'+
@@ -4525,7 +4525,7 @@ function renderDIFTable() {
     '<th style="width:60px;white-space:normal;line-height:1.3" data-tip="Percentage of English-stream students who answered correctly.">EN% correct</th>'+
     '<th style="width:60px;white-space:normal;line-height:1.3" data-tip="Percentage of French-stream students who answered correctly.">FR% correct</th>'+
     '<th style="width:54px" data-tip="Difference between EN and FR correct rates. Arrow shows which group answered higher. Amber = 8–14% gap; Red = 15%+ gap.">&#916; Gap</th>'+
-    '<th style="min-width:90px" data-tip="Comments for this question — shows reason for Credit or Delete, and any alternate key notes.">Comments</th>'+
+    '<th style="width:120px" data-tip="Comments for this question — shows reason for Credit or Delete, and any alternate key notes.">Comments</th>'+
     '</tr></thead><tbody>';
   // Build a lookup from question number to DIF result
   var difByNum = {};
@@ -4591,7 +4591,7 @@ function renderDIFTable() {
     return;
   }
   document.getElementById('dif-table').innerHTML=html;
-  setTimeout(function(){ makeTableResizable('dif-table'); }, 50);
+  // makeTableResizable for dif-table called on first view in switchAnalysisTable
 }
 
 // ── Render: DIF report ────────────────────────────────────────────────────
@@ -5264,6 +5264,13 @@ function switchAnalysisTable(which) {
   if (btnDifCsv) btnDifCsv.style.display = isMcq ? 'none' : '';
   if (btnMcq)    btnMcq.classList.toggle('seg-active',  isMcq);
   if (btnDif)    btnDif.classList.toggle('seg-active',  !isMcq);
+  // Initialise DIF table resizing on first view (must be visible for offsetWidth to work)
+  if (!isMcq) {
+    var difTable = document.getElementById('dif-table');
+    if (difTable && difTable.style.tableLayout !== 'fixed') {
+      setTimeout(function(){ makeTableResizable('dif-table'); }, 50);
+    }
+  }
 }
 
 var _currentReportView = 'mcq';
@@ -5581,6 +5588,15 @@ var RELEASE_NOTES = [
   {
     version: '2.0',
     builds: [
+      {
+        build: '20260702-01',
+        date:  'July 2, 2026',
+        notes: [
+          'DIF Analysis table now displays correctly with proper column widths when switching to the DIF view.',
+          'Feedback Report Word export no longer throws an error when downloading.',
+          'Question number column in the DIF table is now compact and appropriately sized.'
+        ]
+      },
       {
         build: '20260629-01',
         date:  'June 29, 2026',
@@ -6747,6 +6763,15 @@ function fbDiscardAll() {
 // ── Feedback tab renderer ─────────────────────────────────────────────────
 var _fbView = 'freq'; // 'freq' | 'byq' | 'byv'
 
+
+// Returns a plain-text breakdown label: "2 comments", "2 comments + 1 mention", "1 mention"
+function commentLabel(commentCount, bareCount) {
+  var parts = [];
+  if (commentCount > 0) parts.push(commentCount + ' comment' + (commentCount>1?'s':''));
+  if (bareCount > 0)    parts.push(bareCount + ' mention' + (bareCount>1?'s':'') + ' without comment');
+  return parts.join(' + ') || '0 comments';
+}
+
 function renderFeedbackTab(view) {
   _fbView = view || _fbView;
   var sec = document.getElementById('fb-results-content');
@@ -6778,13 +6803,7 @@ function renderFeedbackTab(view) {
     return '<span style="font-size:11px;color:var(--c-muted)">' + count + ' response' + (count>1?'s':'') + '</span>';
   }
 
-  // Returns a plain-text breakdown label: "2 comments", "2 comments + 1 mention", "1 mention"
-  function commentLabel(commentCount, bareCount) {
-    var parts = [];
-    if (commentCount > 0) parts.push(commentCount + ' comment' + (commentCount>1?'s':''));
-    if (bareCount > 0)    parts.push(bareCount + ' mention' + (bareCount>1?'s':'') + ' without comment');
-    return parts.join(' + ') || '0 comments';
-  }
+  // flagBadge helper
 
   function mcqXref(qNum) {
     if (!G.mcq || !G.mcq.length) return '';  // No MCQ analysis loaded — hide entirely
