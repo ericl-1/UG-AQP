@@ -15,9 +15,11 @@ Everything runs in your browser. No data leaves your computer.
 ## What's new in version 2.0
 
 - **Student Feedback module** — upload a QuestionMark feedback export and automatically organise student comments by question number, with a manual review screen for ambiguous entries and a downloadable Feedback Report.
-- **Redesigned setup screen** — cleaner layout with prominent upload zones, a sticky Run Analysis button always visible, and template download links inline below each upload zone.
-- **Redesigned results screen** — six tabs consolidated into three (Analysis, Reports, Feedback). The Analysis tab includes an MCQ / DIF toggle. The Reports tab has a single preview and one Download button.
-- **Modernised interface** — lighter surfaces, consistent controls, frozen table headers, working column resizing, and a unified status colour system across all views and reports.
+- **Redesigned setup screen** — cleaner card-based layout, upload zones with drag-and-drop support that turn green with a checkmark once a file loads successfully, and a sticky Run Analysis button always visible.
+- **Redesigned results screen** — six tabs consolidated into three (Item Analysis, Reports, Feedback). The Item Analysis tab includes an MCQ Analysis / DIF Analysis toggle. The Reports tab has a single preview and one Download button.
+- **Coordinator name field** — optionally record who prepared the analysis; it's automatically included at the start of every exported report.
+- **DIF flagging integrated into the item table** — questions with a significant EN/FR performance gap are now flagged directly in the Reason for Flag column, alongside a recommendation, instead of only appearing in a separate DIF view.
+- **Modernised interface** — a Fluent-inspired design throughout, with frosted-glass headers on the results banner and all pop-up windows, slim sliding toggle controls, frozen table headers, working column resizing, and a unified status colour system across all views and reports.
 
 ---
 
@@ -35,10 +37,10 @@ Don't have a file in the right format? Download the template from the link below
 ## How to run an MCQ analysis
 
 1. Open the tool in your browser.
-2. Enter the **exam title** and **exam date** at the top.
+2. Enter the **exam title** and **exam date** at the top. Optionally, enter the **coordinator name** — this will appear at the start of every exported report.
 3. Select your **data source** (QuestionMark or Scantron).
 4. If you want a DIF report comparing EN and FR student performance, turn **DIF Analysis on** and confirm the stream codes (default: E / F for QM, or enter your course codes for Scantron).
-5. Upload your **results file** and **answer key file**.
+5. Upload your **results file** and **answer key file** — drag and drop or click to browse. Each upload area turns green with a checkmark once the file is validated.
 6. Click **Run Analysis**.
 
 ---
@@ -59,20 +61,24 @@ If an MCQ analysis is also loaded in the same session, questions flagged in the 
 
 ## Analysis results
 
-### Analysis tab
+### Item Analysis tab
+An **MCQ Analysis / DIF Analysis** toggle switches between the two tables.
+
 The MCQ Analysis table shows all questions with:
 - Difficulty (p-value) and discrimination (point-biserial correlation)
-- Flag reason (Difficult, Poor discrimination, Check Key, Too easy)
+- Flag reason (Difficult, Poor discrimination, Check Key, Too easy, DIF), each with a matching recommendation — a question can carry a DIF flag alongside another flag type at the same time
 - Best students chose (for Check Key items)
 - Recommendation (Keep, Review, Credit, Delete)
 
-Use the **MCQ / DIF toggle** to switch between the MCQ item table and the DIF table. Use the **View filter** to show All items, Flagged only, Too easy, Poor disc., or DIF flagged.
+Use the **View filter** to show All items, Flagged only, Easy, Poor disc., or DIF flagged.
 
 ### Reports tab
 Three downloadable Word reports:
 - **MCQ Analysis Report** — key findings narrative, flagged questions table, and all-questions summary
 - **DIF Report** — EN/FR performance comparison per question (only available when DIF is enabled)
 - **Full Combined Report** — MCQ and DIF in a single document
+
+Every report opens with a generation line — "Report generated on [date] by [name]" — using the coordinator name entered on the setup screen, if provided.
 
 Select a report from the toggle to preview it before downloading.
 
@@ -82,7 +88,7 @@ Three views for feedback results:
 - **By Question** — comments grouped by question number in order
 - **Most Commented** — same as By Question but sorted by volume
 
-Download a formatted **Feedback Report** as a Word document at any time.
+Download a formatted **Feedback Report** as a Word document at any time — it also opens with the "Report generated on [date] by [name]" line.
 
 ---
 
@@ -114,7 +120,7 @@ You can mark individual questions as **Credited** or **Deleted** before or after
 
 Open **Settings** from the hamburger menu (top right) to adjust:
 - Analysis thresholds (all eight, with sliders and reset buttons)
-- UI theme (uOttawa garnet or Elentra purple)
+- UI theme (uOttawa garnet or Elentra purple) — applies consistently across the results banner, all pop-up windows, and every status indicator in the app
 
 ---
 
@@ -122,10 +128,10 @@ Open **Settings** from the hamburger menu (top right) to adjust:
 
 | Export | Format | Contents |
 |---|---|---|
-| MCQ Analysis Report | Word (.docx) | Letter to directors, flagged questions table, all-questions table |
-| DIF Report | Word (.docx) | DIF methodology summary, flagged DIF items table |
-| Full Combined Report | Word (.docx) | MCQ + DIF in a single document |
-| Feedback Report | Word (.docx) | Student comment summary by question |
+| MCQ Analysis Report | Word (.docx) | Generation line (date and coordinator, if provided), letter to directors, flagged questions table, all-questions table |
+| DIF Report | Word (.docx) | Generation line, DIF methodology summary, flagged DIF items table |
+| Full Combined Report | Word (.docx) | Generation line, MCQ + DIF in a single document |
+| Feedback Report | Word (.docx) | Generation line, student comment summary by question |
 | MCQ data | CSV | All item statistics — opens in Excel |
 | DIF data | CSV | Full DIF statistics including chi-square values |
 
@@ -146,5 +152,5 @@ For questions or issues, contact **Eric Larouche**, Supervisor Project Managemen
 
 ---
 
-*Version 2.0 · Build 20260629-01 · June 29, 2026*
+*Version 2.0 · Build 20260703-01 · July 3, 2026*
 *Faculty of Medicine · University of Ottawa · Intended for internal use only*

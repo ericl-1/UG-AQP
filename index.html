@@ -1356,10 +1356,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '2.0';
-var APP_BUILD       = '20260702-03';
+var APP_BUILD       = '20260703-01';
 var APP_FAQ_VERSION = '2.0';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'July 2, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 2, 2026'; // Update each version close
+var APP_RN_DATE     = 'July 3, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -5722,6 +5722,17 @@ var RELEASE_NOTES = [
   {
     version: '2.0',
     builds: [
+      {
+        build: '20260703-01',
+        date:  'July 3, 2026',
+        notes: [
+          'New "Coordinator name" field added to Exam Details. When filled in, it now appears at the start of every exported report as "Report generated on [date] by [name]".',
+          'Fixed an issue where the results file and answer key upload areas could incorrectly stack on top of each other after switching from Scantron back to QuestionMark.',
+          'Fixed an issue where the results screen could land partway down the page instead of at the top after running an analysis.',
+          'Renamed the results screen tab from "Analysis" to "Item Analysis" for clarity. The MCQ/DIF toggle beneath it remains labelled "MCQ Analysis".',
+          'The Settings, Diagnostics, FAQ, Question Exceptions, and Unrecognised Course Codes windows now use the same frosted-glass header style as the results screen banner, in both the uOttawa and Elentra themes.'
+        ]
+      },
       {
         build: '20260702-03',
         date:  'July 2, 2026',
