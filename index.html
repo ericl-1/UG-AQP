@@ -84,7 +84,7 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 .card-title{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--c-accent-dark);letter-spacing:-.2px}
 
 /* ── Setup screen — reusable section-card system (matches Fluent demo) ── */
-.exam-fields{display:grid;grid-template-columns:1fr 180px;gap:16px}
+.exam-fields{display:grid;grid-template-columns:minmax(200px,360px) minmax(160px,240px) 150px;gap:16px;max-width:800px}
 .field-label{font-size:12.5px;color:var(--c-secondary);font-weight:600;display:block;margin-bottom:4px}
 .field-input{width:100%;padding:7px 10px;border:1px solid var(--c-border-2);border-radius:6px;font-size:14px;font-family:var(--font);color:var(--c-primary);background:var(--c-surface);transition:border-color .12s}
 .field-input:focus{outline:none;border-color:var(--c-accent)}
@@ -620,7 +620,11 @@ th{position:relative;white-space:normal}
       <div class="exam-fields">
         <div>
           <label for="exam-title" class="field-label" data-tip="Enter the full exam name. This appears in the banner and in all exported reports.">Exam title</label>
-          <input type="text" id="exam-title" class="field-input" style="max-width:520px" placeholder="e.g. Unit I Part A Midterm - Winter 2026">
+          <input type="text" id="exam-title" class="field-input" style="max-width:360px" placeholder="e.g. Unit I Part A Midterm - Winter 2026">
+        </div>
+        <div>
+          <label for="coordinator-name" class="field-label" data-tip="Name of the exam coordinator preparing this analysis. Appears at the start of exported reports — not in the on-screen results banner.">Coordinator name</label>
+          <input type="text" id="coordinator-name" class="field-input" placeholder="e.g. Jane Smith">
         </div>
         <div>
           <label for="exam-date" class="field-label" data-tip="The date this exam was administered. Appears in report headers. Optional.">Exam date</label>
@@ -802,7 +806,7 @@ th{position:relative;white-space:normal}
     </div>
 
     <!-- Upload -->
-    <div class="section-card" style="margin-bottom:14px">
+    <div class="section-card" style="margin-bottom:14px;max-width:640px">
       <div class="section-hdr">
         <span class="section-hdr-title">Upload QM Feedback Export</span>
       </div>
@@ -904,7 +908,7 @@ th{position:relative;white-space:normal}
   <div class="card" id="new-summary-card" style="display:none;padding:0;overflow:hidden;border:none;box-shadow:none"></div>
   <div id="summary-separator" style="display:none;border-top:3px solid rgba(0,0,0,.28);margin:8px 0"></div>
     <div class="tabs no-print" id="main-tab-bar" style="margin-bottom:18px">
-      <div class="tab active" id="tab-analysis" onclick="switchMainTabByClick('analysis',this)">📊 Analysis</div>
+      <div class="tab active" id="tab-analysis" onclick="switchMainTabByClick('analysis',this)">📊 Item Analysis</div>
       <div class="tab"        id="tab-reports"  onclick="switchMainTabByClick('reports',this)">📄 Reports</div>
       <div class="tab tab-fb" id="tab-feedback-main" onclick="switchMainTabByClick('feedback',this)" style="display:none">💬 Feedback</div>
     </div>
@@ -917,19 +921,19 @@ th{position:relative;white-space:normal}
 
         <!-- Table toggle — left -->
         <div class="seg-ctrl" id="analysis-table-toggle">
-          <button class="seg-btn seg-active" id="toggle-btn-mcq" onclick="switchAnalysisTable('mcq')">MCQ Item Analysis</button>
-          <button class="seg-btn" id="toggle-btn-dif" onclick="switchAnalysisTable('dif')" style="display:none">DIF Analysis</button>
+          <button class="seg-btn seg-active" id="toggle-btn-mcq" onclick="switchAnalysisTableByClick('mcq')">MCQ Analysis</button>
+          <button class="seg-btn" id="toggle-btn-dif" onclick="switchAnalysisTableByClick('dif')" style="display:none">DIF Analysis</button>
         </div>
 
         <!-- Filter bar — only shown for MCQ -->
         <div style="display:flex;align-items:center;gap:8px" id="mcq-filter-bar">
           <span style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px">View:</span>
           <div class="seg-ctrl">
-            <button id="filter-all"      class="seg-btn seg-active" onclick="setFilter('all')" data-tip="Show all questions in the exam.">All</button>
-            <button id="filter-flagged"  class="seg-btn"            onclick="setFilter('flagged')" data-tip="Show only flagged questions.">Flagged</button>
-            <button id="filter-easy"     class="seg-btn"            onclick="setFilter('easy')" data-tip="Show only questions answered correctly by 96%+ of students.">Easy</button>
-            <button id="filter-poordisc" class="seg-btn"            onclick="setFilter('poordisc')" data-tip="Show only questions with poor or negative discrimination.">Poor disc.</button>
-            <button id="filter-dif"      class="seg-btn"            onclick="setFilter('dif')" data-tip="Show only DIF-flagged questions." style="display:none">DIF</button>
+            <button id="filter-all"      class="seg-btn seg-active" onclick="setFilterByClick('all')" data-tip="Show all questions in the exam.">All</button>
+            <button id="filter-flagged"  class="seg-btn"            onclick="setFilterByClick('flagged')" data-tip="Show only flagged questions.">Flagged</button>
+            <button id="filter-easy"     class="seg-btn"            onclick="setFilterByClick('easy')" data-tip="Show only questions answered correctly by 96%+ of students.">Easy</button>
+            <button id="filter-poordisc" class="seg-btn"            onclick="setFilterByClick('poordisc')" data-tip="Show only questions with poor or negative discrimination.">Poor disc.</button>
+            <button id="filter-dif"      class="seg-btn"            onclick="setFilterByClick('dif')" data-tip="Show only DIF-flagged questions." style="display:none">DIF</button>
           </div>
         </div>
 
@@ -971,9 +975,9 @@ th{position:relative;white-space:normal}
       <!-- Toggle + download bar -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
         <div class="seg-ctrl" id="report-preview-switcher">
-          <button class="seg-btn seg-active" id="rp-btn-mcq"     onclick="switchReportPreview('mcq')">MCQ Report</button>
-          <button class="seg-btn"            id="rp-btn-dif"      onclick="switchReportPreview('dif')"      style="display:none">DIF Report</button>
-          <button class="seg-btn"            id="rp-btn-combined" onclick="switchReportPreview('combined')" style="display:none">Full Report</button>
+          <button class="seg-btn seg-active" id="rp-btn-mcq"     onclick="switchReportPreviewByClick('mcq')">MCQ Report</button>
+          <button class="seg-btn"            id="rp-btn-dif"      onclick="switchReportPreviewByClick('dif')"      style="display:none">DIF Report</button>
+          <button class="seg-btn"            id="rp-btn-combined" onclick="switchReportPreviewByClick('combined')" style="display:none">Full Report</button>
         </div>
         <button id="btn-report-download" onclick="doReportDownload()" class="btn-dl-primary">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1066,7 +1070,7 @@ th{position:relative;white-space:normal}
   <div style="width:90vw;max-width:580px;max-height:90vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column">
 
     <!-- Header -->
-    <div style="background:var(--c-accent);padding:18px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="background:var(--c-nav-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:18px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -1860,7 +1864,7 @@ function setSource(src) {
     if(lblQM)   { lblQM.style.color='#1e2933'; lblQM.style.fontWeight='700'; }
     if(lblScan) { lblScan.style.color='var(--c-muted)'; lblScan.style.fontWeight='600'; }
     if(keyCard)  keyCard.style.display = '';
-    if(grid)     grid.style.gridTemplateColumns = '';
+    if(grid)     grid.style.gridTemplateColumns = 'repeat(auto-fit,minmax(260px,1fr))';
     if(tplMain)  tplMain.style.display = '';
     document.getElementById('fi-main').accept = '.xlsx,.xls,.csv';
     var ul = document.querySelector('#ua-main .upload-label'); if(ul) ul.textContent='Click to upload results file';
@@ -4073,17 +4077,18 @@ function preserveScrollDuring(fn) {
   setTimeout(function(){ window.scrollTo({top:y, behavior:'instant'}); }, 100);
 }
 function setFilter(f) {
-  preserveScrollDuring(function(){
-    G._mcqFilter = f;
-    var ids=['all','flagged','easy','poordisc','dif'], i;
-    for(i=0;i<ids.length;i++){
-      var el = document.getElementById('filter-'+ids[i]);
-      if (el) el.classList.remove('seg-active');
-    }
-    var active = document.getElementById('filter-'+f);
-    if (active) active.classList.add('seg-active');
-    renderMCQTable(f);
-  });
+  G._mcqFilter = f;
+  var ids=['all','flagged','easy','poordisc','dif'], i;
+  for(i=0;i<ids.length;i++){
+    var el = document.getElementById('filter-'+ids[i]);
+    if (el) el.classList.remove('seg-active');
+  }
+  var active = document.getElementById('filter-'+f);
+  if (active) active.classList.add('seg-active');
+  renderMCQTable(f);
+}
+function setFilterByClick(f) {
+  preserveScrollDuring(function(){ setFilter(f); });
 }
 
 function renderMCQTable(filter) {
@@ -4325,7 +4330,7 @@ function renderMCQReport(avg, alpha) {
   var examLine = (title||'')+(title&&dateStr?' &mdash; '+dateStr:dateStr&&!title?dateStr:'');
   var genTs = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
   document.getElementById('mcq-report').innerHTML=
-    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+'</p>'+
+    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+getCoordinatorByline()+'</p>'+
     '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE &mdash; UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">Multiple-choice Questions Analysis</p>'+
     '<p style="font-size:12px;font-weight:700;text-align:center;margin:0 0 20px;line-height:1.3">'+examLine+'</p>'+
@@ -4547,7 +4552,7 @@ function renderFullReport(avg, alpha) {
 
   document.getElementById('full-report').innerHTML =
     // Header
-    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+'</p>'+
+    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+getCoordinatorByline()+'</p>'+
     '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE &mdash; UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">Full Exam Analysis Report <span style="font-weight:400">(MCQ &amp; DIF)</span></p>'+
     '<p style="font-size:12px;font-weight:700;text-align:center;margin:0 0 24px;line-height:1.3">'+examLine+'</p>'+
@@ -4708,7 +4713,7 @@ function renderDIFReport() {
     items+='<li>Question '+r.num+' had a statistically significant value of DIF. '+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'</li>';
   }
   document.getElementById('dif-report').innerHTML=
-    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:0;text-align:left">Report generated: '+new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})+'</p>'+
+    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:0;text-align:left">Report generated: '+new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})+getCoordinatorByline()+'</p>'+
     '<p style="margin-bottom:14px"></p>'+
     '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">DIF Analysis Report</p>'+
@@ -4755,6 +4760,11 @@ function doExport(type) {
 
 // ── DOCX helpers ──────────────────────────────────────────────────────────
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function getCoordinatorByline() {
+  var el = document.getElementById('coordinator-name');
+  var name = el ? el.value.trim() : '';
+  return name ? (' by ' + name) : '';
+}
 
 function docxPara(text, opts) {
   opts = opts||{};
@@ -4935,7 +4945,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     var genTs3=new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
     body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'+
       '<w:r><w:rPr><w:i/><w:color w:val="555555"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
-      '<w:t xml:space="preserve">Report generated: '+esc(genTs3)+'</w:t></w:r></w:p>';
+      '<w:t xml:space="preserve">Report generated: '+esc(genTs3)+esc(getCoordinatorByline())+'</w:t></w:r></w:p>';
     body+=docxPara('', {sz:20,spAfter:0,spBefore:0});
     // Title
     body+=docxPara('FACULTY OF MEDICINE — UNDERGRADUATE MEDICAL EDUCATION',{bold:true,centre:true,sz:32,spAfter:0});
@@ -5047,7 +5057,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     // Timestamp — top left, italic, dark grey
     body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'+
       '<w:r><w:rPr><w:i/><w:color w:val="555555"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
-      '<w:t xml:space="preserve">Report generated: '+esc(genTs2)+'</w:t></w:r></w:p>';
+      '<w:t xml:space="preserve">Report generated: '+esc(genTs2)+esc(getCoordinatorByline())+'</w:t></w:r></w:p>';
     body += docxPara('', {sz:20, spAfter:0, spBefore:0});
     // Title block
     body += docxPara('FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION', {bold:true, centre:true, sz:32, spAfter:0});
@@ -5160,7 +5170,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     var genTsD = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
     body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'+
       '<w:r><w:rPr><w:i/><w:color w:val="555555"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
-      '<w:t xml:space="preserve">Report generated: '+esc(genTsD)+'</w:t></w:r></w:p>';
+      '<w:t xml:space="preserve">Report generated: '+esc(genTsD)+esc(getCoordinatorByline())+'</w:t></w:r></w:p>';
     body += docxPara('', {sz:20, spAfter:0, spBefore:0});
     body += docxPara('FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION', {bold:true, centre:true, sz:32, spAfter:0});
     body += docxPara('DIF Analysis Report', {bold:true, centre:true, sz:28, spAfter:0});
@@ -5364,30 +5374,31 @@ function switchMainTabByClick(name, el) {
 }
 
 function switchAnalysisTable(which) {
-  preserveScrollDuring(function(){
-    var mcqWrap    = document.getElementById('mcq-table-wrap');
-    var difWrap    = document.getElementById('dif-table-wrap');
-    var mcqFilter  = document.getElementById('mcq-filter-bar');
-    var btnMcqCsv  = document.getElementById('btn-mcq-csv');
-    var btnDifCsv  = document.getElementById('btn-dif-csv');
-    var btnMcq     = document.getElementById('toggle-btn-mcq');
-    var btnDif     = document.getElementById('toggle-btn-dif');
-    var isMcq = (which === 'mcq');
-    if (mcqWrap)   mcqWrap.style.display   = isMcq ? '' : 'none';
-    if (difWrap)   difWrap.style.display   = isMcq ? 'none' : '';
-    if (mcqFilter) mcqFilter.style.display = isMcq ? '' : 'none';
-    if (btnMcqCsv) btnMcqCsv.style.display = isMcq ? '' : 'none';
-    if (btnDifCsv) btnDifCsv.style.display = isMcq ? 'none' : '';
-    if (btnMcq)    btnMcq.classList.toggle('seg-active',  isMcq);
-    if (btnDif)    btnDif.classList.toggle('seg-active',  !isMcq);
-    // Initialise DIF table resizing on first view (must be visible for offsetWidth to work)
-    if (!isMcq) {
-      var difTable = document.getElementById('dif-table');
-      if (difTable && difTable.style.tableLayout !== 'fixed') {
-        setTimeout(function(){ makeTableResizable('dif-table'); }, 50);
-      }
+  var mcqWrap    = document.getElementById('mcq-table-wrap');
+  var difWrap    = document.getElementById('dif-table-wrap');
+  var mcqFilter  = document.getElementById('mcq-filter-bar');
+  var btnMcqCsv  = document.getElementById('btn-mcq-csv');
+  var btnDifCsv  = document.getElementById('btn-dif-csv');
+  var btnMcq     = document.getElementById('toggle-btn-mcq');
+  var btnDif     = document.getElementById('toggle-btn-dif');
+  var isMcq = (which === 'mcq');
+  if (mcqWrap)   mcqWrap.style.display   = isMcq ? '' : 'none';
+  if (difWrap)   difWrap.style.display   = isMcq ? 'none' : '';
+  if (mcqFilter) mcqFilter.style.display = isMcq ? '' : 'none';
+  if (btnMcqCsv) btnMcqCsv.style.display = isMcq ? '' : 'none';
+  if (btnDifCsv) btnDifCsv.style.display = isMcq ? 'none' : '';
+  if (btnMcq)    btnMcq.classList.toggle('seg-active',  isMcq);
+  if (btnDif)    btnDif.classList.toggle('seg-active',  !isMcq);
+  // Initialise DIF table resizing on first view (must be visible for offsetWidth to work)
+  if (!isMcq) {
+    var difTable = document.getElementById('dif-table');
+    if (difTable && difTable.style.tableLayout !== 'fixed') {
+      setTimeout(function(){ makeTableResizable('dif-table'); }, 50);
     }
-  });
+  }
+}
+function switchAnalysisTableByClick(which) {
+  preserveScrollDuring(function(){ switchAnalysisTable(which); });
 }
 
 var _currentReportView = 'mcq';
@@ -5399,21 +5410,22 @@ var _reportMeta = {
 };
 
 function switchReportPreview(which) {
-  preserveScrollDuring(function(){
-    _currentReportView = which;
-    ['mcq','dif','combined'].forEach(function(r){
-      var divId = (r === 'combined') ? 'full' : r;
-      var el  = document.getElementById(divId + '-report');
-      var btn = document.getElementById('rp-btn-' + r);
-      if (el)  el.style.display = (r === which) ? '' : 'none';
-      if (btn) btn.classList.toggle('seg-active', r === which);
-    });
-    var meta = _reportMeta[which] || _reportMeta.mcq;
-    var titleEl = document.getElementById('report-desc-title');
-    var bodyEl  = document.getElementById('report-desc-body');
-    if (titleEl) titleEl.textContent = meta.title;
-    if (bodyEl)  bodyEl.textContent  = meta.desc;
+  _currentReportView = which;
+  ['mcq','dif','combined'].forEach(function(r){
+    var divId = (r === 'combined') ? 'full' : r;
+    var el  = document.getElementById(divId + '-report');
+    var btn = document.getElementById('rp-btn-' + r);
+    if (el)  el.style.display = (r === which) ? '' : 'none';
+    if (btn) btn.classList.toggle('seg-active', r === which);
   });
+  var meta = _reportMeta[which] || _reportMeta.mcq;
+  var titleEl = document.getElementById('report-desc-title');
+  var bodyEl  = document.getElementById('report-desc-body');
+  if (titleEl) titleEl.textContent = meta.title;
+  if (bodyEl)  bodyEl.textContent  = meta.desc;
+}
+function switchReportPreviewByClick(which) {
+  preserveScrollDuring(function(){ switchReportPreview(which); });
 }
 
 function doReportDownload() {
@@ -5458,6 +5470,7 @@ function resetAll() {
   document.getElementById('fi-main').value='';
   document.getElementById('exam-title').value='';
   document.getElementById('exam-date').value='';
+  document.getElementById('coordinator-name').value='';
   document.getElementById('fi-key').value='';
   var dbgs=['dbg-main','dbg-key','feedback-main','feedback-key'], i;
   for(i=0;i<dbgs.length;i++){var el=document.getElementById(dbgs[i]);if(el){el.style.display='none';el.innerHTML='';el.textContent='';}}
@@ -7164,7 +7177,7 @@ function exportFeedbackReport() {
     body += docxPara("FACULTY OF MEDICINE — UNDERGRADUATE MEDICAL EDUCATION", {bold:true, centre:true, sz:24, spAfter:40});
     body += docxPara("Student Feedback Report", {bold:true, centre:true, sz:28, spAfter:40});
     body += docxPara(xmlSafe(title) + (dateStr ? " · " + dateStr : ""), {bold:true, centre:true, sz:22, spAfter:80});
-    body += docxPara("Report generated: " + ts, {sz:18, color:"888888", spAfter:160});
+    body += docxPara("Report generated: " + ts + getCoordinatorByline(), {sz:18, color:"888888", spAfter:160});
 
     // Summary
     body += docxPara("Summary", {bold:true, sz:24, spAfter:60, color:"A31515"});
@@ -7425,7 +7438,7 @@ resetAll = function() {
   <div style="width:90vw;max-width:920px;height:90vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;position:relative;display:flex;flex-direction:column">
 
     <!-- Header -->
-    <div style="background:var(--c-accent);padding:20px 32px 18px;border-bottom:1px solid rgba(0,0,0,0.25);flex-shrink:0">
+    <div style="background:var(--c-nav-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:20px 32px 18px;border-bottom:1px solid rgba(0,0,0,0.25);flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:20px">
         <div style="display:flex;align-items:center;gap:14px">
           <div style="width:42px;height:42px;border-radius:10px;background:#fff;border:1.5px solid rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -7961,12 +7974,12 @@ resetAll = function() {
   <div style="background:#fff;border-radius:12px;width:100%;max-width:1080px;height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden">
 
     <!-- Header -->
-    <div style="padding:20px 28px 16px;border-bottom:1px solid var(--c-border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
+    <div style="padding:20px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;background:var(--c-nav-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px">Pre-Analysis</div>
-        <div style="font-size:20px;font-weight:700;color:var(--c-primary);letter-spacing:-.2px">Question Exceptions</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px">Pre-Analysis</div>
+        <div style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-.2px">Question Exceptions</div>
       </div>
-      <button onclick="closeExclusionsModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--c-muted);line-height:1;flex-shrink:0">&#x2715;</button>
+      <button onclick="closeExclusionsModal()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s;font-size:20px;line-height:1" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">&#x2715;</button>
     </div>
 
     <!-- Definitions strip — equal thirds -->
@@ -8019,11 +8032,11 @@ resetAll = function() {
   <div style="width:100%;max-width:640px;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.22);overflow:hidden">
 
     <!-- Header -->
-    <div style="background:#fff;padding:18px 24px 14px;border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:10px">
-      <div style="width:34px;height:34px;border-radius:8px;background:#fdf0f0;border:1px solid rgba(163,21,21,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">⚠</div>
+    <div style="background:var(--c-nav-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:18px 24px 14px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">⚠</div>
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">DIF Analysis — Action Required</div>
-        <div style="font-size:18px;font-weight:700;color:var(--c-primary);font-family:'Aptos Display','Aptos',Calibri,sans-serif;line-height:1">Unrecognised Course Codes</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">DIF Analysis — Action Required</div>
+        <div style="font-size:18px;font-weight:700;color:#fff;font-family:'Aptos Display','Aptos',Calibri,sans-serif;line-height:1">Unrecognised Course Codes</div>
       </div>
     </div>
 
@@ -8065,7 +8078,7 @@ resetAll = function() {
 <div id="diag-modal" style="display:none;position:fixed;inset:0;z-index:2100;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:5vh 7.5vw">
   <div style="background:#fff;border-radius:14px;width:85vw;max-width:800px;height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden">
     <!-- Header -->
-    <div style="padding:20px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--c-accent)">
+    <div style="padding:20px 28px 16px;border-bottom:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--c-nav-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
       <div>
         <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px">Diagnostics</div>
         <div style="font-size:20px;font-weight:700;color:#fff">Upload Diagnostics</div>
