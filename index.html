@@ -1356,10 +1356,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '2.0';
-var APP_BUILD       = '20260703-01';
+var APP_BUILD       = '20260707-01';
 var APP_FAQ_VERSION = '2.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 2, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 3, 2026'; // Update each version close
+var APP_FAQ_DATE    = 'July 7, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 7, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -1733,7 +1733,7 @@ var TT = {
     'tab-dif':     'DIF analysis using 3-block hierarchical logistic regression. Detects questions that perform systematically differently for English vs French students.',
     'tab-difrep':  'Formatted DIF narrative report ready to send to exam directors.',
     'filter-all':     'Show all questions in the exam.',
-    'filter-flagged': 'Show only questions flagged as Difficult, Poor discrimination, Low discrimination, or Check Key.',
+    'filter-flagged': 'Show only questions flagged as Difficult, Poor discrimination, or Low discrimination.',
     'filter-easy':    'Show only questions answered correctly by 96% or more of students (p ≥ 0.96 with positive discrimination).'
   },
   init: function() {
@@ -2380,7 +2380,7 @@ function parseResults(text, xlsxRows, isCsv) {
       ? 'Stream breakdown: '+streamCodes.map(function(sc){return sc+': '+G.students.filter(function(s){return s.stream===sc;}).length+' students';}).join(', ')+'.\n'
       : '') +
     (unmatchedCount > 0
-      ? unmatchedCount+' row'+(unmatchedCount!==1?'s':'')+' had a stream code that did not match EN ("'+engCode+'") or FR ("'+freCode+'"). These students are included in overall stats but will not be assigned to a stream for DIF analysis. Check the stream codes in Step 1 if this is unexpected.\n'
+      ? unmatchedCount+' row'+(unmatchedCount!==1?'s':'')+' had a stream code that did not match EN ("'+engCode+'") or FR ("'+freCode+'"). These students are included in overall stats but will not be assigned to a stream for DIF analysis. Check the stream codes in the Data Source &amp; DIF section if this is unexpected.\n'
       : 'All student rows matched a recognised stream code.\n') +
     '\n' +
     'ANSWER PREVIEW (first student, Q1–Q10)\n' +
@@ -2699,7 +2699,7 @@ function parseScantronResults(text) {
       'STUDENTS\n' +
       students.length+' student rows found.\n\n' +
       'UNMATCHED COURSE CODES\n' +
-      'The following rows had a course code that was not recognised. Use the correction modal when you run analysis, or check that the course codes in Step 1 are correct.\n\n' +
+      'The following rows had a course code that was not recognised. Use the correction modal when you run analysis, or check that the course codes in the Data Source &amp; DIF section are correct.\n\n' +
       badRows.map(function(u){
         return 'Row '+u.row+':  Student ID: '+(u.id||'\u2014')+',  Name: '+(u.name||'\u2014')+',  Code found: \"'+(u.courseCode||'(blank)')+'\"';
       }).join('\n');
@@ -2797,7 +2797,7 @@ function updateQMPreview() {
 
   // One file uploaded — show interim banner
   var msg = hasResults
-    ? 'Upload your <strong>answer key file</strong> (Step 3) to view the full data validation.'
+    ? 'Upload your <strong>answer key file</strong> (Answer Key section) to view the full data validation.'
     : 'Upload your <strong>results file</strong> (Step 2) to view the full data validation.';
 
   el.innerHTML =
@@ -2912,7 +2912,7 @@ function renderQMPreview(el) {
             '</tr>';
           }).join('') +
         '</tbody></table>' +
-        '<div style="font-size:11px;color:#a07020;margin-top:6px">To fix globally: update the EN/FR stream code fields in Step 1 and click <strong>Re-validate</strong> below. For a permanent fix, correct the stream codes in the source file and re-upload.</div>' +
+        '<div style="font-size:11px;color:#a07020;margin-top:6px">To fix globally: update the EN/FR stream code fields in the Data Source &amp; DIF section and click <strong>Re-validate</strong> below. For a permanent fix, correct the stream codes in the source file and re-upload.</div>' +
       '</div>';
   }
 
@@ -3167,7 +3167,7 @@ function renderScantronPreview(students, keyLetters, nQ, badRows) {
             '</tr>';
           }).join('') +
         '</tbody></table>' +
-        '<div style="font-size:11px;color:#a07020;margin-top:6px">To fix globally: update the EN/FR course code fields in Step 1 and click <strong>Re-validate</strong> below. For a permanent fix, correct the course codes in the source Scantron file and re-upload.</div>' +
+        '<div style="font-size:11px;color:#a07020;margin-top:6px">To fix globally: update the EN/FR course code fields in the Data Source &amp; DIF section and click <strong>Re-validate</strong> below. For a permanent fix, correct the course codes in the source Scantron file and re-upload.</div>' +
       '</div>';
   }
 
@@ -3411,16 +3411,23 @@ function _runAnalysis() {
       if (best) { topWrong=best.toUpperCase(); }
     }
 
-    // Flag cascade — exact from MCQ manual, first match wins
+    // Flag cascade — from MCQ manual, first match wins
     var flag='', rec='';
-    if (p>=getThresh('easy')&&rpbis>=0) {
+    if (p>=getThresh('easy') || (p>=0.8&&rpbis<0)) {
       flag='Too easy'; rec='Report question (Too easy)';
     } else if (p<getThresh('difficult')&&rpbis>0) {
       flag='Difficult item'; rec='Review Item';
     } else if (p<0.8&&rpbis<0) {
       flag='Poor discrimination'; rec='Review Item';
-    } else if (p<getThresh('checkp')&&rpbis<getThresh('checkr')) {
-      flag='Poor discrimination / difficult item'; rec='Check Key';
+    } else if (p<0.8&&rpbis<0.1) {
+      flag='Low discrimination'; rec='Review Item';
+    }
+    // Check Key — not a separate flag category. Per MCQ manual: "if the mean is below 0.25
+    // and/or the discrimination index is below 0.15, verify the key answers... include the
+    // most frequently chosen answer." This overrides the RECOMMENDATION only, on top of
+    // whichever flag (if any) fired above — it never changes the reason-for-flag itself.
+    if (p<getThresh('checkp') && rpbis<getThresh('checkr')) {
+      rec='Check Key';
     }
 
     // Distractor counts
@@ -3606,6 +3613,9 @@ function cronbach(mat) {
 // ── DIF ───────────────────────────────────────────────────────────────────
 function doDIF(eS,fS) {
   if (!eS.length||!fS.length) { return []; }
+  var MIN_DIF_CELL = 5; // Minimum correct AND incorrect responses required per language group.
+                        // Below this, the logistic regression's significance estimate becomes
+                        // unstable (rare-events / sparse-data problem) and can flag noise as DIF.
   var all=eS.concat(fS), n=all.length, lang=[], i, j;
   for (i=0; i<n; i++) {
     var isFre=false;
@@ -3623,11 +3633,13 @@ function doDIF(eS,fS) {
     var eC=0, fC=0;
     for (i=0; i<eS.length; i++) { if (eS[i].ks[qi]===1){eC++;} }
     for (i=0; i<fS.length; i++) { if (fS[i].ks[qi]===1){fC++;} }
+    var eWrong=eS.length-eC, fWrong=fS.length-fC;
+    var lowN = (eC<MIN_DIF_CELL || eWrong<MIN_DIF_CELL || fC<MIN_DIF_CELL || fWrong<MIN_DIF_CELL);
     results.push({num:qi+1, q:G.qLabels[qi],
       chi1:b1.chi2.toFixed(3), r1:b1.nk.toFixed(3),
       chi3:b3.chi2.toFixed(3), r3:b3.nk.toFixed(3),
       cd:cd.toFixed(3), rd:(b3.nk-b1.nk).toFixed(3),
-      sig:sig.toFixed(4), imp:sig<0.01,
+      sig:sig.toFixed(4), imp:sig<0.01 && !lowN, lowN:lowN,
       ePct:eS.length?Math.round(eC/eS.length*100):0,
       fPct:fS.length?Math.round(fC/fS.length*100):0,
       nE:eS.length, nF:fS.length, disc:fmt(G.mcq[qi].rpbis,2)});
@@ -4107,7 +4119,7 @@ function renderMCQTable(filter) {
     '<th style="width:36px" data-tip="The correct answer letter from the answer key file. If an alternate key is set, shows as A (+D).">Key</th>'+
     '<th data-tip="Difficulty index (p-value): proportion of students who answered correctly. Ideal range 0.35–0.95. Below 0.35 = Difficult; 0.96 or above = Too easy.">Difficulty (p)</th>'+
     '<th data-tip="Discrimination index (point-biserial correlation): measures how well this question separates strong from weak students. Above 0.25 = good; 0.15–0.25 = acceptable; below 0.15 = low; negative = red flag (stronger students chose wrong answer).">Discrimination</th>'+
-    '<th style="min-width:80px" data-tip="The reason this question was flagged based on UGME analysis thresholds. Possible values: Difficult, Poor discrimination, Low discrimination, Too easy, Check Key. A DIF badge also appears here if the question shows a significant EN/FR performance gap, independent of the other flag types.">Reason for Flag</th>'+
+    '<th style="min-width:80px" data-tip="The reason this question was flagged based on UGME analysis thresholds. Possible values: Difficult, Poor discrimination, Low discrimination, Too easy. A DIF badge also appears here if the question shows a significant EN/FR performance gap, independent of the other flag types. Note: Check Key is a Recommendation, not a Reason for Flag — it appears in the Recommendation column when difficulty is below 0.25 and discrimination is below 0.15, regardless of which flag applies.">Reason for Flag</th>'+
     '<th style="min-width:48px;white-space:normal;line-height:1.3" data-tip="Most popular wrong answer among top-performing students. Only shown for items with difficulty below 0.25 and discrimination below 0.15 — suggests a possible key error or ambiguous question.">Best Students Chose</th>'+
     '<th style="min-width:90px" class="col-rec" data-tip="Suggested action for this question based on its statistical profile.">Recommendation</th>'+
     '<th style="min-width:110px" class="col-comment" data-tip="Comments for this question — shows reason for Credit or Delete, and any alternate key notes.">Comments</th>'+
@@ -4417,12 +4429,12 @@ function renderFullReport(avg, alpha) {
   var difItems='';
   for(i=0;i<difFlagged.length;i++){
     var r=difFlagged[i];
-    difItems+='<li style="margin-bottom:8px">Question <b>'+r.num+'</b> had a statistically significant value of DIF.<br>'+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly.</li>';
+    difItems+='<li style="margin-bottom:8px">Question <b>'+r.num+'</b> had a statistically significant value of DIF.<br>'+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.</li>';
   }
   var difTableRows='';
   for(i=0;i<difFlagged.length;i++){
     var r=difFlagged[i];
-    difTableRows+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="text-align:center">'+r.ePct+'%</td><td style="text-align:center">'+r.fPct+'%</td><td>'+(r.fPct>r.ePct?'FR students performed better':'EN students performed better')+'</td></tr>';
+    difTableRows+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="text-align:center">'+r.ePct+'%</td><td style="text-align:center">'+r.fPct+'%</td><td>'+(r.fPct>r.ePct?'FR students performed better':'EN students performed better')+'</td><td style="text-align:center">'+r.disc+'</td></tr>';
   }
 
   // ── Build Exam Overview inline snapshot ───────────────────────────────
@@ -4600,7 +4612,7 @@ function renderFullReport(avg, alpha) {
     '<p style="margin-bottom:16px">If there does not appear to be an explanation for the occurrence of DIF, then the item should remain on the exam. If there is an explanation that led to the occurrence of DIF, then it is possible that the item may need to be credited or fixed before using it again.</p>'+
     (difFlagged.length
       ? '<p style="margin-bottom:8px"><b>DIF Results &mdash; '+(title||'This Exam')+'</b><br><i>The following question'+(difFlagged.length!==1?'s':'')+' had a statistically significant value of DIF (p &lt; 0.01):</i></p>'+
-        '<table style="width:95%;margin:0 auto 12px;border-collapse:collapse"><thead><tr><th>Question</th><th>EN % Correct</th><th>FR % Correct</th><th>Interpretation</th></tr></thead><tbody>'+difTableRows+'</tbody></table>'
+        '<table style="width:95%;margin:0 auto 12px;border-collapse:collapse"><thead><tr><th>Question</th><th>EN % Correct</th><th>FR % Correct</th><th>Interpretation</th><th>Discrimination</th></tr></thead><tbody>'+difTableRows+'</tbody></table>'
       : '<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>');
 
   // Capture chart AFTER innerHTML is in the DOM
@@ -4726,7 +4738,7 @@ function renderDIFReport() {
     (flagged.length
       ?'<p style="margin-bottom:8px">'+(title?'On the <b>'+title+'</b>':'On this exam')+':</p>'+
        '<ul style="margin-left:20px;margin-bottom:10px">'+
-       flagged.map(function(r){return '<li style="margin-bottom:8px">Question <b>'+r.num+'</b> had a statistically significant value of DIF.<br>'+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly.</li>';}).join('')+
+       flagged.map(function(r){return '<li style="margin-bottom:8px">Question <b>'+r.num+'</b> had a statistically significant value of DIF.<br>'+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.</li>';}).join('')+
        '</ul>'
       :'<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>');
 }
@@ -5028,8 +5040,8 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     if(difFlagged2.length){
       body+=docxPara('DIF Results — '+(title||'This Exam'),{bold:true,sz:24,spAfter:80});
       body+=docxPara('The following question'+(difFlagged2.length!==1?'s':'')+' had a statistically significant value of DIF (p < 0.01):',{sz:24,spAfter:120});
-      var difRows3=difFlagged2.map(function(r3){return [r3.num,r3.ePct+'%',r3.fPct+'%',r3.fPct>r3.ePct?'FR students performed better':'EN students performed better'];});
-      body+=docxTable(['Question','EN % Correct','FR % Correct','Interpretation'],difRows3,[1200,1800,1800,4913],{centreCols:[0,1,2]});
+      var difRows3=difFlagged2.map(function(r3){return [r3.num,r3.ePct+'%',r3.fPct+'%',r3.fPct>r3.ePct?'FR students performed better':'EN students performed better',r3.disc];});
+      body+=docxTable(['Question','EN % Correct','FR % Correct','Interpretation','Discrimination'],difRows3,[1000,1500,1500,3813,900],{centreCols:[0,1,2,4]});
       body+=docxPara('',{spAfter:120});
     } else {
       body+=docxPara('No items with statistically significant DIF were detected (p < 0.01).',{italic:true,sz:24,spAfter:160});
@@ -5201,7 +5213,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
           '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+r.num+'</w:t></w:r>'+
           '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> had a statistically significant value of DIF.</w:t></w:r>'+
           '<w:br/>'+
-          '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+esc(r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly.')+'</w:t></w:r>'+
+          '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+esc(r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.')+'</w:t></w:r>'+
           '</w:p>';
       }
     } else {
@@ -5722,6 +5734,37 @@ var RELEASE_NOTES = [
   {
     version: '2.0',
     builds: [
+      {
+        build: '20260707-01',
+        date:  'July 7, 2026',
+        notes: [
+          'Student Feedback parser accuracy improvements, based on a detailed comparison of the app\'s output against manually-prepared feedback reports across four real exams.',
+          'Numbers that appear inside a comment as measurements or values are no longer mistaken for question numbers. Blood-pressure and ratio values (e.g. "130/80"), ages written as "60y", dosages and durations (e.g. "24-48 h", "6 days"), and similar quantities no longer create references to questions that were never mentioned.',
+          'When an MCQ analysis is loaded in the same session, the feedback parser now knows how many questions the exam actually has, and will no longer attribute a comment to a question number higher than the exam contains (e.g. a stray "90" from a comment on an 83-question exam).',
+          '"X of Y" phrasing (e.g. "question 59 of 84") is now understood — the second number is recognised as a total, not a separate question. "X and Y" phrasing is unchanged and still counts as two separate questions.',
+          'Short but genuine comments are no longer misread as a bare mention with no text (e.g. "Is Question 75 a riddle??", "no normals", "mortality 50%") — these now appear as real comments under their question.',
+          'Comments where the question number is written without a space before the text (e.g. "13)absolute contraindication..." or "38.mammo...") are now correctly attributed to that question instead of being dropped into the General section.'
+        ]
+      },
+      {
+        build: '20260706-01',
+        date:  'July 6, 2026',
+        notes: [
+          'Added a "Low discrimination" flag for questions with difficulty below 0.80 and discrimination below 0.10, matching the UGME assessment manual — these were previously not flagged at all.',
+          'Check Key is now applied correctly as a recommendation on top of whichever flag reason applies (Difficult, Poor discrimination, etc.), rather than replacing it — matching the intended manual methodology.',
+          'DIF report now includes the discrimination index alongside the EN/FR percentages, in both the standalone DIF Report and the Full Report, matching the standard report format.',
+          'Updated several FAQ entries and in-app validation messages that still referred to the old "Step 1 / Step 3" setup screen numbering, which was replaced by named sections (Data Source & DIF, Answer Key) in an earlier build.'
+        ]
+      },
+      {
+        build: '20260705-01',
+        date:  'July 5, 2026',
+        notes: [
+          'Fixed an issue where some questions with negative discrimination and high difficulty were not appearing anywhere in the analysis — they now correctly appear in the "too easy and/or negative discrimination" list.',
+          'Fixed an issue where certain very difficult, poorly-discriminating questions were labelled "Poor discrimination" instead of the more specific "Check Key" recommendation.',
+          'DIF analysis is now more resistant to false positives on very easy or very difficult questions, where only a handful of students in one language stream answered a certain way. A question needs at least 5 correct and 5 incorrect responses in both language streams before a DIF flag is reported.'
+        ]
+      },
       {
         build: '20260703-01',
         date:  'July 3, 2026',
@@ -6429,7 +6472,7 @@ function cleanFragment(text) {
   return text.replace(/^[\s\\:\.\,\;\)\(\/\-]+/, '').trim();
 }
 
-// FIX 2: improved isBareRef
+// FIX 2: improved isBareRef  (+ Fix 5: recognize short-but-real comments)
 function isBareRef(text, qNum) {
   var t = text.trim();
   if (/^[Qq]?\s*$/.test(t)) return true;
@@ -6442,9 +6485,30 @@ function isBareRef(text, qNum) {
   if (/\b(?:of|with|and|or|but|to|in|for|from|by|at|on|as|a|the)\s*$/i.test(stripped)) return true;
   // Ends with reference-only words suggesting no real content
   if (/\b(?:interpretation|reference|duplicate|repeat|same|copy)\s*$/i.test(stripped)) return true;
-  // Only 1 meaningful word remains
-  var words = stripped.match(/[a-zA-Z\u00C0-\u00FF]{3,}/g) || [];
-  if (words.length <= 1) return true;
+  // Fix 5: a leftover that reads like a phrase is REAL content, not a bare mention.
+  // But a leftover that is ONLY a list of question numbers (e.g. "3, 6, 29, 58, 69, 75"
+  // or "and 74,") is NOT content — it's a bare multi-reference. Detect the latter by
+  // removing digits, list connectors, and the word "question(s)" and seeing what remains.
+  var listResidue = stripped
+    .replace(/\b(?:and|et|ou|or|questions?)\b/gi, ' ')
+    .replace(/[Qq]?#?\s*\d{1,3}/g, ' ')
+    .replace(/[\s,;&\.\)\(\-\\:]+/g, ' ')
+    .trim();
+  var hasSentencePunct = /[?!]/.test(stripped);
+  var longWords = stripped.match(/[a-zA-Z\u00C0-\u00FF]{3,}/g) || [];
+  // Essentially just a number list (nothing meaningful left after removing numbers) -> bare
+  if (listResidue.length < 3 && !hasSentencePunct) return true;
+  // Sentence punctuation signals a real (if short) comment, e.g. "a riddle??"
+  if (hasSentencePunct) return false;
+  // Real content: a meaningful word remains AND the fragment reads like a phrase (2+ tokens),
+  // e.g. "mortality 50%", "no normals", "the same answer is listed"
+  var residueWords = listResidue.match(/[a-zA-Z\u00C0-\u00FF]{3,}/g) || [];
+  if (residueWords.length >= 1) {
+    var tokens = stripped.match(/[a-zA-Z\u00C0-\u00FF]{2,}|\d+\s*%?/g) || [];
+    if (tokens.length >= 2) return false;
+  }
+  // Only 1 meaningful word remains and nothing else — treat as bare
+  if (longWords.length <= 1) return true;
   // Strip all Q# refs — if nothing meaningful remains
   var withoutRef = t.replace(new RegExp('(?:#|[Qq](?:uestion)?\\s*\\.?\\s*#?\\s*)?' + qNum + '\\b\\s*(?:\\\\?[:\\-\\)\\.\\,]+)?', 'g'), ' ');
   withoutRef = withoutRef.replace(/[,&\s]+/g, ' ').trim();
@@ -6452,10 +6516,41 @@ function isBareRef(text, qNum) {
   return false;
 }
 
-// FIX 3: Quantity context — number is a measurement, not a Q#
+// FIX 3 (ceiling): highest question number the AUTO parser will accept.
+// When an MCQ analysis is loaded in the same session, G.nQ is the real exam item
+// count — reject any auto-detected number above it (kills phantoms like a "90" from
+// "140/90" on an 83-question exam). With no MCQ loaded there is no known ceiling yet,
+// so fall back to a loose 200 (a future manual "question count" field will supply it).
+// NOTE: this bounds only the AUTOMATIC parser layers. Numbers a human types on the
+// mapping screen are deliberate overrides and are not clamped by this ceiling.
+function effectiveMaxQ() {
+  try {
+    if (typeof G !== 'undefined' && G && G._lastN && G.nQ && G.nQ > 0) return G.nQ;
+  } catch (e) {}
+  return 200;
+}
+
+// FIX 3: Quantity context — number is a measurement/value, not a Q#
 function isQuantityContext(text, pos, qNum) {
-  var after = text.slice(pos + String(qNum).length).replace(/^\s+/, '');
-  return /^(?:pack\s*year|yr\s*old|year|mg|mm|cm|ml|kg|lb|%|hour|hr|day|week|month)/i.test(after);
+  var numStr = String(qNum);
+  var after = text.slice(pos + numStr.length).replace(/^\s+/, '');
+  var before = text.slice(0, pos);
+  // Unit words immediately after the number (existing list + bare y for years, g, mmol, mcg, min, mo, wk, h, drink)
+  if (/^(?:pack\s*year|yr\s*old|y\s*old|yo\b|y\b|year|mg|mcg|mmol|mm|cm|ml|kg|lb|g\b|%|hour|hr\b|h\b|day|week|wk\b|month|mo\b|min\b|drink)/i.test(after)) return true;
+  // Denominator / ratio / BP pattern: number is the second half of NN/NN (e.g. 130/80, 140/90),
+  // OR the number is immediately followed by a slash then more digits (first half, e.g. 130/80).
+  if (/\/\s*$/.test(before)) return true;          // "130/" + 80  -> 80 is a denominator
+  if (/^\/\s*\d/.test(after)) return true;          // 130 + "/80" -> 130 is a numerator
+  // Range pattern "N - N unit": a number followed by dash + another number + a unit word
+  // (e.g. "6 - 6 DAYS", "24 - 48 h"). The leading number here is part of a quantity range.
+  if (/^[-\u2013\u2014]\s*\d{1,3}\s*(?:day|week|wk|month|mo\b|hour|hr|year|yr|y\b|min|h\b|g\b|mg|ml|kg|%)/i.test(after)) return true;
+  // "NN of MM" count pattern: this number directly follows "of" which is itself directly
+  // preceded by another number (e.g. "59 of 84", "question 75 of 84", "1 of 5"). Here MM is a
+  // total/count, not a Q#. This requires the NUMBER-of-NUMBER fraction shape specifically —
+  // "duplicate of 24" / "repeat of q24" have a WORD before "of" and stay real cross-references.
+  // Note: "NN and MM" is deliberately NOT treated as a count — that remains two questions.
+  if (/\d{1,3}\s+of\s*$/i.test(before)) return true;
+  return false;
 }
 
 // FIX 4: Arrow label context — #N is an image annotation, not a Q#
@@ -6472,11 +6567,11 @@ function splitRunon(text) {
   var markers = {}, m;
   while ((m = reA.exec(text)) !== null) {
     var q = parseInt(m[1],10);
-    if (q >= 1 && q <= 200 && !isQuantityContext(text, m.index, q)) markers[m.index] = q;
+    if (q >= 1 && q <= effectiveMaxQ() && !isQuantityContext(text, m.index, q)) markers[m.index] = q;
   }
   while ((m = reB.exec(text)) !== null) {
     var q2 = parseInt(m[1],10);
-    if (q2 >= 1 && q2 <= 200 && !(m.index in markers) && !isQuantityContext(text, m.index, q2)) markers[m.index] = q2;
+    if (q2 >= 1 && q2 <= effectiveMaxQ() && !(m.index in markers) && !isQuantityContext(text, m.index, q2)) markers[m.index] = q2;
   }
   var sortedM = Object.keys(markers).map(Number).sort(function(a,b){return a-b;});
   if (sortedM.length < 2) return null;
@@ -6496,7 +6591,7 @@ function singleRunon(line) {
   var m = /^(\d{1,3})(?=[a-z])/.exec(line);
   if (m) {
     var q = parseInt(m[1], 10);
-    if (q >= 1 && q <= 200 && !isQuantityContext(line, 0, q)) return q;
+    if (q >= 1 && q <= effectiveMaxQ() && !isQuantityContext(line, 0, q)) return q;
   }
   return null;
 }
@@ -6522,23 +6617,23 @@ function splitLine(line) {
   // 3. Comma/amp list with dash: "7,38 - text"
   var cld = /^(?:#|[Qq](?:uestion)?\s*\.?\s*#?\s*)?(\d{1,3})((?:\s*[,&]\s*\d{1,3})+)\s*[-\u2013\u2014]\s+/.exec(line);
   if (cld) {
-    var nums = [parseInt(cld[1],10)].concat((cld[2].match(/\d{1,3}/g)||[]).map(Number)).filter(function(n){return n>=1&&n<=200;});
+    var nums = [parseInt(cld[1],10)].concat((cld[2].match(/\d{1,3}/g)||[]).map(Number)).filter(function(n){return n>=1&&n<=effectiveMaxQ();});
     return nums.map(function(n){return [n, line];});
   }
 
   // 4. Standard comma/amp list — FIX 1: DON'T add rest as second fragment (creates duplicates)
   var cl = /^(?:#|[Qq](?:uestion)?\s*\.?\s*#?\s*)?(\d{1,3})((?:\s*[,&]\s*\d{1,3})+)(?=\s*(?:\\?[:\-\)\.]|\s+[a-zA-Z\u00C0-\u00FF]|$))/.exec(line);
   if (cl) {
-    var nums2 = [parseInt(cl[1],10)].concat((cl[2].match(/\d{1,3}/g)||[]).map(Number)).filter(function(n){return n>=1&&n<=200;});
+    var nums2 = [parseInt(cl[1],10)].concat((cl[2].match(/\d{1,3}/g)||[]).map(Number)).filter(function(n){return n>=1&&n<=effectiveMaxQ();});
     return nums2.map(function(n){return [n, line];});
   }
 
   // 5. Leading marker pattern — FIX 3: skip quantity contexts, FIX 4: skip arrow labels
-  var mkRe = /(?:^|(?<=[\s\n]))(?:(?:#|[Qq](?:uestion)?\s*\.?\s*#?\s*|[Nn]umber\s+)(\d{1,3})\b\s*(?:\\?[:\-\)\.,]|\s|$)|(\d{1,3})\s*(?:\\?[:\-\)\.\\])\s|(\d{1,3})\s*[-\u2013\u2014]\s+(?=[a-zA-Z\u00C0-\u00FF'"])|(\d{1,3})\s*$|^(\d{1,3})\s+(?=[a-zA-Z]))/g;
+  var mkRe = /(?:^|(?<=[\s\n]))(?:(?:#|[Qq](?:uestion)?\s*\.?\s*#?\s*|[Nn]umber\s+)(\d{1,3})\b\s*(?:\\?[:\-\)\.,]|\s|$)|(\d{1,3})\s*(?:(?:\\?[:\)\.])(?=\s|[a-zA-Z\u00C0-\u00FF])|[-\\](?=\s))|(\d{1,3})\s*[-\u2013\u2014]\s+(?=[a-zA-Z\u00C0-\u00FF'"])|(\d{1,3})\s*$|^(\d{1,3})\s+(?=[a-zA-Z]))/g;
   var markers = [], seen = {}, m2;
   while ((m2 = mkRe.exec(line)) !== null) {
     var q3 = parseInt([m2[1],m2[2],m2[3],m2[4],m2[5]].filter(Boolean)[0], 10);
-    if (q3 >= 1 && q3 <= 200 && !(m2.index in seen) && !isQuantityContext(line, m2.index, q3) && !isArrowLabel(line, m2.index)) {
+    if (q3 >= 1 && q3 <= effectiveMaxQ() && !(m2.index in seen) && !isQuantityContext(line, m2.index, q3) && !isArrowLabel(line, m2.index)) {
       seen[m2.index] = true; markers.push([m2.index, q3]);
     }
   }
@@ -6573,7 +6668,7 @@ function splitLine(line) {
   var em, firstQ = null;
   while ((em = embRe.exec(line)) !== null) {
     var qe = parseInt(em[1], 10);
-    if (qe >= 1 && qe <= 200 && !isArrowLabel(line, em.index)) {
+    if (qe >= 1 && qe <= effectiveMaxQ() && !isArrowLabel(line, em.index)) {
       firstQ = qe;
       break;
     }
@@ -7493,7 +7588,7 @@ resetAll = function() {
             <div class="faq-a">
               It depends on your data source:<br><br>
               <strong>QuestionMark (QM):</strong> You need two files — <strong>(1) the results file</strong> (.xlsx), exported directly from QuestionMark, and <strong>(2) the answer key file</strong> (.xlsx), prepared from the same export (see <em>How do I prepare the answer key file?</em> below). Do not modify either file before uploading.<br><br>
-              <strong>Scantron:</strong> You need a single <strong>.txt</strong> file received from the scanning centre. No preparation is required — the answer key is embedded in the MASTER row of the file and will be read automatically. Switch the Data Source toggle in Step 1 to Scantron before uploading.
+              <strong>Scantron:</strong> You need a single <strong>.txt</strong> file received from the scanning centre. No preparation is required — the answer key is embedded in the MASTER row of the file and will be read automatically. Switch the Data Source toggle in the Data Source &amp; DIF section to Scantron before uploading.
             </div>
           </div>
 
@@ -7523,7 +7618,7 @@ resetAll = function() {
                     <li>Ensure the <strong>column headers</strong> from the original file are included — the tool uses these to identify the answer columns</li>
                   </ul>
                 </li>
-                <li>Save and upload that file as your answer key in Step 3</li>
+                <li>Save and upload that file as your answer key in the Answer Key section</li>
               </ol>
             </div>
           </div>
@@ -7535,8 +7630,8 @@ resetAll = function() {
             </div>
             <div class="faq-a">
               The tool handles bilingual exams automatically for both QuestionMark and Scantron. It uses stream codes to separate English and French students and compares their performance in the DIF analysis.<br><br>
-              <strong>QuestionMark:</strong> By default the tool expects <strong>E</strong> for English and <strong>F</strong> for French in the results file stream column. If your export uses different codes, update them in the <strong>Language Codes</strong> field in Step 1 before running the analysis.<br><br>
-              <strong>Scantron:</strong> Students are identified by the course code they entered on their scan sheet. Enter the EN and FR course codes in Step 1 so the tool can match each student to the correct stream. Because students enter these manually, some variation in codes is common — unmatched codes can be assigned to a stream at run time via the correction modal.
+              <strong>QuestionMark:</strong> By default the tool expects <strong>E</strong> for English and <strong>F</strong> for French in the results file stream column. If your export uses different codes, update them in the <strong>Language Codes</strong> field in the Data Source &amp; DIF section before running the analysis.<br><br>
+              <strong>Scantron:</strong> Students are identified by the course code they entered on their scan sheet. Enter the EN and FR course codes in the Data Source &amp; DIF section so the tool can match each student to the correct stream. Because students enter these manually, some variation in codes is common — unmatched codes can be assigned to a stream at run time via the correction modal.
             </div>
           </div>
 
@@ -7546,7 +7641,7 @@ resetAll = function() {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              Yes. In <strong>Step 1 → Data Source</strong>, switch the toggle from <strong>QM</strong> to <strong>Scantron</strong>. You then upload a single Scantron <strong>.txt</strong> export — no separate answer key file is needed, as the key is embedded in the MASTER row of the Scantron file. The rest of the analysis works identically to the QM path. When DIF is enabled, enter your EN and FR course codes in Step 1 so the tool can assign each student to the correct language stream.
+              Yes. In the <strong>Data Source &amp; DIF</strong> section, switch the toggle from <strong>QM</strong> to <strong>Scantron</strong>. You then upload a single Scantron <strong>.txt</strong> export — no separate answer key file is needed, as the key is embedded in the MASTER row of the Scantron file. The rest of the analysis works identically to the QM path. When DIF is enabled, enter your EN and FR course codes in the Data Source &amp; DIF section so the tool can assign each student to the correct language stream.
             </div>
           </div>
 
@@ -7558,7 +7653,7 @@ resetAll = function() {
             <div class="faq-a">
               When unrecognised course codes are detected, the upload validation panel will show a warning listing each distinct unmatched code and how many students used it. There are two ways to fix this:<br><br>
               <strong>Quick fix (this session):</strong> When you click <strong>Run Analysis</strong>, a correction modal will appear listing each affected student. Assign them to the correct stream using the dropdown, then click <strong>Save &amp; Run Analysis</strong>. This applies to the current session only.<br><br>
-              <strong>Global fix:</strong> If the mismatch is due to a typo in the EN or FR course code fields in Step 1, correct them there and click <strong>Re-validate</strong> in the preview panel to refresh the stream counts immediately — no re-upload needed.<br><br>
+              <strong>Global fix:</strong> If the mismatch is due to a typo in the EN or FR course code fields in the Data Source &amp; DIF section, correct them there and click <strong>Re-validate</strong> in the preview panel to refresh the stream counts immediately — no re-upload needed.<br><br>
               <strong>Permanent fix:</strong> Correct the course codes in the source Scantron file and re-upload.
             </div>
           </div>
@@ -7640,7 +7735,7 @@ resetAll = function() {
               After a successful upload, a parse preview panel appears below the upload fields. It confirms what the tool detected in your files before you run the analysis.<br><br>
               <strong>QuestionMark:</strong> The panel appears once <em>both</em> the results file and the answer key are uploaded successfully. It shows both filenames, student and question counts, EN/FR stream breakdown, the answer key for the first 10 questions, and a sample of the first 5 student rows. If the question count in the results file doesn't match the key, a mismatch warning appears. If any stream codes are unrecognised, the panel lists each distinct code and how many students used it.<br><br>
               <strong>Scantron:</strong> The panel appears after the single Scantron file is uploaded. It shows the same information — filename, counts, key preview, and student sample — with unmatched course codes highlighted if any are found.<br><br>
-              In both cases this is a preview only — all students and questions are fully loaded regardless. You can fix Step 1 codes and click <strong>Re-validate</strong> to refresh the stream counts without re-uploading, or click <strong>Re-upload</strong> if the file itself needs replacing. Click <strong>Looks good</strong> to dismiss the panel and proceed.
+              In both cases this is a preview only — all students and questions are fully loaded regardless. You can fix the codes in the Data Source &amp; DIF section and click <strong>Re-validate</strong> to refresh the stream counts without re-uploading, or click <strong>Re-upload</strong> if the file itself needs replacing. Click <strong>Looks good</strong> to dismiss the panel and proceed.
             </div>
           </div>
 
@@ -7693,7 +7788,7 @@ resetAll = function() {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              The tool automatically excludes rows that are not scoreable student responses — this includes header rows, timestamp rows, summary rows, and any students whose stream code doesn't match the EN or FR codes set in Step 1. If the count is unexpectedly low, check that your stream codes in Step 1 match exactly what's in the file (case-sensitive). Click <em>details</em> after uploading for a full row-by-row breakdown.
+              The tool automatically excludes rows that are not scoreable student responses — this includes header rows, timestamp rows, summary rows, and any students whose stream code doesn't match the EN or FR codes set in the Data Source &amp; DIF section. If the count is unexpectedly low, check that your stream codes there match exactly what's in the file (case-sensitive). Click <em>details</em> after uploading for a full row-by-row breakdown.
             </div>
           </div>
 
@@ -7703,7 +7798,7 @@ resetAll = function() {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              In <strong>Step 1 → Language Codes</strong>, update the EN and FR fields to match the codes used in your QM export. The tool will re-read the uploaded file using the new codes the next time you run the analysis. Note: changing the codes after an analysis has been run will mark the results as stale and prompt you to re-run.
+              In the <strong>Data Source &amp; DIF</strong> section, update the EN and FR <strong>Language Codes</strong> fields to match the codes used in your QM export. The tool will re-read the uploaded file using the new codes the next time you run the analysis. Note: changing the codes after an analysis has been run will mark the results as stale and prompt you to re-run.
             </div>
           </div>
 
@@ -7731,7 +7826,7 @@ resetAll = function() {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              DIF analysis is optional. Toggle it on or off in <strong>Step 1 → DIF Analysis</strong>. When off, the DIF-related tabs, report sections, and KPI indicators are hidden. Turn it on if the exam has both English and French students and you need to identify questions that may have performed differently between streams. If your exam is a single-language cohort, you can leave DIF off.
+              DIF analysis is optional. Toggle it on or off in the <strong>Data Source &amp; DIF</strong> section. When off, the DIF-related tabs, report sections, and KPI indicators are hidden. Turn it on if the exam has both English and French students and you need to identify questions that may have performed differently between streams. If your exam is a single-language cohort, you can leave DIF off.
             </div>
           </div>
 
@@ -7752,7 +7847,7 @@ resetAll = function() {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              Click <strong>← Setup</strong> on the analysis screen to return to the setup page. Re-upload the corrected file in Step 2 or Step 3 as needed. The Run Analysis button will change to <strong>Update Analysis</strong>. Click it to re-run — all results, KPIs, and reports will refresh automatically.
+              Click <strong>← Setup</strong> on the analysis screen to return to the setup page. Re-upload the corrected file in the <strong>Results Data</strong> or <strong>Answer Key</strong> section as needed. The Run Analysis button will change to <strong>Update Analysis</strong>. Click it to re-run — all results, KPIs, and reports will refresh automatically.
             </div>
           </div>
 
@@ -7790,7 +7885,7 @@ resetAll = function() {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              The tool only counts students whose stream code matches the EN or FR codes set in Step 1. Students with a different, blank, or unrecognised stream code are excluded. Check your language codes in Step 1, and click <em>details</em> under the upload confirmation for a diagnostic breakdown showing exactly which rows were included and which were excluded and why.
+              The tool only counts students whose stream code matches the EN or FR codes set in the Data Source &amp; DIF section. Students with a different, blank, or unrecognised stream code are excluded. Check your language codes there, and click <em>details</em> under the upload confirmation for a diagnostic breakdown showing exactly which rows were included and which were excluded and why.
             </div>
           </div>
 
