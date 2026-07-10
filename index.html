@@ -53,6 +53,8 @@
   --s-dif-row:       #fef0f0;
   --s-dif-row-h:     #ffdddd;
   --s-warn-bg:       #fff8e0;
+  --c-fb:            #0d7a7a;   /* feedback teal — text/border */
+  --c-fb-bg:         #e0f5f5;   /* feedback teal — badge background */
   --s-warn-border:   #e8b800;
 }
 
@@ -77,11 +79,9 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);font-size:13.5px;background:var(--c-bg);color:var(--c-primary);padding:16px;-webkit-font-smoothing:antialiased}
 h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
-.sub{font-size:13px;color:var(--c-muted);margin-bottom:16px}
 
 /* ── Cards — crisp white with visible border ── */
 .card{background:var(--c-bg);border:1px solid var(--c-border);border-radius:12px;padding:20px;margin-bottom:10px}
-.card-title{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--c-accent-dark);letter-spacing:-.2px}
 
 /* ── Setup screen — reusable section-card system (matches Fluent demo) ── */
 .exam-fields{display:grid;grid-template-columns:minmax(200px,360px) minmax(160px,240px) 150px;gap:16px;max-width:800px}
@@ -117,14 +117,10 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 .step.complete{background:var(--c-accent);color:var(--c-bg);border-color:var(--c-accent)}
 
 /* ── Stepper connector line ── */
-.stepper-line{width:1.5px;background:var(--c-border);margin:0 auto;flex-shrink:0}
 
 /* ── Accordion — borderless, no separator between accordions ── */
-.accordion-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;cursor:pointer;border-bottom:none;user-select:none;transition:color .15s}
 .accordion-header:hover .accordion-title{color:var(--c-accent)}
-.accordion-chevron{transition:transform .2s;flex-shrink:0;color:var(--c-muted)}
 .accordion-header.open .accordion-chevron{transform:rotate(180deg)}
-.accordion-body{padding:14px 0 6px}
 
 /* ── Toggles — slim, modern ── */
 .toggle-track{position:relative;width:36px;height:20px;border-radius:10px;cursor:pointer;transition:background .2s;flex-shrink:0}
@@ -136,8 +132,6 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 .btn-primary{background:var(--c-accent);color:var(--c-bg);border-color:var(--c-accent)}
 .btn-primary:hover{background:var(--c-accent-dark)}
 .btn-sm{padding:4px 10px;font-size:12px}
-.btn-filter{transition:background .15s,border-color .15s}
-.active-filter{background:var(--c-accent-dark)!important;color:var(--c-bg)!important;border-color:var(--c-accent-dark)!important}
 
 /* ── Inputs ── */
 input[type=file]{display:none}
@@ -239,6 +233,7 @@ tr.row-dif td{background:#e8eaf6}
 tr.row-dif:hover td{background:#d1d6ef}
 tr.row-dif td:first-child{box-shadow:inset 8px 0 0 #3949ab}
 tr:not(.row-flagged):not(.row-easy):not(.row-dif):not(.row-expand) td:first-child{box-shadow:inset 8px 0 0 #639922}
+.fb-freq-table td:first-child{box-shadow:none!important}
 tr.row-expand td{background:var(--c-surface);padding:0}
 .dist-expand-wrap{border:1px solid var(--c-border-2);border-radius:0 0 6px 6px;margin:0 4px 4px 4px;background:var(--c-surface)}
 tr.row-expand td{border-top:none!important}
@@ -258,6 +253,7 @@ tr.row-expand td{border-top:none!important}
 .badge{display:inline-block;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.1px;border:none}
 .b-ok{color:var(--s-ok);background:var(--s-ok-bg)}
 .b-hard{color:var(--s-hard);background:var(--s-hard-bg)}
+.b-fb{color:var(--c-fb);background:var(--c-fb-bg)}   /* feedback teal badges */
 .b-poor{color:var(--s-hard);background:var(--s-hard-bg)}
 .b-low{color:var(--s-lowdisc);background:var(--s-lowdisc-bg)}
 .b-easy{color:#0a5a9c;background:var(--s-easy-bg)}
@@ -267,11 +263,7 @@ tr.row-expand td{border-top:none!important}
 .b-deleted{color:var(--c-accent);background:#fce8e8}
 
 /* ── KPI metrics ── */
-.metrics{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:14px}
-.metric{background:var(--c-surface);border:1px solid var(--c-border);border-radius:9px;padding:11px 8px;cursor:default;transition:box-shadow .15s;text-align:center}
 .metric:hover{box-shadow:0 3px 12px rgba(0,0,0,.1)}
-.metric-label{font-size:10px;color:var(--c-muted);font-weight:600;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.metric-value{font-size:21px;font-weight:700;letter-spacing:-0.5px;text-align:center;justify-content:center;color:var(--c-primary)}
 
 /* ── Misc ── */
 .tbl-wrap{border:1px solid var(--c-border);border-radius:10px;overflow:hidden}
@@ -293,7 +285,6 @@ th{position:relative;white-space:normal}
 .report-preview tr.row-dif td{background:#e8eaf6}
 .report-preview td:first-child{box-shadow:none!important}
 .report-preview tr td:first-child{box-shadow:none!important}
-.warn-box{background:var(--s-warn-bg);border:1px solid var(--s-warn-border);border-radius:6px;padding:9px 13px;font-size:13px;margin-bottom:10px;color:#4a3600}
 .footer{margin-top:24px;padding:14px 0 8px;border-top:3px solid rgba(0,0,0,.28);text-align:center;font-size:11.5px;color:var(--c-faint)}
 #tt{position:fixed;background:#ffffff;color:#3d3650;border:1px solid var(--c-border);font-size:12px;padding:7px 11px;border-radius:10px;max-width:250px;line-height:1.55;box-shadow:0 4px 14px rgba(0,0,0,.12);pointer-events:none;z-index:99999;display:none;white-space:normal;font-family:var(--font)}
 
@@ -302,7 +293,6 @@ th{position:relative;white-space:normal}
 .btn-dl-primary:hover{background:var(--c-accent-dark)}
 .btn-dl-secondary{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:10px;border:1px solid var(--c-border-2);background:var(--c-bg);color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
 .btn-dl-secondary:hover{background:var(--c-surface);border-color:rgba(0,0,0,.3)}
-.btn-tpl{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1px solid var(--c-border-2);background:var(--c-bg);color:var(--c-muted);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
 .btn-tpl:hover{background:var(--c-surface);color:var(--c-secondary);border-color:var(--c-secondary)}
 #btn-back-setup:hover{background:rgba(255,255,255,.22)!important;border-color:rgba(255,255,255,.5)!important;color:#fff!important}
 #btn-print:hover{background:var(--c-surface)!important;border-color:var(--c-secondary)!important;color:var(--c-secondary)!important}
@@ -333,11 +323,7 @@ th{position:relative;white-space:normal}
 .btn-expand-all:hover{background:var(--c-surface);border-color:var(--c-secondary)}
 
 /* ── Analysis section headers — same as setup ── */
-.section-header{background:var(--c-accent-tint);padding:10px 16px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.section-header-title{font-size:14px;font-weight:700;color:var(--c-primary);letter-spacing:-.2px}
-.section-content{padding:16px;border:1px solid var(--c-border);border-radius:8px;margin-top:6px}
 /* ── Section subsection labels ── */
-.section-label{font-size:10.5px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px}
 
 @media print{
   #tt{display:none!important}
@@ -375,7 +361,6 @@ th{position:relative;white-space:normal}
 .fb-info-green{background:#e8f5eb;border-left:3px solid #2e7d32;color:#1a4a1a}
 .fb-info-amber{background:#fff8e0;border-left:3px solid #c07800;color:#5a3a00}
 
-.fb-run-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#fafafa;border:1px solid var(--c-border);border-radius:8px;margin-top:14px;gap:12px;flex-wrap:wrap}
 .fb-freq-table{width:100%;border-collapse:collapse;font-size:13px}
 .fb-freq-table th{background:var(--c-bg);padding:9px 10px;text-align:left;border-bottom:1.5px solid var(--c-border-2);font-weight:600;font-size:10.5px;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px}
 .fb-freq-table td{padding:9px 10px;border-bottom:1px solid rgba(0,0,0,.05);background:var(--c-bg)}
@@ -391,8 +376,8 @@ th{position:relative;white-space:normal}
 /* Mapping screen */
 .fb-map-row{display:flex;align-items:flex-start;gap:8px;padding:9px 14px;border-bottom:0.5px solid var(--c-border);background:var(--c-bg)}
 .fb-map-row.resolved{background:#f0fdf4;opacity:.7}
-.fb-map-comment{flex:1;font-size:12px;color:var(--c-secondary);line-height:1.55}
-.fb-map-input{width:56px;flex-shrink:0;padding:5px 6px;border:1px solid var(--c-border);border-radius:6px;font-size:12px;text-align:center;color:var(--c-primary);font-family:var(--font)}
+.fb-map-comment{flex:1;font-size:12px;color:var(--c-secondary);line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.fb-map-input{width:120px;flex-shrink:0;padding:5px 6px;border:1px solid var(--c-border);border-radius:6px;font-size:12px;text-align:left;color:var(--c-primary);font-family:var(--font)}
 .btn-fb-gen{font-size:11px;font-weight:600;color:#0d7a7a;border:1px solid #0d7a7a;border-radius:8px;padding:4px 8px;background:var(--c-bg);cursor:pointer;white-space:nowrap;font-family:var(--font)}
 .btn-fb-gen:hover{background:#e0f5f5}
 .btn-fb-disc{font-size:11px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:8px;padding:4px 8px;background:var(--c-bg);cursor:pointer;font-family:var(--font)}
@@ -827,6 +812,31 @@ th{position:relative;white-space:normal}
       </div>
     </div>
 
+    <!-- Question count -->
+    <div class="section-card" style="margin-bottom:14px;max-width:640px">
+      <div class="section-hdr">
+        <span class="section-hdr-title">Question Count</span>
+      </div>
+      <div class="section-body" style="padding:14px 16px">
+        <div id="fb-qcount-editable">
+          <label for="fb-max-q" class="field-label" data-tip="Used to validate question numbers while parsing feedback comments. Optional — a default of 150 is used if left blank.">Number of questions in this exam</label>
+          <input type="number" id="fb-max-q" class="field-input" style="max-width:120px" min="1" placeholder="e.g. 83" oninput="fbSetManualMaxQ(this.value)">
+          <p style="font-size:12px;color:var(--c-muted);margin:8px 0 0">Optional — used to catch out-of-range question numbers while parsing. A default of 150 is used if left blank.</p>
+          <div id="fb-qcount-stale-warning" style="display:none;margin-top:8px" class="fb-info-box fb-info-amber">
+            <span>⚠</span><div id="fb-qcount-stale-text"></div>
+          </div>
+        </div>
+        <div id="fb-qcount-locked" style="display:none">
+          <label class="field-label">Number of questions in this exam</label>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--c-bg);border-radius:8px;padding:9px 12px;width:fit-content">
+            <span style="font-size:14px">&#128274;</span>
+            <span id="fb-qcount-locked-text" style="font-size:13px;color:var(--c-secondary)">Using question count from MCQ analysis</span>
+          </div>
+          <p style="font-size:12px;color:var(--c-muted);margin:8px 0 0">To change this, update it on the MCQ Item Analysis tab.</p>
+        </div>
+      </div>
+    </div>
+
     <div id="fb-xref-notice" style="display:none" class="fb-info-box fb-info-blue" style="margin-top:10px">
       <span>ℹ</span>
       <div>MCQ analysis is loaded in this session. Flagged questions will be cross-referenced automatically in the Feedback Report.</div>
@@ -905,12 +915,19 @@ th{position:relative;white-space:normal}
     <button onclick="goToSetup()" style="margin-left:auto;padding:4px 12px;border-radius:8px;border:1.5px solid #b85c00;background:transparent;color:#b85c00;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">&#8592; Back to Setup</button>
   </div>
   </div><!-- /sticky-header -->
-  <div class="card" id="new-summary-card" style="display:none;padding:0;overflow:hidden;border:none;box-shadow:none"></div>
-  <div id="summary-separator" style="display:none;border-top:3px solid rgba(0,0,0,.28);margin:8px 0"></div>
+    <!-- Shared KPI zone — swaps content based on active main tab -->
+    <div id="kpi-zone" style="display:none;margin-bottom:8px">
+      <div id="kpi-zone-mcq">
+        <div class="card" id="new-summary-card" style="display:none;padding:0;overflow:hidden;border:none;box-shadow:none"></div>
+        <div id="summary-separator" style="display:none;border-top:3px solid rgba(0,0,0,.28);margin:8px 0"></div>
+      </div>
+      <div id="kpi-zone-fb" style="display:none;border:1px solid var(--c-border);border-radius:8px;overflow:hidden;margin-bottom:0"></div>
+    </div>
+
     <div class="tabs no-print" id="main-tab-bar" style="margin-bottom:18px">
       <div class="tab active" id="tab-analysis" onclick="switchMainTabByClick('analysis',this)">📊 Item Analysis</div>
-      <div class="tab"        id="tab-reports"  onclick="switchMainTabByClick('reports',this)">📄 Reports</div>
       <div class="tab tab-fb" id="tab-feedback-main" onclick="switchMainTabByClick('feedback',this)" style="display:none">💬 Feedback</div>
+      <div class="tab"        id="tab-reports"  onclick="switchMainTabByClick('reports',this)">📄 Reports</div>
     </div>
 
     <!-- ── Analysis tab ── -->
@@ -975,9 +992,10 @@ th{position:relative;white-space:normal}
       <!-- Toggle + download bar -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
         <div class="seg-ctrl" id="report-preview-switcher">
-          <button class="seg-btn seg-active" id="rp-btn-mcq"     onclick="switchReportPreviewByClick('mcq')">MCQ Report</button>
-          <button class="seg-btn"            id="rp-btn-dif"      onclick="switchReportPreviewByClick('dif')"      style="display:none">DIF Report</button>
-          <button class="seg-btn"            id="rp-btn-combined" onclick="switchReportPreviewByClick('combined')" style="display:none">Full Report</button>
+          <button class="seg-btn seg-active" id="rp-btn-mcq"      onclick="switchReportPreviewByClick('mcq')">MCQ Report</button>
+          <button class="seg-btn"            id="rp-btn-dif"       onclick="switchReportPreviewByClick('dif')"      style="display:none">DIF Report</button>
+          <button class="seg-btn"            id="rp-btn-combined"  onclick="switchReportPreviewByClick('combined')" style="display:none">Full Report</button>
+          <button class="seg-btn"            id="rp-btn-feedback"  onclick="switchReportPreviewByClick('feedback')" style="display:none">Feedback Report</button>
         </div>
         <button id="btn-report-download" onclick="doReportDownload()" class="btn-dl-primary">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -993,8 +1011,9 @@ th{position:relative;white-space:normal}
 
       <!-- Report previews -->
       <div class="report-preview" id="mcq-report"></div>
-      <div class="report-preview" id="dif-report"  style="display:none"></div>
-      <div class="report-preview" id="full-report" style="display:none"></div>
+      <div class="report-preview" id="dif-report"      style="display:none"></div>
+      <div class="report-preview" id="full-report"     style="display:none"></div>
+      <div class="report-preview" id="feedback-report" style="display:none"></div>
 
       <!-- Hidden legacy section shells -->
       <div class="section" id="section-report"   style="display:none"></div>
@@ -1012,7 +1031,7 @@ th{position:relative;white-space:normal}
     <!-- ── Feedback tab ── -->
     <div class="main-section" id="main-section-feedback" style="display:none">
       <div class="section active" id="section-feedback">
-        <div id="fb-results-content">
+        <div id="fb-results-content" style="max-height:calc(100vh - 280px);overflow-y:auto;overflow-x:hidden">
           <!-- Rendered by renderFeedbackTab() -->
         </div>
       </div>
@@ -1356,10 +1375,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '2.0';
-var APP_BUILD       = '20260707-01';
+var APP_BUILD       = '20260708-01';
 var APP_FAQ_VERSION = '2.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 7, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 7, 2026'; // Update each version close
+var APP_FAQ_DATE    = 'July 8, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 8, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -1371,28 +1390,12 @@ var FB = {
   general: [],
   examTitle: '',
   examDate: '',
+  manualMaxQ: null,   // user-entered question count (Feedback tab, used only when no MCQ loaded)
+  maxQUsed: null,     // ceiling actually applied during the last parse (snapshot, not live)
+  maxQSource: null,   // 'mcq' | 'manual' | 'default' — where maxQUsed came from
   ready: false
 };
 
-// ── Guide toggle ──────────────────────────────────────────────────────────
-function toggleGuide() {
-  var body = document.getElementById('guide-body');
-  var icon = document.getElementById('guide-icon');
-  var hdr  = document.getElementById('guide-header');
-  var open = body.style.display === 'block';
-  body.style.display = open ? 'none' : 'block';
-  if (icon) icon.textContent = open ? '+' : '-';
-  if (hdr) hdr.classList.toggle('open', !open);
-}
-function toggleAbout() {
-  var body = document.getElementById('about-body');
-  var icon = document.getElementById('about-icon');
-  var hdr  = document.getElementById('about-header');
-  var open = body.style.display === 'block';
-  body.style.display = open ? 'none' : 'block';
-  if (icon) icon.textContent = open ? '+' : '-';
-  if (hdr) hdr.classList.toggle('open', !open);
-}
 
 // ── Feedback helper ───────────────────────────────────────────────────────
 var _dbgStore = {}; // keyed by feedback id, value: {type, lines, dbgText}
@@ -1711,8 +1714,7 @@ function resetThresholdsMCQ() { _applyThreshReset(['difficult','easy','disc','ch
 function resetThresholdsDIF() { _applyThreshReset(['dif','gapamber','gapred']); }
 function resetThresholds()    { _applyThreshReset(Object.keys(THRESH_DEFAULTS)); _threshChanged=false; var n=document.getElementById('thresh-changed-notice'); if(n) n.style.display='none'; }
 
-
-function showDbg(id,msg){_dbgStore[id]=msg;} // kept for compatibility, no longer renders
+ // kept for compatibility, no longer renders
 var TT = {
   el: null,
   tips: {
@@ -1768,17 +1770,6 @@ var TT = {
 
 // ── Embedded format template file ────────────────────────────────────────
 var TEMPLATE_B64 = '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';
-function downloadFormatTemplates() {
-  var byteChars = atob(TEMPLATE_B64);
-  var byteNums = new Array(byteChars.length);
-  for (var i = 0; i < byteChars.length; i++) { byteNums[i] = byteChars.charCodeAt(i); }
-  var blob = new Blob([new Uint8Array(byteNums)], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url; a.download = 'UGME_Analysis_Tool_File_Format_Templates.xlsx';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(url);}, 2000);
-}
 
 // ── Source toggle ─────────────────────────────────────────────────────────
 var G_SOURCE = 'qm';
@@ -2059,46 +2050,6 @@ function parseOutcome(v) {
   return '';
 }
 
-// ── Column map builder ────────────────────────────────────────────────────
-// Reads row 2 (header row) and builds a map of column roles
-// Order-independent — identifies columns by name, falls back to content
-function buildColMap(headerRow, dataRows) {
-  var map = {
-    stream: -1, lastName: -1, firstName: -1, studentId: -1,
-    qCols: []  // [{labelCol, scoreCol, outcomeCol, qNum}]
-  };
-  var i;
-  var h = headerRow.map(function(c){ return String(c||'').trim().toLowerCase(); });
-
-  // Named column detection
-  for (i = 0; i < h.length; i++) {
-    if (h[i] === 'special 4') map.stream    = i;
-    if (h[i] === 'special 5') map.studentId = i;
-    if (h[i] === 'special 2') map.lastName  = i;
-    if (h[i] === 'special 1') map.firstName = i;
-  }
-
-  // Content-based fallback for stream if not found by name
-  if (map.stream === -1 && dataRows.length > 0) {
-    var engCode = (document.getElementById('eng-code').value||'E').trim().toUpperCase();
-    var freCode = (document.getElementById('fre-code').value||'F').trim().toUpperCase();
-    for (i = 0; i < Math.min(h.length, 20); i++) {
-      var hits = 0;
-      for (var ri = 0; ri < Math.min(dataRows.length, 10); ri++) {
-        var v = String(dataRows[ri][i]||'').trim().toUpperCase();
-        if (v === engCode || v === freCode) hits++;
-      }
-      if (hits >= Math.min(dataRows.length, 5)) { map.stream = i; break; }
-    }
-  }
-
-  // Find Score/Outcome pairs — look for repeating "score"/"outcome" pattern
-  // Also check row 0 for "Question N" labels
-  var labelRow = dataRows.length > 0 ? [] : []; // row 0 is timestamp, not labels
-  // Row 0 of the ORIGINAL rows array (before student filtering) has Q labels
-  // We pass those separately as qLabelRow
-  return map;
-}
 
 // ── Main results parser ───────────────────────────────────────────────────
 function parseResults(text, xlsxRows, isCsv) {
@@ -3068,7 +3019,37 @@ function exportSessionRecord() {
   }
 }
 
-function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
+
+// Shared brand mark — faded icon + tool name, used top-right of every report
+// banner so every report view is quietly attributed to the tool.
+function brandMarkHtml() {
+  return '<div style="display:flex;align-items:center;gap:7px;opacity:0.4;flex-shrink:0;user-select:none">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 44" style="height:24px;width:auto;display:block;flex-shrink:0">' +
+      '<rect x="3" y="2" width="22" height="28" rx="2" fill="#555" opacity=".35"/>' +
+      '<text x="14" y="10" text-anchor="middle" font-family="system-ui,sans-serif" font-size="5" font-weight="700" fill="#555">EXAM</text>' +
+      '<line x1="6" y1="15" x2="21" y2="15" stroke="#555" stroke-width=".8" stroke-linecap="round" opacity=".5"/>' +
+      '<line x1="6" y1="19" x2="21" y2="19" stroke="#555" stroke-width=".8" stroke-linecap="round" opacity=".5"/>' +
+      '<g transform="translate(8,11) rotate(-40)">' +
+        '<rect x="0" y="0" width="3.5" height="11" rx=".6" fill="#555" opacity=".7"/>' +
+        '<polygon points="0,11 3.5,11 1.75,15" fill="#555" opacity=".6"/>' +
+      '</g>' +
+      '<rect x="22" y="26" width="5" height="8" rx="1" fill="#555" opacity=".5"/>' +
+      '<rect x="28" y="20" width="5" height="14" rx="1" fill="#555" opacity=".6"/>' +
+      '<rect x="34" y="14" width="5" height="20" rx="1" fill="#555" opacity=".7"/>' +
+    '</svg>' +
+    '<div style="font-size:10px;font-weight:700;color:#555;letter-spacing:.2px;line-height:1.35;white-space:nowrap">Exam Results<br>Analysis Tool</div>' +
+  '</div>';
+}
+
+// Word export brand mark — right-aligned tiny grey line appended to every export
+function docxBrandMark() {
+  return '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="200" w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="right"/></w:pPr>' +
+    '<w:r><w:rPr><w:color w:val="cccccc"/><w:sz w:val="14"/><w:szCs w:val="14"/></w:rPr>' +
+    '<w:t xml:space="preserve">Exam Results Analysis Tool · uOttawa Faculty of Medicine</w:t>' +
+    '</w:r></w:p>';
+}
+
 function renderScantronPreview(students, keyLetters, nQ, badRows) {
   var el = document.getElementById('scantron-preview');
   if (!el) return;
@@ -3587,6 +3568,7 @@ function _runAnalysis() {
   if (tabRp) tabRp.style.display = '';
   switchMainTab('analysis', tabAn);
   window.scrollTo({top:0, behavior:'instant'});
+  fbRefreshQCountField();
 }
 
 // ── Cronbach alpha ────────────────────────────────────────────────────────
@@ -3704,6 +3686,14 @@ function renderNewSummary(n, avg, alpha, nE, nF) {
   if (!card) return;
   card.style.display = '';
   var sep = document.getElementById('summary-separator'); if(sep) sep.style.display = '';
+  // Show KPI zone if currently on the analysis tab
+  var activeTab = (document.querySelector('#main-tab-bar .tab.active') || {}).id || '';
+  var kpiZone = document.getElementById('kpi-zone');
+  var kpiMcq  = document.getElementById('kpi-zone-mcq');
+  var kpiFb   = document.getElementById('kpi-zone-fb');
+  if (kpiZone) kpiZone.style.display = '';
+  if (kpiMcq)  kpiMcq.style.display  = (activeTab !== 'tab-feedback-main') ? '' : 'none';
+  if (kpiFb)   kpiFb.style.display   = (activeTab === 'tab-feedback-main') ? '' : 'none';
 
   var avgN = parseFloat(avg);
   var alphaN = parseFloat(alpha);
@@ -4287,6 +4277,20 @@ function buildDistPanel(r) {
 }
 
 // ── Render: MCQ report ────────────────────────────────────────────────────
+// Shared UI report footer — wordmark + generated line, shown at bottom of all
+// report previews in the Reports tab and in the Feedback report preview.
+function uiReportFooterHtml() {
+  var ts = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  var name = (function(){ var el = document.getElementById('coordinator-name'); return el ? el.value.trim() : ''; })();
+  var byLine = 'Report generated with:';
+  var genLine = ts + (name ? ' by ' + name : '');
+  return '<div style="text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--c-border)">' +
+    '<div style="font-size:11px;color:var(--c-muted);font-style:italic;margin-bottom:8px">' + byLine + '</div>' +
+    '<img src="data:image/png;base64,' + (typeof _DOCX_WORDMARK_B64 !== 'undefined' ? _DOCX_WORDMARK_B64 : '') + '" alt="Exam Results Analysis Tool" style="height:32px;display:block;margin:0 auto 8px;opacity:0.85">' +
+    '<div style="font-size:11px;color:var(--c-muted);font-style:italic">' + genLine + '</div>' +
+    '</div>';
+}
+
 function renderMCQReport(avg, alpha) {
   var title=document.getElementById('exam-title').value||'';
   var dateVal=document.getElementById('exam-date').value;
@@ -4368,7 +4372,8 @@ function renderMCQReport(avg, alpha) {
     '<tbody>'+(t1||'<tr><td colspan="5" style="text-align:center;color:var(--c-muted)">No flagged items</td></tr>')+'</tbody></table>'+
     t2+
     '<p style="margin-bottom:4px"><b>Table 3</b> <span style="font-size:10px;color:#555">(<span style="background:#fff0f0;padding:1px 5px;border-radius:3px;color:#c0392b;font-weight:700">Flagged</span> | <span style="background:#e8f4fd;padding:1px 5px;border-radius:3px;color:#0a5a9c;font-weight:700">Easy</span>' + (G_DIF_ENABLED ? ' | <span style="background:#e8eaf6;padding:1px 5px;border-radius:3px;color:#3949ab;font-weight:700">DIF</span>' : '') + ')</span><br><i>All questions — correct answer, difficulty index, and discrimination index.</i></p>'+
-    '<table><thead><tr><th>Question</th><th>Answer</th><th>Difficulty</th><th>Discrimination (Point-Biserial)</th><th>Comments</th></tr></thead><tbody>'+t3+'</tbody></table>';
+    '<table><thead><tr><th>Question</th><th>Answer</th><th>Difficulty</th><th>Discrimination (Point-Biserial)</th><th>Comments</th></tr></thead><tbody>'+t3+'</tbody></table>'+
+    uiReportFooterHtml();
 }
 
 
@@ -4613,7 +4618,8 @@ function renderFullReport(avg, alpha) {
     (difFlagged.length
       ? '<p style="margin-bottom:8px"><b>DIF Results &mdash; '+(title||'This Exam')+'</b><br><i>The following question'+(difFlagged.length!==1?'s':'')+' had a statistically significant value of DIF (p &lt; 0.01):</i></p>'+
         '<table style="width:95%;margin:0 auto 12px;border-collapse:collapse"><thead><tr><th>Question</th><th>EN % Correct</th><th>FR % Correct</th><th>Interpretation</th><th>Discrimination</th></tr></thead><tbody>'+difTableRows+'</tbody></table>'
-      : '<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>');
+      : '<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>')+
+    uiReportFooterHtml();
 
   // Capture chart AFTER innerHTML is in the DOM
   setTimeout(function(){
@@ -4740,7 +4746,8 @@ function renderDIFReport() {
        '<ul style="margin-left:20px;margin-bottom:10px">'+
        flagged.map(function(r){return '<li style="margin-bottom:8px">Question <b>'+r.num+'</b> had a statistically significant value of DIF.<br>'+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.</li>';}).join('')+
        '</ul>'
-      :'<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>');
+      :'<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>')+
+    uiReportFooterHtml();
 }
 
 // ── Exports ───────────────────────────────────────────────────────────────
@@ -4776,6 +4783,58 @@ function getCoordinatorByline() {
   var el = document.getElementById('coordinator-name');
   var name = el ? el.value.trim() : '';
   return name ? (' by ' + name) : '';
+}
+
+// Shared "Report generated" byline for all Word exports.
+// Format: "Report generated [date] by [name] using Exam Results Analysis Tool"
+// The app name is rendered in two styled runs to match the nav bar wordmark.
+// Wordmark PNG (logo + title) extracted from reference report — used in all Word export bylines
+var _DOCX_WORDMARK_B64 = "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";
+
+// "Report generated with:" block — matches the reference report layout exactly:
+//   Centred at bottom of document, after all content.
+//   Line 1: "Report generated with:" (small italic grey, centred)
+//   Line 2: wordmark image (centred)
+//   Line 3: "[date] by [name]" (small italic grey, centred)
+function docxReportByline(dateStr) {
+  var name = (function(){
+    var el = document.getElementById('coordinator-name');
+    return el ? el.value.trim() : '';
+  })();
+  // Centred paragraph styles
+  var ns0 = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:jc w:val="center"/><w:spacing w:before="480" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>';
+  var nsImg = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:jc w:val="center"/><w:spacing w:before="80" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>';
+  var ns1 = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:jc w:val="center"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>';
+  var rPr = '<w:rPr><w:i/><w:color w:val="888888"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>';
+
+  // Line 1 — label
+  var xml = '<w:p>' + ns0 + '<w:r>' + rPr + '<w:t>Report generated with:</w:t></w:r></w:p>';
+
+  // Line 2 — wordmark image (centred via paragraph alignment)
+  var imgXml = '<w:p>' + nsImg + '<w:r><w:rPr><w:noProof/></w:rPr><w:drawing>' +
+    '<wp:inline distT="0" distB="0" distL="0" distR="0" ' +
+    'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">' +
+    '<wp:extent cx="1097280" cy="284400"/>' +
+    '<wp:docPr id="9002" name="Wordmark"/>' +
+    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' +
+    '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+    '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+    '<pic:nvPicPr><pic:cNvPr id="9002" name="Wordmark"/><pic:cNvPicPr/></pic:nvPicPr>' +
+    '<pic:blipFill>' +
+    '<a:blip r:embed="rWordmark" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>' +
+    '<a:stretch><a:fillRect/></a:stretch>' +
+    '</pic:blipFill>' +
+    '<pic:spPr><a:xfrm><a:off x="0" y="0"/>' +
+    '<a:ext cx="1097280" cy="284400"/></a:xfrm>' +
+    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
+    '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>';
+  xml += imgXml;
+
+  // Line 3 — date + name
+  var byLine = dateStr + (name ? ' by ' + esc(name) : '');
+  xml += '<w:p>' + ns1 + '<w:r>' + rPr + '<w:t xml:space="preserve">' + byLine + '</w:t></w:r></w:p>';
+
+  return xml;
 }
 
 function docxPara(text, opts) {
@@ -4857,6 +4916,10 @@ function buildDocx(bodyXml, imageB64, title, extraImages) {
   var allImages = [];
   if(imageB64) allImages.push({id:'rImg1', filename:'chart.png', b64:imageB64});
   if(extraImages) extraImages.forEach(function(img){ if(img.b64) allImages.push(img); });
+  // Always include the wordmark (used in docxReportByline on every report)
+  if(typeof _DOCX_WORDMARK_B64 !== 'undefined' && _DOCX_WORDMARK_B64) {
+    allImages.push({id:'rWordmark', filename:'wordmark.png', b64:_DOCX_WORDMARK_B64});
+  }
 
   // _rels/.rels
   zip.file('_rels/.rels',
@@ -4955,9 +5018,6 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     var body='';
     // Timestamp
     var genTs3=new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'+
-      '<w:r><w:rPr><w:i/><w:color w:val="555555"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
-      '<w:t xml:space="preserve">Report generated: '+esc(genTs3)+esc(getCoordinatorByline())+'</w:t></w:r></w:p>';
     body+=docxPara('', {sz:20,spAfter:0,spBefore:0});
     // Title
     body+=docxPara('FACULTY OF MEDICINE — UNDERGRADUATE MEDICAL EDUCATION',{bold:true,centre:true,sz:32,spAfter:0});
@@ -5047,7 +5107,8 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
       body+=docxPara('No items with statistically significant DIF were detected (p < 0.01).',{italic:true,sz:24,spAfter:160});
     }
 
-    buildDocx(body, chartB64_3, title, overviewB64?[{id:'rOvw3',filename:'overview.png',b64:overviewB64}]:null).then(function(blob){
+    body += docxReportByline(esc(genTs3));
+        buildDocx(body, chartB64_3, title, overviewB64?[{id:'rOvw3',filename:'overview.png',b64:overviewB64}]:null).then(function(blob){
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download=filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -5066,11 +5127,6 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
 
     var body = '';
     var genTs2 = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    // Timestamp — top left, italic, dark grey
-    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'+
-      '<w:r><w:rPr><w:i/><w:color w:val="555555"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
-      '<w:t xml:space="preserve">Report generated: '+esc(genTs2)+esc(getCoordinatorByline())+'</w:t></w:r></w:p>';
-    body += docxPara('', {sz:20, spAfter:0, spBefore:0});
     // Title block
     body += docxPara('FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION', {bold:true, centre:true, sz:32, spAfter:0});
     body += docxPara('Multiple-choice Questions Analysis', {bold:true, centre:true, sz:28, spAfter:0});
@@ -5166,7 +5222,8 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     }
     body += docxTable(['Question','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'], t3rows, [1500,1200,1800,2200,2513], {centreCols:[0,1,2,3], rowFills:t3fills});
 
-    buildDocx(body, null, title, chartB64M?[{id:'rChrtM',filename:'chart.png',b64:chartB64M}]:null).then(function(blob){
+    body += docxReportByline(genTs2);
+        buildDocx(body, null, title, chartB64M?[{id:'rChrtM',filename:'chart.png',b64:chartB64M}]:null).then(function(blob){
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download=filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -5180,10 +5237,6 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
 
     var body = '';
     var genTsD = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="200" w:line="240" w:lineRule="auto"/></w:pPr>'+
-      '<w:r><w:rPr><w:i/><w:color w:val="555555"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
-      '<w:t xml:space="preserve">Report generated: '+esc(genTsD)+esc(getCoordinatorByline())+'</w:t></w:r></w:p>';
-    body += docxPara('', {sz:20, spAfter:0, spBefore:0});
     body += docxPara('FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION', {bold:true, centre:true, sz:32, spAfter:0});
     body += docxPara('DIF Analysis Report', {bold:true, centre:true, sz:28, spAfter:0});
     var difExamLine=(title&&dateStr?title+' — '+dateStr:title||dateStr||''); if(difExamLine) body += docxPara(difExamLine, {bold:true, centre:true, sz:24, spAfter:320});
@@ -5220,7 +5273,8 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
       body += docxPara('No items with statistically significant DIF were detected (p < 0.01).', {italic:true, sz:24, spAfter:160});
     }
 
-    buildDocx(body, null, title).then(function(blob){
+    body += docxReportByline(genTsD);
+        buildDocx(body, null, title).then(function(blob){
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download=filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -5236,63 +5290,124 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
 // ── Banner inline edit ────────────────────────────────────────────────────
 // ── Banner (exam title / date / edit) ────────────────────────────────────
 function renderBanner() {
-  var title   = document.getElementById('exam-title').value || 'Untitled Exam';
-  var dateVal = document.getElementById('exam-date').value;
-  var dateStr = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}) : '';
   var bc = document.getElementById('banner-card');
   if (!bc) return;
 
-  // Build meta line from live analysis data
-  var metaParts = [];
-  if (dateStr) metaParts.push(dateStr);
-  if (G._lastN) metaParts.push(G._lastN + ' students');
-  if (G.nQ)    metaParts.push(G.nQ + ' questions');
-  if (G_SOURCE === 'scantron') metaParts.push('Scantron');
-  else if (G._lastN) metaParts.push('QuestionMark');
-  var metaLine = metaParts.join(' · ');
+  // ── Shared header data ──────────────────────────────────────────────────
+  var hasMcq = !!(G._lastN && G.mcq && G.mcq.length);
+  var hasFb  = !!(FB.ready);
 
-  // Compute status badge counts from G.mcq (per-question analysis array)
+  // Title: prefer MCQ setup field; fall back to FB.examTitle; then generic
+  var title   = document.getElementById('exam-title').value.trim()
+              || (hasFb ? FB.examTitle : '')
+              || (hasMcq ? 'Untitled Exam' : 'Student Feedback Report');
+  var dateVal = document.getElementById('exam-date').value
+              || (hasFb && !hasMcq ? FB.examDate : '');
+  var dateStr = dateVal
+    ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'})
+    : '';
+
+  // ── MCQ block data ──────────────────────────────────────────────────────
   var nFlagged=0, nEasy=0, nDIF=0;
-  if (G.mcq && G.mcq.length) {
+  if (hasMcq) {
     for (var i=0; i<G.mcq.length; i++) {
       var fl = G.mcq[i].flag || '';
       if (fl === 'Too easy') nEasy++;
       else if (fl) nFlagged++;
     }
+    if (G_DIF_ENABLED && G.dif && G.dif.length)
+      for (var j=0; j<G.dif.length; j++) { if (G.dif[j].imp) nDIF++; }
   }
-  if (G_DIF_ENABLED && G.dif && G.dif.length) {
-    for (var j=0; j<G.dif.length; j++) { if (G.dif[j].imp) nDIF++; }
-  }
-  var badges = '';
-  if (nFlagged) badges += '<span class="badge b-hard">'+nFlagged+' flagged</span>';
-  if (nEasy)    badges += '<span class="badge b-easy">'+nEasy+' easy</span>';
-  if (nDIF)     badges += '<span class="badge b-dif">'+nDIF+' DIF</span>';
-  if (!nFlagged && !nEasy && !nDIF && G.mcq && G.mcq.length)
-                badges += '<span class="badge b-ok">All clear</span>';
 
-  bc.innerHTML =
-    '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'
-      +'<div>'
-        +'<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:'+(badges?'6':'0')+'px">'
-          +'<span style="font-size:18px;font-weight:700;color:var(--c-primary);letter-spacing:-.2px">'+title+'</span>'
-          +(dateStr ? '<span style="font-size:13px;color:var(--c-muted)">'+dateStr+'</span>' : '<span style="font-size:13px;color:var(--c-muted);font-style:italic">No date entered</span>')
-          +'<a onclick="startBannerEdit()" style="font-size:12px;color:var(--c-accent);cursor:pointer;text-decoration:underline;opacity:.8">edit</a>'
-        +'</div>'
-        +(metaLine && !dateStr ? '' : '')
-        +(G._lastN ? '<div style="font-size:12px;color:var(--c-muted);margin-bottom:'+(badges?'6':'0')+'px">'+[G._lastN+' students', G.nQ+' questions', G_SOURCE==='scantron'?'Scantron':'QuestionMark'].join(' · ')+'</div>' : '')
-        +(badges ? '<div style="display:flex;gap:6px;flex-wrap:wrap">'+badges+'</div>' : '')
-      +'</div>'
-    +'</div>'
-    +'<div id="banner-edit" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.08)">'
-      +'<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">'
-        +'<div><label style="font-size:11px;color:var(--c-muted);font-weight:600;display:block;margin-bottom:3px">Exam title</label>'
-          +'<input type="text" id="banner-title-input" style="width:280px" placeholder="e.g. Unit I Part A Midterm - Winter 2026"></div>'
-        +'<div><label style="font-size:11px;color:var(--c-muted);font-weight:600;display:block;margin-bottom:3px">Exam date</label>'
-          +'<input type="date" id="banner-date-input" style="width:150px"></div>'
-        +'<button onclick="saveBannerEdit()" class="btn btn-primary btn-sm">Save</button>'
-        +'<button onclick="cancelBannerEdit()" class="btn btn-sm">Cancel</button>'
-      +'</div>'
-    +'</div>';
+  // ── Feedback block data ─────────────────────────────────────────────────
+  var fbQs = 0, fbStudents = 0;
+  if (hasFb) {
+    fbQs = fbAllQs().length;
+    var seen = {};
+    FB.parsed.forEach(function(p) {
+      if (p.qNums.length > 0 && p.status !== 'discard') seen[p.rawIdx] = true;
+    });
+    fbStudents = Object.keys(seen).length;
+  }
+
+  // ── Edit popover fields ─────────────────────────────────────────────────
+  // Show question count field only when feedback is loaded but MCQ is not
+  var showQCount = hasFb && !hasMcq;
+
+  // ── Build HTML ──────────────────────────────────────────────────────────
+  // Shared heading row
+  var html = '<div style="margin-bottom:8px">';
+  html += '<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:2px">';
+  html += '<span style="font-size:18px;font-weight:700;color:var(--c-primary);letter-spacing:-.2px">' + escHtml(title) + '</span>';
+  html += dateStr
+    ? '<span style="font-size:13px;color:var(--c-muted)">' + dateStr + '</span>'
+    : '<span style="font-size:13px;color:var(--c-muted);font-style:italic">No date entered</span>';
+  html += '<a onclick="startBannerEdit()" style="font-size:12px;color:var(--c-accent);cursor:pointer;text-decoration:underline;opacity:.8">edit</a>';
+  html += '</div>';
+
+  // Meta line: students / questions / source (only when MCQ loaded)
+  if (hasMcq) {
+    html += '<div style="font-size:12px;color:var(--c-muted);margin-bottom:10px">'
+      + [G._lastN+' students', G.nQ+' questions', G_SOURCE==='scantron'?'Scantron':'QuestionMark'].join(' · ')
+      + '</div>';
+  } else if (hasFb) {
+    html += '<div style="font-size:12px;color:var(--c-muted);margin-bottom:10px">' + fbCeilingNote() + '</div>';
+  }
+  html += '</div>';
+
+  // Analysis blocks — side-by-side with flex-wrap fallback
+  if (hasMcq || hasFb) {
+    html += '<div style="display:flex;gap:16px;flex-wrap:wrap">';
+
+    // ── Item Analysis block ───────────────────────────────────────────────
+    if (hasMcq) {
+      html += '<div style="flex:1;min-width:220px">';
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin-bottom:6px">Item Analysis</div>';
+      html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+      if (nFlagged) html += '<span class="badge b-hard">'+nFlagged+' flagged</span>';
+      if (nEasy)    html += '<span class="badge b-easy">'+nEasy+' easy</span>';
+      if (nDIF)     html += '<span class="badge b-dif">'+nDIF+' DIF</span>';
+      if (!nFlagged && !nEasy && !nDIF)
+                    html += '<span class="badge b-ok">All clear</span>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    // Divider between blocks (only when both present)
+    if (hasMcq && hasFb) {
+      html += '<div style="width:1px;background:var(--c-border);align-self:stretch;flex-shrink:0"></div>';
+    }
+
+    // ── Feedback Analysis block ───────────────────────────────────────────
+    if (hasFb) {
+      html += '<div style="flex:1;min-width:220px">';
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin-bottom:6px">Feedback Analysis</div>';
+      html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+      html += '<span class="badge b-fb">'+fbQs+' question'+(fbQs===1?'':'s')+' touched</span>';
+      html += '<span class="badge b-fb">'+fbStudents+' student'+(fbStudents===1?'':'s')+' attributed</span>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    html += '</div>'; // flex row
+  }
+
+  // Edit popover
+  html += '<div id="banner-edit" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.08)">'
+    + '<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">'
+    + '<div><label style="font-size:11px;color:var(--c-muted);font-weight:600;display:block;margin-bottom:3px">Exam title</label>'
+    + '<input type="text" id="banner-title-input" style="width:280px" placeholder="e.g. Unit I Part A Midterm - Winter 2026"></div>'
+    + '<div><label style="font-size:11px;color:var(--c-muted);font-weight:600;display:block;margin-bottom:3px">Exam date</label>'
+    + '<input type="date" id="banner-date-input" style="width:150px"></div>';
+  if (showQCount) {
+    html += '<div><label style="font-size:11px;color:var(--c-muted);font-weight:600;display:block;margin-bottom:3px">Question count</label>'
+      + '<input type="number" id="banner-qcount-input" style="width:90px" min="1" placeholder="e.g. 83" value="'+(FB.manualMaxQ||'')+'"></div>';
+  }
+  html += '<button onclick="saveBannerEdit()" class="btn btn-primary btn-sm">Save</button>'
+    + '<button onclick="cancelBannerEdit()" class="btn btn-sm">Cancel</button>'
+    + '</div></div>';
+
+  bc.innerHTML = html;
 }
 
 function startBannerEdit() {
@@ -5307,9 +5422,17 @@ function startBannerEdit() {
 function saveBannerEdit() {
   var titleIn=document.getElementById('banner-title-input');
   var dateIn=document.getElementById('banner-date-input');
+  var qIn=document.getElementById('banner-qcount-input');
   if(!titleIn) return;
   document.getElementById('exam-title').value=titleIn.value;
   document.getElementById('exam-date').value=dateIn?dateIn.value:'';
+  if (qIn) {
+    var qVal = parseInt(qIn.value, 10);
+    FB.manualMaxQ = (!isNaN(qVal) && qVal > 0) ? qVal : null;
+    // Also sync the setup tab field
+    var setupQ = document.getElementById('fb-max-q');
+    if (setupQ) setupQ.value = FB.manualMaxQ || '';
+  }
   renderBanner();
   renderNewSummary(G._lastN,G._lastAvg,G._lastAlpha,G._lastNE,G._lastNF);
   renderMCQReport(G._lastAvg,G._lastAlpha);
@@ -5364,15 +5487,12 @@ window.addEventListener('afterprint', function() {
   if (tt) tt.style.display = 'none'; // keep hidden until next hover
 });
 
-function switchTab(name,el) {
-  // Legacy no-op — kept for backward compat with any stray calls
-}
 
 function switchMainTab(name, el) {
   // Update tab buttons
   document.querySelectorAll('#main-tab-bar .tab').forEach(function(t){ t.classList.remove('active'); });
   if (el) el.classList.add('active');
-  // Show/hide main sections — must set explicit display values, not just clear inline
+  // Show/hide main sections
   ['analysis','reports','feedback'].forEach(function(s){
     var sec = document.getElementById('main-section-'+s);
     if (sec) sec.style.display = (s === name) ? 'block' : 'none';
@@ -5380,6 +5500,25 @@ function switchMainTab(name, el) {
   // Suppress stale-results banner when on feedback tab
   var staleBar = document.getElementById('stale-bar');
   if (staleBar) staleBar.style.display = (name === 'feedback') ? 'none' : (G_DIRTY ? 'flex' : 'none');
+  // KPI zone: show MCQ KPIs for analysis tab, feedback KPIs for feedback tab, hide for reports
+  var kpiZone   = document.getElementById('kpi-zone');
+  var kpiMcq    = document.getElementById('kpi-zone-mcq');
+  var kpiFb     = document.getElementById('kpi-zone-fb');
+  var hasMcqKpi = !!(document.getElementById('new-summary-card') && document.getElementById('new-summary-card').innerHTML);
+  var hasFbKpi  = !!(FB && FB.ready);
+  if (kpiZone) {
+    if (name === 'analysis' && hasMcqKpi) {
+      kpiZone.style.display = '';
+      if (kpiMcq) kpiMcq.style.display = '';
+      if (kpiFb)  kpiFb.style.display  = 'none';
+    } else if (name === 'feedback' && hasFbKpi) {
+      kpiZone.style.display = '';
+      if (kpiMcq) kpiMcq.style.display = 'none';
+      if (kpiFb)  kpiFb.style.display  = '';
+    } else {
+      kpiZone.style.display = 'none';
+    }
+  }
 }
 function switchMainTabByClick(name, el) {
   preserveScrollDuring(function(){ switchMainTab(name, el); });
@@ -5416,14 +5555,15 @@ function switchAnalysisTableByClick(which) {
 var _currentReportView = 'mcq';
 
 var _reportMeta = {
-  mcq:      { title: 'MCQ Item Analysis Report',   desc: 'Key findings narrative, flagged questions table, and all-questions summary. Formatted for exam directors.',        type: 'mcq' },
-  dif:      { title: 'DIF Report',             desc: 'EN/FR performance comparison per question using 3-block logistic regression. Items with p < 0.01 are flagged.',   type: 'dif' },
-  combined: { title: 'Full Combined Report',   desc: 'MCQ Item Analysis and DIF Report in a single Word document — the most common export for stakeholder review.',          type: 'full' }
+  mcq:      { title: 'MCQ Item Analysis Report',  desc: 'Key findings narrative, flagged questions table, and all-questions summary. Formatted for exam directors.',      type: 'mcq' },
+  dif:      { title: 'DIF Report',                desc: 'EN/FR performance comparison per question using 3-block logistic regression. Items with p < 0.01 are flagged.', type: 'dif' },
+  combined: { title: 'Full Combined Report',      desc: 'MCQ Item Analysis and DIF Report in a single Word document — the most common export for stakeholder review.',    type: 'full' },
+  feedback: { title: 'Student Feedback Report',   desc: 'Frequency summary, per-question student comments, and general feedback — ready for exam director review.',       type: 'feedback' }
 };
 
 function switchReportPreview(which) {
   _currentReportView = which;
-  ['mcq','dif','combined'].forEach(function(r){
+  ['mcq','dif','combined','feedback'].forEach(function(r){
     var divId = (r === 'combined') ? 'full' : r;
     var el  = document.getElementById(divId + '-report');
     var btn = document.getElementById('rp-btn-' + r);
@@ -5441,6 +5581,10 @@ function switchReportPreviewByClick(which) {
 }
 
 function doReportDownload() {
+  if (_currentReportView === 'feedback') {
+    exportFeedbackReport();
+    return;
+  }
   var meta = _reportMeta[_currentReportView] || _reportMeta.mcq;
   doExportReport(meta.type);
 }
@@ -5471,7 +5615,10 @@ function resetAll() {
   });
   var fbContent=document.getElementById('fb-results-content'); if(fbContent) fbContent.innerHTML='';
   var nsc=document.getElementById('new-summary-card'); if(nsc){nsc.style.display='none';nsc.innerHTML='';}
-  var ab=document.getElementById('about-body'); if(ab) ab.style.display='none';
+  var kpiZ=document.getElementById('kpi-zone'); if(kpiZ) kpiZ.style.display='none';
+  var kpiFbZ=document.getElementById('kpi-zone-fb'); if(kpiFbZ) kpiFbZ.innerHTML='';
+  var rpFbBtn=document.getElementById('rp-btn-feedback'); if(rpFbBtn) rpFbBtn.style.display='none';
+  var fbRptDiv=document.getElementById('feedback-report'); if(fbRptDiv) fbRptDiv.innerHTML='';  var ab=document.getElementById('about-body'); if(ab) ab.style.display='none';
   var ac2=document.getElementById('about-icon'); if(ac2) ac2.textContent='+';
   var _sp=document.getElementById('setup-panel'); if(_sp){_sp.style.display='block';_sp.style.visibility='visible';}
   document.getElementById('results-panel').style.display='none';
@@ -5734,6 +5881,24 @@ var RELEASE_NOTES = [
   {
     version: '2.0',
     builds: [
+      {
+        build: '20260708-01',
+        date:  'July 8, 2026',
+        notes: [
+          'Student Feedback report is now integrated into the Reports tab alongside the MCQ and DIF reports. The Feedback tab focuses on interactive review; the Reports tab is the single place to download all report types.',
+          'A unified banner now covers both Item Analysis and Feedback Analysis in one card. When both analyses are loaded, the banner shows MCQ flags (flagged, easy, DIF) and Feedback badges (questions touched, students attributed) side by side.',
+          'KPI panels (Exam Overview / Feedback Overview) now swap based on which tab you are viewing — only the relevant set is shown at a time.',
+          'Feedback Overview is now a collapsible card matching the Exam Overview style.',
+          'Six Feedback KPI cards now include two visual enhancements: the Questions Reached card shows a colour-coded donut arc (green = strong >70%, teal = moderate 41–70%, amber = low ≤40%) with a coverage legend; the Students Responded card shows a 0-to-enrolled track bar when MCQ analysis is also loaded.',
+          'Flagged Qs w/ Feedback KPI now correctly cross-references MCQ flags with student comments, and splits the count into concern flags (Difficult, Poor disc, Low disc, Check Key) and easy flags.',
+          'New "Flagged Qs" view in the Feedback tab (visible when MCQ is loaded) shows only questions that have both an MCQ flag and at least one student comment, sorted concern-first.',
+          'Discarded comments are now tracked in a dedicated Discarded tab, showing origin labels ("Was: Q47", "Was: General", "Was: Pending") and full recovery controls (Restore, Move to Q#, General).',
+          'Question number input fields now accept comma or semicolon-separated lists (e.g. "12, 45, 29") to attribute one comment to multiple questions at once. The Move button updates to "Move All (N)" when staged questions are pending.',
+          'A global "Apply All Moves" bar appears in the sticky toolbar (and on the mapping screen) whenever any comments have staged question numbers, allowing all pending attributions to be committed in one click.',
+          'The mapping screen segmented control bar is now sticky — it remains visible while scrolling through the comment list.',
+          'Word reports now include a "Report generated with:" footer at the end of every document, showing the date, coordinator name, and app wordmark.'
+        ]
+      },
       {
         build: '20260707-01',
         date:  'July 7, 2026',
@@ -6442,6 +6607,7 @@ function switchSetupTab(tab) {
     // Show cross-reference notice if MCQ analysis loaded
     var xref = document.getElementById('fb-xref-notice');
     if (xref) xref.style.display = G._lastN ? 'flex' : 'none';
+    fbRefreshQCountField();
   }
 }
 
@@ -6468,9 +6634,6 @@ function isObviouslyGeneral(text) {
   return false;
 }
 
-function cleanFragment(text) {
-  return text.replace(/^[\s\\:\.\,\;\)\(\/\-]+/, '').trim();
-}
 
 // FIX 2: improved isBareRef  (+ Fix 5: recognize short-but-real comments)
 function isBareRef(text, qNum) {
@@ -6517,17 +6680,47 @@ function isBareRef(text, qNum) {
 }
 
 // FIX 3 (ceiling): highest question number the AUTO parser will accept.
-// When an MCQ analysis is loaded in the same session, G.nQ is the real exam item
-// count — reject any auto-detected number above it (kills phantoms like a "90" from
-// "140/90" on an 83-question exam). With no MCQ loaded there is no known ceiling yet,
-// so fall back to a loose 200 (a future manual "question count" field will supply it).
-// NOTE: this bounds only the AUTOMATIC parser layers. Numbers a human types on the
-// mapping screen are deliberate overrides and are not clamped by this ceiling.
+// Precedence: MCQ ceiling (if an MCQ analysis is loaded this session) always wins,
+// since it's derived directly from the uploaded exam file. Otherwise fall back to
+// the manually-entered question count on the Feedback tab, if provided. If neither
+// is available, use a 150 default rather than an unbounded guess.
+// NOTE: this bounds the AUTOMATIC parser layers AND manual mapping/reassignment
+// entry (both call this). It reflects live state each call; callers that need a
+// frozen value for reporting (e.g. what ceiling a given parse actually used) should
+// snapshot it once via fbMaxQSnapshot(), not re-call this after the fact.
 function effectiveMaxQ() {
   try {
     if (typeof G !== 'undefined' && G && G._lastN && G.nQ && G.nQ > 0) return G.nQ;
   } catch (e) {}
-  return 200;
+  if (FB && FB.manualMaxQ && FB.manualMaxQ > 0) return FB.manualMaxQ;
+  return 150;
+}
+
+// Snapshot the ceiling + its source at the moment a Feedback parse actually runs,
+// so later edits to the manual field (or loading MCQ afterward) don't retroactively
+// relabel a parse that already happened under a different ceiling.
+function fbMaxQSnapshot() {
+  var hasMcq = (typeof G !== 'undefined' && G && G._lastN && G.nQ && G.nQ > 0);
+  if (hasMcq) {
+    FB.maxQUsed = G.nQ;
+    FB.maxQSource = 'mcq';
+  } else if (FB.manualMaxQ && FB.manualMaxQ > 0) {
+    FB.maxQUsed = FB.manualMaxQ;
+    FB.maxQSource = 'manual';
+  } else {
+    FB.maxQUsed = 150;
+    FB.maxQSource = 'default';
+  }
+}
+
+// Human-readable ceiling + source note, shown unconditionally (UI banner and Word
+// export) so it's always clear what bounded question-number parsing for this run.
+function fbCeilingNote() {
+  var n = FB.maxQUsed || 150;
+  var src = FB.maxQSource === 'mcq' ? 'from MCQ analysis'
+    : FB.maxQSource === 'manual' ? 'manually entered'
+    : 'default, no question count set';
+  return 'Parsed against a ceiling of Q1\u2013' + n + ' \u00b7 ' + src;
 }
 
 // FIX 3: Quantity context — number is a measurement/value, not a Q#
@@ -6691,23 +6884,30 @@ function splitCommentByQuestion(text) {
   });
   var merged = [];
   fragments.forEach(function(f) {
-    if (merged.length && merged[merged.length-1].qNum === f.qNum)
-      merged[merged.length-1].text += '\n' + f.text;
-    else merged.push({qNum: f.qNum, text: f.text});
+    var last = merged.length ? merged[merged.length-1] : null;
+    if (last && last.qNum === f.qNum) {
+      // Same Q# (or both null) — always merge
+      last.text += '\n' + f.text;
+    } else if (last && last.qNum !== null && f.qNum === null) {
+      // Continuation: a line with no Q# that follows a Q#-attributed line.
+      // Treat it as additional text for that question rather than a new item.
+      // Rationale: students frequently add context, quote the question stem,
+      // or add sign-offs on the next line — these belong with the Q# comment
+      // above them, not as orphaned pending items. The mapping screen handles
+      // any edge cases that need human review.
+      last.text += '\n' + f.text;
+    } else {
+      merged.push({qNum: f.qNum, text: f.text});
+    }
   });
   var result = merged.filter(function(f){return f.text.trim();});
   return result.length ? result : [{qNum: null, text: cleanText}];
 }
 
-function extractQNums(text) {
-  var nums = [];
-  splitCommentByQuestion(text).forEach(function(f){ if(f.qNum!==null) nums.push(f.qNum); });
-  return nums;
-}
 
 function parseComments(rawList) {
   var parsed = [];
-  rawList.forEach(function(text) {
+  rawList.forEach(function(text, rawIdx) {
     if (!text || text.trim().length < 3) return;
     splitCommentByQuestion(text.trim()).forEach(function(frag) {
       var status;
@@ -6721,11 +6921,60 @@ function parseComments(rawList) {
       parsed.push({
         text:   frag.text,
         qNums:  frag.qNum !== null ? [frag.qNum] : [],
-        status: status
+        status: status,
+        rawIdx: rawIdx   // original Excel row index — used for distinct-student counts
       });
     });
   });
   return parsed;
+}
+
+// ── Question count field (Item 3) ───────────────────────────────────────────
+// MCQ ceiling always wins when an MCQ analysis is loaded — the field locks and
+// displays the MCQ's own question count rather than any previously-typed value.
+function fbSetManualMaxQ(val) {
+  var n = parseInt(val, 10);
+  FB.manualMaxQ = (!isNaN(n) && n > 0) ? n : null;
+  fbCheckQCountStale();
+}
+
+// The ceiling is snapshotted once, at the moment a file is actually parsed
+// (fbMaxQSnapshot, called from handleFeedbackUpload) — that's also when the
+// automatic parser layers consult effectiveMaxQ() to auto-attribute comments.
+// If the count field changes AFTER a file's already been parsed, the existing
+// parse silently keeps using whatever ceiling was in effect at upload time.
+// Rather than let that go unnoticed, warn and point at the fix (re-upload).
+function fbCheckQCountStale() {
+  var warn = document.getElementById('fb-qcount-stale-warning');
+  var warnText = document.getElementById('fb-qcount-stale-text');
+  if (!warn) return;
+  var hasMcq = !!(typeof G !== 'undefined' && G && G._lastN && G.nQ && G.nQ > 0);
+  var fileParsed = FB.raw && FB.raw.length > 0 && FB.maxQSource !== null;
+  var currentTarget = FB.manualMaxQ || 150;
+  var stale = !hasMcq && fileParsed && FB.maxQUsed !== currentTarget;
+  if (stale) {
+    if (warnText) warnText.textContent = 'The uploaded file was already parsed using a ceiling of ' + FB.maxQUsed + ' — re-upload it to apply ' + currentTarget + ' instead.';
+    warn.style.display = 'flex';
+  } else {
+    warn.style.display = 'none';
+  }
+}
+
+function fbRefreshQCountField() {
+  var hasMcq = !!(typeof G !== 'undefined' && G && G._lastN && G.nQ && G.nQ > 0);
+  var ed = document.getElementById('fb-qcount-editable');
+  var lk = document.getElementById('fb-qcount-locked');
+  var lkText = document.getElementById('fb-qcount-locked-text');
+  if (!ed || !lk) return;
+  if (hasMcq) {
+    ed.style.display = 'none';
+    lk.style.display = 'block';
+    if (lkText) lkText.textContent = 'Using question count from MCQ analysis \u2014 ' + G.nQ + ' question' + (G.nQ === 1 ? '' : 's');
+  } else {
+    ed.style.display = 'block';
+    lk.style.display = 'none';
+  }
+  fbCheckQCountStale();
 }
 
 function handleFeedbackDrop(event) {
@@ -6753,13 +7002,26 @@ function handleFeedbackUpload(input) {
       var wb   = XLSX.read(data, {type:'array'});
       var ws   = wb.Sheets[wb.SheetNames[0]];
       var rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-      // Find data rows: skip until we see "Assessment name" or row 4+
-      var dataStart = 0;
+      // Find data rows: scan the first 8 rows for a recognisable header.
+      // Two patterns:
+      //   (a) col A contains "assessment" — the older QM export format
+      //   (b) col B contains "comment" and is short with no leading digit
+      //       — the current QM format (e.g. "Comments Ss", "Comments")
+      // If neither fires, default to dataStart=1 (skip only row 1) rather
+      // than the old fallback of dataStart=i which swallowed real data rows.
+      var dataStart = 1;
       for (var i = 0; i < Math.min(8, rows.length); i++) {
-        if (rows[i] && rows[i][0] && String(rows[i][0]).toLowerCase().includes('assessment')) {
+        var colA = rows[i] ? String(rows[i][0] || '').toLowerCase() : '';
+        var colB = rows[i] ? String(rows[i][1] || '').trim() : '';
+        var colBLower = colB.toLowerCase();
+        if (colA.includes('assessment')) {
           dataStart = i + 1; break;
         }
-        if (i >= 3) { dataStart = i; break; }
+        if (colBLower.indexOf('comment') !== -1) {
+          if (colB.length < 40 && !/^\d/.test(colB)) {
+            dataStart = i + 1; break;
+          }
+        }
       }
       // Column B (index 1) is the comment column
       var rawComments = [];
@@ -6770,6 +7032,8 @@ function handleFeedbackUpload(input) {
         if (val.length > 0) rawComments.push(val);
       }
       FB.raw = rawComments;
+      fbMaxQSnapshot();
+      fbCheckQCountStale();
       FB.parsed = parseComments(rawComments);
       FB.ready = false;
       // Count auto vs pending
@@ -6815,7 +7079,7 @@ function groupComments() {
     if (p.status === 'general' || (p.status === 'pending' && p.qNums.length === 0)) {
       FB.general.push({text: p.text, idx: idx});
     } else {
-      var nums = p.status === 'mapped' ? [p.mappedQ] : p.qNums;
+      var nums = p.status === 'mapped' ? (p.mappedQs || (p.mappedQ != null ? [p.mappedQ] : [])) : p.qNums;
       nums.forEach(function(q) {
         if (isBareRef(p.text, q)) {
           FB.bareRefs[q] = (FB.bareRefs[q] || 0) + 1;
@@ -6826,6 +7090,168 @@ function groupComments() {
       });
     }
   });
+}
+
+// FIX (bare-only questions): a question where every reference is bare never gets an
+// entry in FB.grouped (only FB.bareRefs), so Object.keys(FB.grouped) alone silently
+// drops it from every report view. Union both key sets so bare-only questions still
+// surface (with 0 comments + their bare count) instead of vanishing entirely.
+function fbAllQs() {
+  var s = {};
+  Object.keys(FB.grouped).forEach(function(k){ s[k] = true; });
+  Object.keys(FB.bareRefs).forEach(function(k){ s[k] = true; });
+  return Object.keys(s).map(Number).sort(function(a,b){return a-b;});
+}
+
+// ── Multi-number mapping (Item 2) ───────────────────────────────────────────
+// One comment can be attributed to more than one question. FB.parsed[idx]._typed
+// holds the current unsaved input text; ._staged holds numbers already added via
+// "+" but not yet committed; ._addErr holds an inline out-of-scope message.
+// Shared by both the initial mapping screen and the in-report "Move to Q#" control.
+
+// Try to add whatever's currently typed for idx onto its staged list.
+// Returns true (added), false (invalid — ._addErr is set), or null (nothing typed).
+// fbStageAddCore: parse typed text for one or more Q# values (comma/semicolon
+// separated). Adds all valid ones to the staged list, sets _addErr for any that
+// are out of scope, clears _typed on full success, leaves it partially cleared
+// on partial success so the user sees which ones failed.
+// Returns: true (all added), false (at least one invalid — _addErr set),
+//          null (nothing typed).
+function fbStageAddCore(idx) {
+  var raw = (FB.parsed[idx]._typed || '').replace(/[Qq#]/g,'').trim();
+  if (raw === '') return null;
+  var max = effectiveMaxQ();
+  var tokens = raw.split(/[,;]+/).map(function(t){ return t.trim(); }).filter(function(t){ return t !== ''; });
+  if (tokens.length === 0) return null;
+
+  var good = [], bad = [];
+  tokens.forEach(function(t) {
+    var num = parseInt(t, 10);
+    if (isNaN(num) || num < 1 || num > max) {
+      bad.push('Q' + t);
+    } else {
+      good.push(num);
+    }
+  });
+
+  FB.parsed[idx]._staged = FB.parsed[idx]._staged || [];
+  good.forEach(function(num) {
+    if (FB.parsed[idx]._staged.indexOf(num) === -1) FB.parsed[idx]._staged.push(num);
+  });
+  FB.parsed[idx]._staged.sort(function(a,b){return a-b;});
+
+  if (bad.length > 0) {
+    FB.parsed[idx]._addErr = bad.join(', ') + ' out of scope — exam has ' + max + ' questions (Q1–Q' + max + ').';
+    // Clear only the good tokens from typed, leave the bad ones for the user to fix
+    FB.parsed[idx]._typed = bad.map(function(b){ return b.replace('Q',''); }).join(', ');
+    return false;
+  }
+  FB.parsed[idx]._typed = '';
+  FB.parsed[idx]._addErr = '';
+  return true;
+}
+
+// Commit idx's staged numbers (plus anything still typed) as its final mapping.
+// Returns true on success; false if there's nothing valid to commit (._addErr set
+// if the reason is an out-of-scope typed value, left blank if simply empty).
+function fbCommitStaged(idx) {
+  var staged = (FB.parsed[idx]._staged || []).slice();
+  var raw = (FB.parsed[idx]._typed || '').replace(/[Qq#]/g,'').trim();
+  if (raw !== '') {
+    var max = effectiveMaxQ();
+    var tokens = raw.split(/[,;]+/).map(function(t){ return t.trim(); }).filter(function(t){ return t !== ''; });
+    var bad = [];
+    tokens.forEach(function(t) {
+      var num = parseInt(t, 10);
+      if (isNaN(num) || num < 1 || num > max) {
+        bad.push('Q' + t);
+      } else {
+        if (staged.indexOf(num) === -1) staged.push(num);
+      }
+    });
+    if (bad.length > 0) {
+      FB.parsed[idx]._addErr = bad.join(', ') + ' out of scope — exam has ' + max + ' questions (Q1–Q' + max + ').';
+      return false;
+    }
+  }
+  if (staged.length === 0) return false;
+  staged.sort(function(a,b){return a-b;});
+  FB.parsed[idx].status   = 'mapped';
+  FB.parsed[idx].mappedQs = staged;
+  FB.parsed[idx].qNums    = staged;
+  delete FB.parsed[idx].mappedQ;
+  delete FB.parsed[idx]._typed;
+  delete FB.parsed[idx]._staged;
+  delete FB.parsed[idx]._addErr;
+  return true;
+}
+
+function fbStageRemove(idx, num) {
+  if (FB.parsed[idx]._staged) FB.parsed[idx]._staged = FB.parsed[idx]._staged.filter(function(n){ return n !== num; });
+  if (window._refreshMapScreen) window._refreshMapScreen();
+}
+
+function fbStageAdd(idx) {
+  fbStageAddCore(idx);
+  if (window._refreshMapScreen) window._refreshMapScreen();
+}
+
+function fbApplyStaged(idx) {
+  fbCommitStaged(idx);
+  if (window._refreshMapScreen) window._refreshMapScreen();
+}
+
+function fbApplyAllStaged() {
+  var changed = false;
+  FB.parsed.forEach(function(p, idx) {
+    if (p._staged && p._staged.length > 0) {
+      if (fbCommitStaged(idx)) changed = true;
+    }
+  });
+  if (changed) {
+    groupComments();
+    renderFbKpiZone();
+    renderBanner();
+  }
+  renderFeedbackTabKeep(_fbView);
+}
+
+function fbApplyAllStagedMap() {
+  FB.pending.forEach(function(idx) {
+    if (FB.parsed[idx]._staged && FB.parsed[idx]._staged.length > 0) {
+      fbCommitStaged(idx);
+    }
+  });
+  if (window._refreshMapScreen) window._refreshMapScreen();
+}
+
+function fbStageRemoveReassign(idx, num) {
+  if (FB.parsed[idx]._staged) FB.parsed[idx]._staged = FB.parsed[idx]._staged.filter(function(n){ return n !== num; });
+  renderFeedbackTabKeep(_fbView);
+}
+
+function fbStageAddReassign(idx) {
+  fbStageAddCore(idx);
+  renderFeedbackTabKeep(_fbView);
+}
+
+// Renders the "staged badges + Apply" strip that appears below a row once multi-add
+// mode is engaged (staged.length > 0) or an out-of-scope error needs to show. The
+// row's own Q# input stays the single entry point in both modes — this tray only
+// adds the running list of already-added numbers plus a way to commit them.
+function fbBadgeTrayHtml(idx, staged, err, removeFn, applyFn) {
+  var html = '';
+  if (staged.length === 0 && !err) return html;
+  html += '<div style="padding:6px 14px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-top:1px dashed var(--c-border)">';
+  staged.forEach(function(n) {
+    html += '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#0a5a9c;background:#e8f0fd;padding:3px 7px;border-radius:6px">Q' + n +
+      ' <span onclick="' + removeFn + '(' + idx + ',' + n + ')" style="cursor:pointer;font-weight:700" title="Remove">&times;</span></span>';
+  });
+  html += '</div>';
+  if (err) {
+    html += '<div style="padding:0 14px 8px;font-size:11px;color:#c0392b">' + escHtml(err) + '</div>';
+  }
+  return html;
 }
 
 // Run feedback analysis — if no pending items, go straight to results
@@ -6843,52 +7269,53 @@ function runFeedbackAnalysis() {
 
 // Finalise feedback — group, show results tab
 function finaliseFeedback() {
-  // Commit any Q# values typed but not yet applied in the mapping screen
+  // Commit any Q# values typed/staged but not yet applied in the mapping screen
   if (FB.pending && FB.pending.length) {
     FB.pending.forEach(function(idx) {
       if (FB.parsed[idx].status !== 'pending') return;
-      var typed = (FB.parsed[idx]._typed || '').replace(/[Qq#\s]/g,'');
-      if (typed !== '') {
-        var num = parseInt(typed, 10);
-        if (!isNaN(num) && num >= 1 && num <= 200) {
-          FB.parsed[idx].status  = 'mapped';
-          FB.parsed[idx].mappedQ = num;
-          return;
-        }
-      }
-      // Still pending — route to general by default
-      if (FB.parsed[idx].status === 'pending') FB.parsed[idx].status = 'general';
+      if (fbCommitStaged(idx)) return;
+      // Still pending (nothing valid was entered) — route to general by default
+      FB.parsed[idx].status = 'general';
+      delete FB.parsed[idx]._typed;
+      delete FB.parsed[idx]._staged;
+      delete FB.parsed[idx]._addErr;
     });
   }
   groupComments();
   FB.ready = true;
-  // Populate the banner card with feedback exam details
-  var bc = document.getElementById('banner-card');
-  if (bc) {
-    var fbTitle = FB.examTitle || 'Student Feedback Report';
-    var fbDateStr = FB.examDate ? new Date(FB.examDate + 'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}) : '';
-    bc.innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">' +
-        '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">' +
-          '<span style="font-size:18px;font-weight:700;color:var(--c-primary)">' + escHtml(fbTitle) + '</span>' +
-          (fbDateStr ? '<span style="font-size:13px;color:var(--c-muted)">' + fbDateStr + '</span>' : '') +
-          '<span style="font-size:12px;color:#0a5a9c;font-weight:600">&#128172; Feedback Report</span>' +
-        '</div>' +
-      '</div>';
-  }
+  renderFbKpiZone();
+  // Populate the banner card using the unified renderBanner (handles MCQ-only,
+  // feedback-only, and combined states automatically)
+  renderBanner();
 
-  // Show/hide Analysis and Reports tabs based on whether MCQ data is loaded
+  // Show/hide Analysis tab (only when MCQ loaded)
   var hasMcqData = !!(G._lastN);
   var tabAnalysis = document.getElementById('tab-analysis');
-  var tabReports  = document.getElementById('tab-reports');
   if (tabAnalysis) tabAnalysis.style.display = hasMcqData ? '' : 'none';
-  if (tabReports)  tabReports.style.display  = hasMcqData ? '' : 'none';
+
+  // Reports tab always visible when any analysis has run
+  var tabReports = document.getElementById('tab-reports');
+  if (tabReports) tabReports.style.display = '';
+
+  // Show Feedback Report segment in Reports tab, update to rightmost active
+  var rpFb = document.getElementById('rp-btn-feedback');
+  if (rpFb) rpFb.style.display = '';
+
+  // Render feedback report preview into the Reports tab feedback-report div
+  var fbReportDiv = document.getElementById('feedback-report');
+  if (fbReportDiv) {
+    renderFeedbackReportPreview(fbReportDiv);
+  }
+
+  // If no MCQ data, auto-select Feedback Report in the Reports tab
+  if (!hasMcqData) {
+    switchReportPreview('feedback');
+  }
 
   // Show feedback tab
   var tabEl = document.getElementById('tab-feedback-main');
-  if (tabEl) {
-    tabEl.style.display = '';
-  }
+  if (tabEl) tabEl.style.display = '';
+
   // Show results panel
   var setup = document.getElementById('setup-panel');
   var results = document.getElementById('results-panel');
@@ -6918,7 +7345,7 @@ function renderMappingScreen() {
     var html = '<div style="padding:16px;background:var(--c-surface);min-height:400px">';
     html += '<div class="fb-info-box fb-info-amber" style="margin-bottom:14px">';
     html += '<span>⚠</span><div>These <strong>' + FB.pending.length + ' comments</strong> couldn\'t be auto-attributed to a question number. ';
-    html += 'For each one: enter a question number, click <strong>General</strong> (non-question-specific feedback), or <strong>Discard</strong> (initials, junk).</div></div>';
+    html += 'For each one: enter a question number (click <strong>+</strong> to add more than one), click <strong>General</strong> (non-question-specific feedback), or <strong>Discard</strong> (initials, junk).</div></div>';
     // Progress
     var resolvedNow = FB.pending.filter(function(i){ return FB.parsed[i].status !== 'pending'; }).length;
     var pct = Math.round(resolvedNow / total * 100);
@@ -6936,30 +7363,51 @@ function renderMappingScreen() {
       var p = FB.parsed[idx];
       var isResolved = p.status !== 'pending';
       var rowClass = isResolved ? 'fb-map-row resolved' : 'fb-map-row';
-      html += '<div class="' + rowClass + '" id="fb-map-row-' + idx + '">';
+      html += '<div class="' + rowClass + '" id="fb-map-row-' + idx + '" style="display:flex;flex-direction:column;align-items:stretch;padding:0">';
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:9px 14px">';
       html += '<div class="fb-map-comment">' + escHtml(p.text) + '</div>';
       if (isResolved) {
+        var qList = (p.mappedQs || (p.mappedQ != null ? [p.mappedQ] : [])).map(function(n){ return 'Q' + n; }).join(', ');
         var statusLabel = p.status === 'general' ? '<span style="font-size:10px;font-weight:700;color:#0d7a7a;background:#e0f5f5;padding:2px 7px;border-radius:4px">✓ General</span>'
           : p.status === 'discard' ? '<span style="font-size:10px;font-weight:700;color:var(--c-muted);background:var(--c-surface);padding:2px 7px;border-radius:4px">✓ Discarded</span>'
-          : '<span style="font-size:10px;font-weight:700;color:#2e7d32;background:#e8f5eb;padding:2px 7px;border-radius:4px">✓ Q' + p.mappedQ + '</span>';
-        html += '<div style="width:64px;text-align:center">' + statusLabel + '</div>';
+          : '<span style="font-size:10px;font-weight:700;color:#2e7d32;background:#e8f5eb;padding:2px 7px;border-radius:4px">✓ ' + qList + '</span>';
+        html += '<div style="width:80px;text-align:center">' + statusLabel + '</div>';
         html += '<div style="width:150px"></div>';
       } else {
-        html += '<div style="width:64px;display:flex;justify-content:center">';
-        html += '<input class="fb-map-input" id="fb-qinput-' + idx + '" type="text" placeholder="Q#" ' +
-          'oninput="FB.parsed[' + idx + ']._typed=this.value" ' +
-          'onkeydown="if(event.key===\'Enter\')fbAssignQ(' + idx + ')" ' +
+        html += '<div style="width:128px;display:flex;justify-content:center">';
+        html += '<input class="fb-map-input" id="fb-qinput-' + idx + '" type="text" placeholder="Q# or 12, 45, 29" ' +
+          'oninput="FB.parsed[' + idx + ']._typed=this.value.replace(/[^0-9,;\\s]/g,\'\')" ' +
+          'onkeydown="if(event.key===\'Enter\'){event.preventDefault();fbAssignQ(' + idx + ');}" ' +
           'value="' + (FB.parsed[idx]._typed || '') + '">';
         html += '</div>';
         html += '<div style="width:150px;display:flex;gap:4px;justify-content:center">';
+        html += '<button class="btn-fb-gen" onclick="fbStageAdd(' + idx + ')" title="Add another question to this comment" style="padding:4px 8px">+</button>';
         html += '<button class="btn-fb-gen" onclick="fbSetGeneral(' + idx + ')">General</button>';
         html += '<button class="btn-fb-disc" onclick="fbDiscard(' + idx + ')">Discard</button>';
         html += '</div>';
       }
       html += '</div>';
+      if (!isResolved) {
+        html += fbBadgeTrayHtml(idx, p._staged || [], p._addErr || '', 'fbStageRemove', 'fbApplyStaged');
+      }
+      html += '</div>';
     });
     html += '</div>';
     // Bottom actions
+    // Global staged bar — appears when any row has staged Q#s
+    var mapTotalStaged = 0, mapStagedCount = 0;
+    FB.pending.forEach(function(idx) {
+      if (FB.parsed[idx]._staged && FB.parsed[idx]._staged.length > 0) {
+        mapTotalStaged += FB.parsed[idx]._staged.length;
+        mapStagedCount++;
+      }
+    });
+    if (mapTotalStaged > 0) {
+      html += '<div style="margin-bottom:10px;padding:7px 12px;background:var(--c-fb-bg);border:1px solid var(--c-fb);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:10px">';
+      html += '<span style="font-size:12px;color:var(--c-fb);font-weight:600">' + mapTotalStaged + ' attribution' + (mapTotalStaged===1?'':'s') + ' staged across ' + mapStagedCount + ' comment' + (mapStagedCount===1?'':'s') + '</span>';
+      html += '<button onclick="fbApplyAllStagedMap()" style="font-size:11px;font-weight:700;color:#fff;background:var(--c-fb);border:none;border-radius:6px;padding:5px 14px;cursor:pointer;white-space:nowrap">Apply All</button>';
+      html += '</div>';
+    }
     html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
     html += '<div style="display:flex;gap:8px">';
     html += '<button class="btn" onclick="fbRouteAllGeneral()">Route all remaining → General</button>';
@@ -6981,43 +7429,44 @@ function renderMappingScreen() {
 }
 
 function fbAssignQ(idx) {
-  var typed = (FB.parsed[idx]._typed || '').replace(/[Qq#\s]/g,'');
-  var num = parseInt(typed, 10);
-  if (isNaN(num) || num < 1 || num > 200) {
-    var inp = document.getElementById('fb-qinput-' + idx);
-    if (inp) inp.style.borderColor = '#c0392b';
-    return;
+  if ((FB.parsed[idx]._staged || []).length > 0) {
+    // Already staging — Enter adds the typed value to the staged list
+    fbStageAdd(idx);
+  } else {
+    // Common case: no staged items yet — Enter commits immediately (no staging step)
+    fbCommitStaged(idx);
+    if (window._refreshMapScreen) window._refreshMapScreen();
   }
-  FB.parsed[idx].status  = 'mapped';
-  FB.parsed[idx].mappedQ = num;
-  delete FB.parsed[idx]._typed;
-  if (window._refreshMapScreen) window._refreshMapScreen();
 }
 
 function fbSetGeneral(idx) {
   FB.parsed[idx].status = 'general';
+  delete FB.parsed[idx]._typed;
+  delete FB.parsed[idx]._staged;
+  delete FB.parsed[idx]._addErr;
   if (window._refreshMapScreen) window._refreshMapScreen();
 }
 
 function fbDiscard(idx) {
+  if (FB.parsed[idx].status !== 'discard') {
+    FB.parsed[idx]._prevStatus = FB.parsed[idx].status;
+    FB.parsed[idx]._prevQNums  = (FB.parsed[idx].mappedQs || FB.parsed[idx].qNums || []).slice();
+  }
   FB.parsed[idx].status = 'discard';
+  delete FB.parsed[idx]._typed;
+  delete FB.parsed[idx]._staged;
+  delete FB.parsed[idx]._addErr;
   if (window._refreshMapScreen) window._refreshMapScreen();
 }
 
 function fbRouteAllGeneral() {
   FB.pending.forEach(function(idx) {
     if (FB.parsed[idx].status !== 'pending') return;
-    var typed = (FB.parsed[idx]._typed || '').replace(/[Qq#\s]/g,'');
-    if (typed !== '') {
-      var num = parseInt(typed, 10);
-      if (!isNaN(num) && num >= 1 && num <= 200) {
-        FB.parsed[idx].status  = 'mapped';
-        FB.parsed[idx].mappedQ = num;
-        delete FB.parsed[idx]._typed;
-        return;
-      }
-    }
+    if (fbCommitStaged(idx)) return;
     FB.parsed[idx].status = 'general';
+    delete FB.parsed[idx]._typed;
+    delete FB.parsed[idx]._staged;
+    delete FB.parsed[idx]._addErr;
   });
   if (window._refreshMapScreen) window._refreshMapScreen();
 }
@@ -7025,17 +7474,15 @@ function fbRouteAllGeneral() {
 function fbDiscardAll() {
   FB.pending.forEach(function(idx) {
     if (FB.parsed[idx].status !== 'pending') return;
-    var typed = (FB.parsed[idx]._typed || '').replace(/[Qq#\s]/g,'');
-    if (typed !== '') {
-      var num = parseInt(typed, 10);
-      if (!isNaN(num) && num >= 1 && num <= 200) {
-        FB.parsed[idx].status  = 'mapped';
-        FB.parsed[idx].mappedQ = num;
-        delete FB.parsed[idx]._typed;
-        return;
-      }
+    if (fbCommitStaged(idx)) return;
+    if (FB.parsed[idx].status !== 'discard') {
+      FB.parsed[idx]._prevStatus = FB.parsed[idx].status;
+      FB.parsed[idx]._prevQNums  = (FB.parsed[idx].mappedQs || FB.parsed[idx].qNums || []).slice();
     }
     FB.parsed[idx].status = 'discard';
+    delete FB.parsed[idx]._typed;
+    delete FB.parsed[idx]._staged;
+    delete FB.parsed[idx]._addErr;
   });
   if (window._refreshMapScreen) window._refreshMapScreen();
 }
@@ -7052,6 +7499,278 @@ function commentLabel(commentCount, bareCount) {
   return parts.join(' + ') || '0 comments';
 }
 
+// ── Feedback KPI zone ─────────────────────────────────────────────────────
+function toggleFbOverview() {
+  var el  = document.getElementById('fb-overview-collapsible');
+  var btn = document.getElementById('fb-overview-toggle');
+  if (!el || !btn) return;
+  var open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : '';
+  btn.innerHTML = open
+    ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 8l4-4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Expand'
+    : '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Collapse';
+  btn.className = open ? 'toggle-link' : 'toggle-link open';
+}
+
+function renderFbKpiZone() {
+  var zone = document.getElementById('kpi-zone-fb');
+  if (!zone || !FB.ready) return;
+
+  var sortedQs = fbAllQs();
+  var sourceRows = FB.raw.filter(function(r){return r && r.trim().length >= 3;}).length;
+  var totalAttr = FB.parsed.filter(function(p){return p.status!=='discard' && p.qNums.length > 0;}).length;
+  var freq = sortedQs.map(function(q){ var cc=(FB.grouped[q]||[]).length, bc=FB.bareRefs[q]||0; return {q:q,count:cc+bc,commentCount:cc,bareCount:bc}; })
+    .sort(function(a,b){return b.count-a.count;});
+  var topQ = freq.length > 0 ? freq[0] : null;
+  var pctReached = sortedQs.length > 0 ? Math.round(sortedQs.length / (sortedQs[sortedQs.length-1] || 1) * 100) : 0;
+
+  var seen = {};
+  FB.parsed.forEach(function(p){ if (p.qNums.length > 0 && p.status !== 'discard') seen[p.rawIdx] = true; });
+  var studentsWithQFeedback = Object.keys(seen).length;
+  var pctStudentsWithQ = sourceRows > 0 ? Math.round(studentsWithQFeedback / sourceRows * 100) : 0;
+
+  // Use same condition as finaliseFeedback for consistency
+  var hasMcqData = !!(G._lastN && G.mcq && G.mcq.length);
+  var totalEnrolled = hasMcqData ? G._lastN : 0;
+  var concernFlagged = 0, totalConcern = 0, easyFlagged = 0, totalEasy = 0;
+  if (hasMcqData) {
+    G.mcq.forEach(function(item) {
+      if (!item || !item.flag || item.flag === '') return;
+      var qn = item.num; // ← correct property name
+      var hasComment = !!(FB.grouped[qn] || FB.bareRefs[qn]);
+      if (item.flag === 'Too easy') {
+        totalEasy++;
+        if (hasComment) easyFlagged++;
+      } else {
+        totalConcern++;
+        if (hasComment) concernFlagged++;
+      }
+    });
+  }
+
+  function fbKpi(val, label, sub) {
+    var s = '<div style="background:var(--c-bg);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px 16px">';
+    s += '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">' + label + '</div>';
+    s += '<div style="font-size:32px;font-weight:700;color:var(--c-fb);line-height:1;margin-bottom:4px">' + val + '</div>';
+    if (sub) s += '<div style="font-size:11px;color:var(--c-muted)">' + sub + '</div>';
+    s += '</div>';
+    return s;
+  }
+
+  var kpiGrid = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px">';
+
+  // ── Students responded — plain when FB only; reliability bar when MCQ also loaded ──
+  if (hasMcqData && totalEnrolled > 0) {
+    var respPct = Math.round(sourceRows / totalEnrolled * 100);
+    var markerPct = Math.min(100, sourceRows / totalEnrolled * 100);
+    var respKpi = '<div style="background:var(--c-bg);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px 16px">' +
+      '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Students responded</div>' +
+      '<div style="font-size:32px;font-weight:700;color:var(--c-fb);line-height:1;margin-bottom:10px">' + sourceRows + '</div>' +
+      // Track bar: 0 to totalEnrolled, filled to sourceRows, marker line
+      '<div style="position:relative;height:8px;border-radius:4px;background:var(--c-border);margin-bottom:6px">' +
+        '<div style="height:8px;width:' + markerPct.toFixed(1) + '%;background:var(--c-fb);border-radius:4px"></div>' +
+        '<div style="position:absolute;top:-3px;left:' + markerPct.toFixed(1) + '%;transform:translateX(-50%);width:3px;height:14px;background:var(--c-fb);border-radius:2px"></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--c-muted);margin-bottom:4px"><span>0</span><span>' + totalEnrolled + ' enrolled</span></div>' +
+      '<div style="font-size:11px;color:var(--c-muted)">' + respPct + '% of enrolled students responded</div>' +
+      '</div>';
+    kpiGrid += respKpi;
+  } else {
+    kpiGrid += fbKpi(sourceRows, 'Students responded', '');
+  }
+  // ── Questions reached — donut arc (path-based, no dashoffset quirk) ───────
+  var arcPct = pctReached;
+  var arcColor = arcPct > 70 ? '#2e7d32' : arcPct >= 41 ? '#0d7a7a' : '#e8a800';
+  var arcCx = 40, arcCy = 40, arcR = 34, arcStroke = 7;
+  // Compute arc path: start at 12 o'clock (-PI/2), sweep clockwise by arcPct%
+  var arcStartAngle = -Math.PI / 2;
+  var arcEndAngle   = arcStartAngle + (arcPct / 100) * 2 * Math.PI;
+  var arcX1 = (arcCx + arcR * Math.cos(arcStartAngle)).toFixed(2);
+  var arcY1 = (arcCy + arcR * Math.sin(arcStartAngle)).toFixed(2);
+  var arcX2 = (arcCx + arcR * Math.cos(arcEndAngle)).toFixed(2);
+  var arcY2 = (arcCy + arcR * Math.sin(arcEndAngle)).toFixed(2);
+  var arcLargeFlag = arcPct > 50 ? 1 : 0;
+  // For exactly 0% or 100% the path would collapse; nudge end slightly
+  var arcPathD = arcPct <= 0
+    ? '' // no arc, just track
+    : arcPct >= 100
+      ? ('M' + arcX1 + ',' + arcY1 + ' A' + arcR + ',' + arcR + ' 0 1,1 ' + (arcCx + arcR * Math.cos(arcStartAngle + 0.001)).toFixed(2) + ',' + (arcCy + arcR * Math.sin(arcStartAngle + 0.001)).toFixed(2))
+      : ('M' + arcX1 + ',' + arcY1 + ' A' + arcR + ',' + arcR + ' 0 ' + arcLargeFlag + ',1 ' + arcX2 + ',' + arcY2);
+  var arcKpi = '<div style="background:var(--c-bg);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px 16px">' +
+    '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Questions reached</div>' +
+    '<div style="display:flex;align-items:center;gap:6px">' +
+      '<div style="flex-shrink:0">' +
+        '<div style="font-size:28px;font-weight:700;color:' + arcColor + ';line-height:1;margin-bottom:4px">' + sortedQs.length + '</div>' +
+        '<div style="font-size:10px;color:var(--c-muted);white-space:nowrap">' + arcPct + '% of Q1–Q' + (FB.maxQUsed || '?') + '</div>' +
+      '</div>' +
+      '<div style="flex:1;display:flex;justify-content:center">' +
+        '<svg width="80" height="80" viewBox="0 0 80 80">' +
+          // Track — full circle
+          '<circle cx="' + arcCx + '" cy="' + arcCy + '" r="' + arcR + '" fill="none" stroke="#d0d0d0" stroke-width="' + arcStroke + '"/>' +
+          // Coloured arc — path so start/end are exact, no dashoffset rotation artefact
+          (arcPathD ? '<path d="' + arcPathD + '" fill="none" stroke="' + arcColor + '" stroke-width="' + arcStroke + '" stroke-linecap="butt"/>' : '') +
+          // 0-start marker dot at 12 o'clock
+          '<circle cx="' + arcCx + '" cy="' + (arcCy - arcR) + '" r="3.5" fill="' + arcColor + '"/>' +
+          // Centre percentage text
+          '<text x="' + arcCx + '" y="' + (arcCy + 5) + '" text-anchor="middle" font-size="13" font-weight="700" fill="' + arcColor + '" font-family="system-ui,sans-serif">' + arcPct + '%</text>' +
+        '</svg>' +
+      '</div>' +
+      '<div style="flex-shrink:0;display:flex;flex-direction:column;gap:3px">' +
+        '<div style="font-size:8px;color:#b0b0b0;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#2e7d32;display:inline-block;flex-shrink:0"></span>Strong &gt;70%</div>' +
+        '<div style="font-size:8px;color:#b0b0b0;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#0d7a7a;display:inline-block;flex-shrink:0"></span>Moderate 41–70%</div>' +
+        '<div style="font-size:8px;color:#b0b0b0;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#e8a800;display:inline-block;flex-shrink:0"></span>Low ≤40%</div>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
+  kpiGrid += arcKpi;
+
+  // Card 3: Total attributions
+  kpiGrid += fbKpi(totalAttr, 'Total attributions', FB.general.length + ' in General');
+
+  // Card 4: Most commented
+  kpiGrid += fbKpi(topQ ? 'Q' + topQ.q : '\u2014', 'Most commented', topQ ? commentLabel(topQ.commentCount, topQ.bareCount) : '');
+
+  // ── Students with Q# feedback — with stacked proportion bar ───────────────
+  kpiGrid += fbKpi(studentsWithQFeedback, 'Students w/ Q# feedback', pctStudentsWithQ + '% of respondents');
+  if (hasMcqData) {
+    var flagKpi = '<div style="background:var(--c-bg);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px 16px">' +
+      '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Flagged Qs w/ feedback</div>' +
+      // Concern flags row
+      '<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,.06)">' +
+        '<div style="font-size:10px;font-weight:700;color:var(--c-muted);margin-bottom:3px">Concern flags</div>' +
+        '<div style="display:flex;align-items:baseline;gap:6px">' +
+          '<span style="font-size:24px;font-weight:700;color:var(--c-accent);line-height:1">' + concernFlagged + '</span>' +
+          '<span style="font-size:11px;color:var(--c-muted)">of ' + totalConcern + ' flagged</span>' +
+        '</div>' +
+        (concernFlagged === 0 ? '<div style="font-size:10px;color:var(--c-muted);margin-top:2px">No overlap</div>' : '') +
+      '</div>' +
+      // Easy flags row
+      '<div>' +
+        '<div style="font-size:10px;font-weight:700;color:var(--c-muted);margin-bottom:3px">Easy flags</div>' +
+        '<div style="display:flex;align-items:baseline;gap:6px">' +
+          '<span style="font-size:24px;font-weight:700;color:#0a5a9c;line-height:1">' + easyFlagged + '</span>' +
+          '<span style="font-size:11px;color:var(--c-muted)">of ' + totalEasy + ' flagged</span>' +
+        '</div>' +
+        (easyFlagged === 0 ? '<div style="font-size:10px;color:var(--c-muted);margin-top:2px">No overlap</div>' : '') +
+      '</div>' +
+      '</div>';
+    kpiGrid += flagKpi;
+  } else {
+    kpiGrid += '<div style="background:#f5f5f5;border:1px solid #e0e0e0;border-radius:10px;padding:14px 16px;opacity:0.72">';
+    kpiGrid += '<div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Flagged Qs w/ feedback</div>';
+    kpiGrid += '<div style="font-size:22px;font-weight:700;color:#bbb;line-height:1;margin-bottom:6px">&#128274;</div>';
+    kpiGrid += '<div style="font-size:11px;color:#bbb;line-height:1.4">Run MCQ analysis in this session to calculate</div>';
+    kpiGrid += '</div>';
+  }
+  kpiGrid += '</div>';
+
+  // Collapsible card — same structure as Exam Overview
+  var html =
+    '<div style="background:#fafafa;padding:10px 16px;border-radius:8px 8px 0 0;border-bottom:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between">' +
+      '<span style="font-size:15px;font-weight:700;color:var(--c-fb);letter-spacing:-.2px">Feedback Overview</span>' +
+      '<button onclick="toggleFbOverview()" id="fb-overview-toggle" class="toggle-link open">' +
+        '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        'Collapse' +
+      '</button>' +
+    '</div>' +
+    '<div id="fb-overview-collapsible">' +
+      kpiGrid +
+    '</div>';
+
+  zone.innerHTML = html;
+  // Always make the zone and fb slot visible — switchMainTab controls
+  // which slot (mcq vs fb) is shown based on the active tab.
+  var kpiZone = document.getElementById('kpi-zone');
+  var kpiMcq  = document.getElementById('kpi-zone-mcq');
+  var activeTab = (document.querySelector('#main-tab-bar .tab.active') || {}).id || '';
+  if (kpiZone) kpiZone.style.display = '';
+  zone.style.display = '';
+  // On non-feedback tabs keep the fb slot hidden (mcq slot manages itself)
+  if (activeTab !== 'tab-feedback-main') {
+    zone.style.display = 'none';
+  } else {
+    if (kpiMcq) kpiMcq.style.display = 'none';
+  }
+}
+
+// ── Feedback report preview (Reports tab) ────────────────────────────────
+// Renders a read-only HTML summary of the feedback analysis into the
+// feedback-report div in the Reports tab — mirrors the Word export structure.
+function renderFeedbackReportPreview(container) {
+  if (!container || !FB.ready) return;
+  var sortedQs = fbAllQs();
+  var sourceRows = FB.raw.filter(function(r){return r && r.trim().length >= 3;}).length;
+  var totalAttr = FB.parsed.filter(function(p){return p.status!=='discard' && p.qNums.length > 0;}).length;
+  var freq = sortedQs.map(function(q){
+    var cc=(FB.grouped[q]||[]).length, bc=FB.bareRefs[q]||0;
+    return {q:q, count:cc+bc, commentCount:cc, bareCount:bc};
+  }).sort(function(a,b){return b.count-a.count;});
+  var HIGH_THRESH = 8, MED_THRESH = 4;
+  var highVol = freq.filter(function(f){ return f.count >= HIGH_THRESH; });
+  var medVol  = freq.filter(function(f){ return f.count >= MED_THRESH && f.count < HIGH_THRESH; });
+
+  var html = '<div class="report-preview" style="font-family:\'Segoe UI\',system-ui,sans-serif;padding:28px;max-width:820px;margin:0 auto">';
+
+  // Header
+  var title = document.getElementById('exam-title').value.trim() || FB.examTitle || '';
+  var dateVal = document.getElementById('exam-date').value || FB.examDate || '';
+  var dateStr = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}) : '';
+  html += '<div style="text-align:center;margin-bottom:24px">';
+  html += '<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--c-muted)">Faculty of Medicine — Undergraduate Medical Education</div>';
+  if (title) html += '<div style="font-size:20px;font-weight:700;margin-top:6px">' + escHtml(title) + ' — Student Feedback Report</div>';
+  else html += '<div style="font-size:20px;font-weight:700;margin-top:6px">Student Feedback Report</div>';
+  if (dateStr) html += '<div style="font-size:13px;color:var(--c-muted);margin-top:4px">' + dateStr + '</div>';
+  html += '</div>';
+
+  // Summary
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:14px;font-weight:700;color:var(--c-accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Summary</div>';
+  html += '<div style="font-size:13px;line-height:1.8">';
+  html += 'Students who submitted feedback: <strong>' + sourceRows + '</strong><br>';
+  html += 'Questions receiving comments: <strong>' + sortedQs.length + '</strong><br>';
+  html += 'Total question attributions: <strong>' + totalAttr + '</strong><br>';
+  html += 'General / unattributed comments: <strong>' + FB.general.length + '</strong>';
+  html += '</div></div>';
+
+  // Key findings
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:14px;font-weight:700;color:var(--c-accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Key Findings</div>';
+  if (highVol.length > 0) {
+    html += '<div style="margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:var(--c-accent)">High volume (' + HIGH_THRESH + '+ responses)</span>';
+    html += '<div style="font-size:13px;margin-top:4px">' + highVol.map(function(f){ return 'Q'+f.q+' ('+f.count+')'; }).join(' &nbsp;·&nbsp; ') + '</div></div>';
+  }
+  if (medVol.length > 0) {
+    html += '<div style="margin-bottom:8px"><span style="font-size:12px;font-weight:700;color:#c07800">Moderate volume (' + MED_THRESH + '–' + (HIGH_THRESH-1) + ' responses)</span>';
+    html += '<div style="font-size:13px;margin-top:4px">' + medVol.map(function(f){ return 'Q'+f.q+' ('+f.count+')'; }).join(' &nbsp;·&nbsp; ') + '</div></div>';
+  }
+  html += '</div>';
+
+  // Comments by question (top 10 for preview)
+  html += '<div style="margin-bottom:20px">';
+  html += '<div style="font-size:14px;font-weight:700;color:var(--c-accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Comments by Question</div>';
+  var previewQs = freq.slice(0, 10);
+  previewQs.forEach(function(item) {
+    var comments = FB.grouped[item.q] || [];
+    var bareCount = FB.bareRefs[item.q] || 0;
+    html += '<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--c-border)">';
+    html += '<div style="font-size:13px;font-weight:700;margin-bottom:6px">Question ' + item.q;
+    html += ' <span style="font-weight:400;color:var(--c-muted);font-size:12px">— ' + commentLabel(comments.length, bareCount) + '</span></div>';
+    comments.slice(0, 5).forEach(function(c) {
+      html += '<div style="font-size:12px;color:var(--c-secondary);padding:4px 0 4px 12px;border-left:2px solid var(--c-border);margin-bottom:4px;white-space:pre-wrap;word-break:break-word">' + escHtml(c.text) + '</div>';
+    });
+    if (comments.length > 5) html += '<div style="font-size:11px;color:var(--c-muted);padding-left:12px">+ ' + (comments.length-5) + ' more comment' + (comments.length-5===1?'':'s') + '</div>';
+    if (bareCount > 0) html += '<div style="font-size:11px;color:var(--c-muted);padding-left:12px;margin-top:4px">' + bareCount + ' student' + (bareCount===1?' referenced':'s referenced') + ' this question without comment.</div>';
+    html += '</div>';
+  });
+  if (freq.length > 10) html += '<div style="font-size:12px;color:var(--c-muted);font-style:italic">+ ' + (freq.length-10) + ' more questions — download the Word report for the full document.</div>';
+  html += '</div>';
+
+  html += '<div style="text-align:center;padding:20px 0;border-top:1px solid var(--c-border);font-size:11px;color:var(--c-muted)">' + fbCeilingNote() + '</div>';
+  html += uiReportFooterHtml();
+  html += '</div>';
+  container.innerHTML = html;
+}
+
 function renderFeedbackTabKeep(view) {
   preserveScrollDuring(function(){ renderFeedbackTab(view); });
 }
@@ -7060,12 +7779,12 @@ function renderFeedbackTab(view) {
   var sec = document.getElementById('fb-results-content');
   if (!sec || !FB.ready) return;
 
-  var sortedQs = Object.keys(FB.grouped).map(Number).sort(function(a,b){return a-b;});
-  var freq = sortedQs.map(function(q){ var cc=FB.grouped[q].length, bc=FB.bareRefs[q]||0; return {q:q, count:cc+bc, commentCount:cc, bareCount:bc}; })
+  var sortedQs = fbAllQs();
+  var freq = sortedQs.map(function(q){ var cc=(FB.grouped[q]||[]).length, bc=FB.bareRefs[q]||0; return {q:q, count:cc+bc, commentCount:cc, bareCount:bc}; })
     .sort(function(a,b){return b.count-a.count;});
   var maxCount = freq.length > 0 ? freq[0].count : 1;
   // Source rows = original Excel rows parsed (not inflated by multi-Q splitting)
-  var sourceRows = FB.raw.filter(function(r){return r && r.trim().length > 3;}).length;
+  var sourceRows = FB.raw.filter(function(r){return r && r.trim().length >= 3;}).length;
   // Total attributions = all parsed fragments assigned to a Q# (may exceed sourceRows due to multi-Q entries)
   var totalAttr = FB.parsed.filter(function(p){return p.status!=='discard' && p.qNums.length > 0;}).length;
   var pendingLeft = FB.parsed.filter(function(p){return p.status==='pending';}).length;
@@ -7095,39 +7814,49 @@ function renderFeedbackTab(view) {
     return '<span class="fb-mcq-xref">Also flagged: <strong style="color:var(--c-accent)">' + flag + '</strong> in MCQ analysis</span>';
   }
 
-  // KPI stats
+  // KPI stats used by both the zone and the report view
   var topQ = freq.length > 0 ? freq[0] : null;
   var pctReached = sortedQs.length > 0 ? Math.round(sortedQs.length / (sortedQs[sortedQs.length-1] || 1) * 100) : 0;
 
-  var html = '<div style="padding:0">';
+  // Toolbar (sticky)
+  var nDiscarded = FB.parsed.filter(function(p){ return p.status === 'discard'; }).length;
 
-  // KPI strip
-  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">';
-  var kpis = [
-    {val: sourceRows, label: 'Students responded', sub: ''},
-    {val: sortedQs.length, label: 'Questions reached', sub: pctReached + '% of Q1–Q' + (sortedQs[sortedQs.length-1]||'?')},
-    {val: totalAttr, label: 'Total attributions', sub: FB.general.length + ' in General'},
-    topQ
-      ? {val: 'Q' + topQ.q, label: 'Most commented', sub: commentLabel(topQ.commentCount, topQ.bareCount)}
-      : {val: '—', label: 'Most commented', sub: ''}
-  ];
-  kpis.forEach(function(k) {
-    html += '<div style="background:var(--c-bg);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px 16px">';
-    html += '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">' + k.label + '</div>';
-    html += '<div style="font-size:32px;font-weight:700;color:#0a5a9c;line-height:1;margin-bottom:4px">' + k.val + '</div>';
-    if (k.sub) html += '<div style="font-size:11px;color:var(--c-muted)">' + k.sub + '</div>';
-    html += '</div>';
+  // Count total staged items across ALL parsed items for the global action bar
+  var totalStaged = 0;
+  var stagedIdxs = [];
+  FB.parsed.forEach(function(p, idx) {
+    if (p._staged && p._staged.length > 0) {
+      totalStaged += p._staged.length;
+      stagedIdxs.push(idx);
+    }
   });
-  html += '</div>';
 
-  // Toolbar
-  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">';
+  var html = '<div style="padding:0">';
+  html += '<div style="position:sticky;top:0;z-index:10;background:var(--c-bg);padding-bottom:8px;margin-bottom:4px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
   html += '<div class="seg-ctrl">';
   html += '<button class="seg-btn' + (_fbView==='freq'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'freq\')">Frequency</button>';
   html += '<button class="seg-btn' + (_fbView==='byq'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'byq\')">By Question</button>';
   html += '<button class="seg-btn' + (_fbView==='byv'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'byv\')">Most Commented</button>';
+  // Flagged Qs tab — only when MCQ analysis is loaded
+  var hasMcqForTab = !!(G._lastN && G.mcq && G.mcq.length);
+  if (hasMcqForTab) {
+    html += '<button class="seg-btn' + (_fbView==='flagged'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'flagged\')" style="color:' + (_fbView==='flagged'?'':'var(--c-accent)') + '">⚑ Flagged Qs</button>';
+  }
+  html += '<button class="seg-btn' + (_fbView==='disc'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'disc\')" style="' + (nDiscarded > 0 ? 'color:var(--c-muted)' : '') + '">Discarded (' + nDiscarded + ')</button>';
   html += '</div>';
-  html += '<button class="btn-dl-primary" onclick="exportFeedbackReport()" style="font-size:11.5px;padding:7px 16px">⬇ Download Report</button>';
+  html += '</div>';
+
+  // Global staged action bar — appears only when at least one row has staged Q#s
+  if (totalStaged > 0) {
+    html += '<div style="margin-top:6px;padding:7px 12px;background:var(--c-fb-bg);border:1px solid var(--c-fb);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:10px">';
+    html += '<span style="font-size:12px;color:var(--c-fb);font-weight:600">' +
+      totalStaged + ' question attribution' + (totalStaged===1?'':'s') + ' staged across ' + stagedIdxs.length + ' comment' + (stagedIdxs.length===1?'':'s') +
+      '</span>';
+    html += '<button onclick="fbApplyAllStaged()" style="font-size:11px;font-weight:700;color:#fff;background:var(--c-fb);border:none;border-radius:6px;padding:5px 14px;cursor:pointer;white-space:nowrap">Apply All Moves</button>';
+    html += '</div>';
+  }
+
   html += '</div>';
 
   if (_fbView === 'freq') {
@@ -7161,7 +7890,7 @@ function renderFeedbackTab(view) {
         })
       : sortedQs;
     qs.forEach(function(q) {
-      var comments = FB.grouped[q];
+      var comments = FB.grouped[q] || [];
       var bareCount = FB.bareRefs[q] || 0;
       var totalCount = comments.length + bareCount;
       html += '<div class="fb-section">';
@@ -7170,15 +7899,22 @@ function renderFeedbackTab(view) {
       html += mcqXref(q);
       html += '</div>';
       comments.forEach(function(c) {
-        html += '<div class="fb-comment-row" style="display:flex;align-items:flex-start;gap:8px;padding-left:14px">';
+        var staged = FB.parsed[c.idx]._staged || [];
+        var err = FB.parsed[c.idx]._addErr || '';
+        html += '<div class="fb-comment-row" style="display:flex;flex-direction:column;padding-left:14px">';
+        html += '<div style="display:flex;align-items:center;gap:8px">';
         html += '<span style="color:var(--c-muted);flex-shrink:0;margin-top:2px">&bull;</span>';
-        html += '<span style="flex:1">' + escHtml(c.text) + '</span>';
+        html += '<span style="flex:1;white-space:pre-wrap;word-break:break-word">' + escHtml(c.text) + '</span>';
         html += '<span style="flex-shrink:0;display:flex;align-items:center;gap:4px;padding-top:1px">';
-        html += '<input type="text" placeholder="Move to Q#" style="width:72px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;text-align:center;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9]/g,\'\')">';
-        html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Move</button>';
+        html += '<input type="text" placeholder="Q# or 12, 45" style="width:160px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
+        html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
+        var _mvLabel = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move';
+        html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + _mvLabel + '</button>';
         html += '<button onclick="fbMoveToGeneral(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0d7a7a;border:1px solid #0d7a7a;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">General</button>';
         html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
         html += '</span>';
+        html += '</div>';
+        html += fbBadgeTrayHtml(c.idx, staged, err, 'fbStageRemoveReassign', 'fbReassign');
         html += '</div>';
       });
       if (bareCount > 0) {
@@ -7195,14 +7931,21 @@ function renderFeedbackTab(view) {
       html += '<div><span class="fb-section-q">General Feedback</span> <span style="font-size:11px;color:var(--c-muted);margin-left:8px">' + FB.general.length + ' comments — not attributed to a specific question</span></div>';
       html += '</div>';
       FB.general.forEach(function(c) {
-        html += '<div class="fb-comment-row" style="display:flex;align-items:flex-start;gap:8px;padding-left:14px">';
+        var staged = FB.parsed[c.idx]._staged || [];
+        var err = FB.parsed[c.idx]._addErr || '';
+        html += '<div class="fb-comment-row" style="display:flex;flex-direction:column;padding-left:14px">';
+        html += '<div style="display:flex;align-items:center;gap:8px">';
         html += '<span style="color:var(--c-muted);flex-shrink:0;margin-top:2px">&bull;</span>';
-        html += '<span style="flex:1">' + escHtml(c.text) + '</span>';
+        html += '<span style="flex:1;white-space:pre-wrap;word-break:break-word">' + escHtml(c.text) + '</span>';
         html += '<span style="flex-shrink:0;display:flex;align-items:center;gap:4px;padding-top:1px">';
-        html += '<input type="text" placeholder="Move to Q#" style="width:72px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;text-align:center;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9]/g,\'\')">';
-        html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Move</button>';
+        html += '<input type="text" placeholder="Q# or 12, 45" style="width:160px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
+        html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
+        var _mvLabelG = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move';
+        html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + _mvLabelG + '</button>';
         html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
         html += '</span>';
+        html += '</div>';
+        html += fbBadgeTrayHtml(c.idx, staged, err, 'fbStageRemoveReassign', 'fbReassign');
         html += '</div>';
       });
       html += '</div>';
@@ -7212,46 +7955,217 @@ function renderFeedbackTab(view) {
     }
   }
 
+  // ── Discarded view ───────────────────────────────────────────────────────
+  if (_fbView === 'disc') {
+    var discarded = FB.parsed.map(function(p, idx){ return {p:p, idx:idx}; })
+      .filter(function(x){ return x.p.status === 'discard'; });
+
+    if (discarded.length === 0) {
+      html += '<div style="text-align:center;padding:60px 20px">';
+      html += '<div style="font-size:32px;margin-bottom:12px">🗂</div>';
+      html += '<div style="font-size:14px;font-weight:600;color:var(--c-muted)">No discarded comments</div>';
+      html += '<div style="font-size:12px;color:var(--c-muted);margin-top:6px">Comments you discard will appear here and can be recovered at any time.</div>';
+      html += '</div>';
+    } else {
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin-bottom:8px">' + discarded.length + ' discarded comment' + (discarded.length===1?'':'s') + ' — not included in reports</div>';
+      html += '<div style="background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;overflow:hidden">';
+      discarded.forEach(function(x, i) {
+        var p = x.p, idx = x.idx;
+        var staged = p._staged || [];
+        var err = p._addErr || '';
+        var originLabel = fbDiscardOriginLabel(p);
+        if (i > 0) html += '<div style="height:1px;background:var(--c-border)"></div>';
+        html += '<div style="display:flex;flex-direction:column;padding:0">';
+        html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px">';
+        // Comment text + origin label
+        html += '<div style="flex:1">';
+        html += '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px">' + escHtml(originLabel) + '</div>';
+        html += '<div style="font-size:12.5px;color:var(--c-secondary);white-space:pre-wrap;word-break:break-word;line-height:1.55">' + escHtml(p.text) + '</div>';
+        html += '</div>';
+        // Recovery controls
+        html += '<div style="flex-shrink:0;display:flex;align-items:center;gap:4px;padding-top:2px">';
+        html += '<input type="text" placeholder="Q# or 12, 45" style="width:160px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + idx + ']._typed=this.value" value="' + (p._typed || '') + '">';
+        html += '<button onclick="fbStageAddReassign(' + idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
+        var _mvLabelD = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move to Q#';
+        html += '<button onclick="fbUndiscardToQ(' + idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + _mvLabelD + '</button>';
+        html += '<button onclick="fbUndiscardToGeneral(' + idx + ')" style="font-size:10px;font-weight:600;color:var(--c-fb);border:1px solid var(--c-fb);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">General</button>';
+        html += '<button onclick="fbUndiscard(' + idx + ')" style="font-size:10px;font-weight:600;color:#2e7d32;border:1px solid #2e7d32;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap" title="Restore to previous location">↩ Restore</button>';
+        html += '</div>';
+        html += '</div>';
+        // Badge tray for multi-Q staging
+        html += fbBadgeTrayHtml(idx, staged, err, 'fbStageRemoveReassign', 'fbUndiscardToQ');
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+  }
+
+  // ── Flagged Qs view (MCQ-conditional) ────────────────────────────────────
+  if (_fbView === 'flagged') {
+    var hasMcqFlagged = !!(G._lastN && G.mcq && G.mcq.length);
+    if (!hasMcqFlagged) {
+      html += '<div style="text-align:center;padding:60px 20px;color:var(--c-muted)">Run MCQ analysis to see flagged questions with feedback.</div>';
+    } else {
+      // Build list of flagged questions that have comments, sorted concern-first then easy
+      var flaggedWithComments = [];
+      G.mcq.forEach(function(item) {
+        if (!item || !item.flag || item.flag === '') return;
+        var qn = item.num;
+        var comments = FB.grouped[qn] || [];
+        var bareCount = FB.bareRefs[qn] || 0;
+        if (comments.length > 0 || bareCount > 0) {
+          flaggedWithComments.push({q:qn, flag:item.flag, comments:comments, bareCount:bareCount, isEasy:item.flag==='Too easy'});
+        }
+      });
+      // Sort: concern flags first, then easy; within each group by comment count desc
+      flaggedWithComments.sort(function(a,b){
+        if (a.isEasy !== b.isEasy) return a.isEasy ? 1 : -1;
+        return (b.comments.length + b.bareCount) - (a.comments.length + a.bareCount);
+      });
+
+      if (flaggedWithComments.length === 0) {
+        html += '<div style="text-align:center;padding:60px 20px">';
+        html += '<div style="font-size:14px;font-weight:600;color:var(--c-muted)">No flagged questions received student comments</div>';
+        html += '<div style="font-size:12px;color:var(--c-muted);margin-top:6px">Comments and MCQ flags do not overlap for this exam.</div>';
+        html += '</div>';
+      } else {
+        html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin-bottom:8px">' + flaggedWithComments.length + ' flagged question' + (flaggedWithComments.length===1?'':'s') + ' with student feedback</div>';
+        html += '<div style="background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;overflow:hidden">';
+        flaggedWithComments.forEach(function(item, i) {
+          if (i > 0) html += '<div style="height:1px;background:var(--c-border)"></div>';
+          var flagBadgeStyle = item.isEasy
+            ? 'font-size:11px;font-weight:700;color:#0a5a9c;background:#e8f4fd;padding:2px 8px;border-radius:4px'
+            : 'font-size:11px;font-weight:700;color:var(--c-accent);background:#fff0f0;padding:2px 8px;border-radius:4px';
+          html += '<div class="fb-section">';
+          html += '<div class="fb-section-hdr" style="display:flex;align-items:center;gap:10px">';
+          html += '<span class="fb-section-q">Q' + item.q + '</span>';
+          html += '<span style="' + flagBadgeStyle + '">' + item.flag + '</span>';
+          html += '<span style="font-size:12px;color:var(--c-muted)">' + commentLabel(item.comments.length, item.bareCount) + '</span>';
+          html += '<span style="margin-left:auto">' + (item.comments.length + item.bareCount) + ' response' + (item.comments.length+item.bareCount===1?'':'s') + '</span>';
+          html += '</div>';
+          // Comments
+          item.comments.forEach(function(c) {
+            var staged = FB.parsed[c.idx]._staged || [];
+            var err = FB.parsed[c.idx]._addErr || '';
+            html += '<div class="fb-comment-row" style="display:flex;flex-direction:column;padding-left:14px">';
+            html += '<div style="display:flex;align-items:center;gap:8px">';
+            html += '<span style="color:var(--c-muted);flex-shrink:0">&bull;</span>';
+            html += '<span style="flex:1;white-space:pre-wrap;word-break:break-word">' + escHtml(c.text) + '</span>';
+            html += '<span style="flex-shrink:0;display:flex;align-items:center;gap:4px;padding-top:1px">';
+            html += '<input type="text" placeholder="Q# or 12, 45" style="width:160px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
+            html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
+            var mvL = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move';
+            html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + mvL + '</button>';
+            html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+            html += '</span></div>';
+            html += fbBadgeTrayHtml(c.idx, staged, err, 'fbStageRemoveReassign', 'fbReassign');
+            html += '</div>';
+          });
+          if (item.bareCount > 0) {
+            html += '<div style="padding:5px 14px 8px;font-size:11px;color:var(--c-muted);font-style:italic;border-top:1px solid rgba(0,0,0,.04)">' + item.bareCount + ' student' + (item.bareCount>1?'s':'')+' referenced this question without comment.</div>';
+          }
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+    }
+  }
+
   html += '</div>';
   sec.innerHTML = html;
 }
 
-// Simple HTML escape helper
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+
 
 // Re-assign a comment from the By Question view
 function fbReassign(idx) {
-  var inp = document.getElementById('fb-ri-' + idx);
-  if (!inp) return;
-  var num = parseInt(inp.value.trim(), 10);
-  if (isNaN(num) || num < 1 || num > 200) {
-    inp.style.borderColor = '#c0392b';
-    inp.focus();
-    return;
-  }
-  FB.parsed[idx].status  = 'mapped';
-  FB.parsed[idx].mappedQ = num;
-  FB.parsed[idx].qNums   = [num];
-  delete FB.parsed[idx]._typed;
+  fbCommitStaged(idx);
   groupComments();
+  renderFbKpiZone();
+  renderBanner();
   renderFeedbackTabKeep(_fbView);
 }
 
 function fbMoveToGeneral(idx) {
   FB.parsed[idx].status = 'general';
+  delete FB.parsed[idx]._typed;
+  delete FB.parsed[idx]._staged;
+  delete FB.parsed[idx]._addErr;
   groupComments();
+  renderFbKpiZone();
+  renderBanner();
   renderFeedbackTabKeep(_fbView);
 }
 
 function fbDiscardFromView(idx) {
+  if (FB.parsed[idx].status !== 'discard') {
+    FB.parsed[idx]._prevStatus = FB.parsed[idx].status;
+    FB.parsed[idx]._prevQNums  = (FB.parsed[idx].mappedQs || FB.parsed[idx].qNums || []).slice();
+  }
   FB.parsed[idx].status = 'discard';
+  delete FB.parsed[idx]._typed;
+  delete FB.parsed[idx]._staged;
+  delete FB.parsed[idx]._addErr;
   groupComments();
+  renderFbKpiZone();
+  renderBanner();
   renderFeedbackTabKeep(_fbView);
 }
 
-// ── Feedback Word export ──────────────────────────────────────────────────
+// Recovery from Discarded tab — restore to previous state or send to General/Q#
+function fbDiscardOriginLabel(p) {
+  var prev = p._prevStatus;
+  if (!prev || prev === 'pending') return 'Was: Pending (unresolved)';
+  if (prev === 'general') return 'Was: General';
+  if (prev === 'auto' || prev === 'mapped') {
+    var qs = p._prevQNums && p._prevQNums.length ? p._prevQNums : p.qNums;
+    return qs && qs.length ? 'Was: ' + qs.map(function(n){ return 'Q'+n; }).join(', ') : 'Was: Q#';
+  }
+  return 'Was: ' + prev;
+}
+
+function fbUndiscard(idx) {
+  // Restore to previous status; fall back to general if no prior state saved
+  var prev = FB.parsed[idx]._prevStatus;
+  var prevQs = FB.parsed[idx]._prevQNums;
+  if (prev === 'auto' || prev === 'mapped') {
+    FB.parsed[idx].status   = 'mapped';
+    FB.parsed[idx].mappedQs = prevQs && prevQs.length ? prevQs.slice() : FB.parsed[idx].qNums;
+    FB.parsed[idx].qNums    = FB.parsed[idx].mappedQs;
+  } else if (prev === 'general') {
+    FB.parsed[idx].status = 'general';
+  } else {
+    // Was pending or unknown — send to general for review
+    FB.parsed[idx].status = 'general';
+  }
+  delete FB.parsed[idx]._prevStatus;
+  delete FB.parsed[idx]._prevQNums;
+  groupComments();
+  renderBanner();
+  renderFeedbackTabKeep(_fbView);
+}
+
+function fbUndiscardToGeneral(idx) {
+  FB.parsed[idx].status = 'general';
+  delete FB.parsed[idx]._prevStatus;
+  delete FB.parsed[idx]._prevQNums;
+  groupComments();
+  renderBanner();
+  renderFeedbackTabKeep(_fbView);
+}
+
+function fbUndiscardToQ(idx) {
+  // Uses the staging system — fbCommitStaged will set status + mappedQs
+  if (fbCommitStaged(idx)) {
+    delete FB.parsed[idx]._prevStatus;
+    delete FB.parsed[idx]._prevQNums;
+    groupComments();
+    renderBanner();
+  }
+  renderFeedbackTabKeep(_fbView);
+}
+
+
 function exportFeedbackReport() {
   if (!FB.ready) return;
 
@@ -7267,11 +8181,21 @@ function exportFeedbackReport() {
   try {
     var title = FB.examTitle || "Student Feedback Report";
     var dateStr = FB.examDate ? new Date(FB.examDate + "T12:00:00").toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"}) : "";
-    var sortedQs = Object.keys(FB.grouped).map(Number).sort(function(a,b){return a-b;});
+    var sortedQs = fbAllQs();
     var HIGH_THRESH = 8, MED_THRESH = 4;
-    var sourceRows = FB.raw.filter(function(r){return r && r.trim().length > 3;}).length;
+    var sourceRows = FB.raw.filter(function(r){return r && r.trim().length >= 3;}).length;
     var totalAttr = FB.parsed.filter(function(p){return p.status!=="discard" && p.qNums.length > 0;}).length;
     var ts = new Date().toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"});
+
+    // Students with at least one Q#-attributed fragment (distinct source rows)
+    var studentsWithQFeedbackExp = (function() {
+      var seen = {};
+      FB.parsed.forEach(function(p) {
+        if (p.qNums.length > 0 && p.status !== 'discard') seen[p.rawIdx] = true;
+      });
+      return Object.keys(seen).length;
+    })();
+    var pctStudentsWithQExp = sourceRows > 0 ? Math.round(studentsWithQFeedbackExp / sourceRows * 100) : 0;
 
     function getMcqFlag(qNum) {
       if (!G.mcq || !G.mcq.length) return null;
@@ -7280,93 +8204,127 @@ function exportFeedbackReport() {
     }
 
     var body = "";
+
+    // ── Header block (Item 1) ─────────────────────────────────────────────
     body += docxPara("FACULTY OF MEDICINE — UNDERGRADUATE MEDICAL EDUCATION", {bold:true, centre:true, sz:24, spAfter:40});
-    body += docxPara("Student Feedback Report", {bold:true, centre:true, sz:28, spAfter:40});
-    body += docxPara(xmlSafe(title) + (dateStr ? " · " + dateStr : ""), {bold:true, centre:true, sz:22, spAfter:80});
-    body += docxPara("Report generated: " + ts + getCoordinatorByline(), {sz:18, color:"888888", spAfter:160});
+    var titleLine = FB.examTitle ? xmlSafe(FB.examTitle) + " — Student Feedback Report" : "Student Feedback Report";
+    body += docxPara(titleLine, {bold:true, centre:true, sz:28, spAfter:40});
+    var subtitleParts = [];
+    if (dateStr) subtitleParts.push(dateStr);
+    var coord = getCoordinatorByline ? getCoordinatorByline().replace(/^\s*·\s*/, '').trim() : '';
+    if (coord) subtitleParts.push(coord);
+    if (subtitleParts.length) {
+      body += docxPara(subtitleParts.join(" · "), {centre:true, sz:20, color:"444444", spAfter:80});
+    }
 
-    // Summary
-    body += docxPara("Summary", {bold:true, sz:24, spAfter:60, color:"A31515"});
-    body += docxPara("Students who submitted feedback: " + sourceRows, {spAfter:40});
-    body += docxPara("Questions receiving comments: " + sortedQs.length, {spAfter:40});
-    body += docxPara("Total question attributions: " + totalAttr + " (one comment may reference multiple questions)", {spAfter:40});
-    body += docxPara("General / unattributed comments: " + FB.general.length, {spAfter:160});
+    // ── Summary — KPI table (Item 2) ──────────────────────────────────────
+    body += docxPara("Summary", {bold:true, sz:24, spAfter:80, color:"A31515"});
 
-    // Key findings summary (replaces frequency table)
+    var hasMcqExp = !!(G.mcq && G.mcq.length);
+    var fcKpi = 0, tfKpi = 0;
+    if (hasMcqExp) {
+      G.mcq.forEach(function(item) {
+        if (item && item.flag && item.flag !== 'OK') {
+          tfKpi++;
+          if (FB.grouped[item.n] || FB.bareRefs[item.n]) fcKpi++;
+        }
+      });
+    }
+
     var freq = sortedQs.map(function(q){
-      return {q:q, count:FB.grouped[q].length + (FB.bareRefs[q]||0), comments:FB.grouped[q].length, bare:(FB.bareRefs[q]||0)};
+      return {q:q, count:(FB.grouped[q]||[]).length + (FB.bareRefs[q]||0), comments:(FB.grouped[q]||[]).length, bare:(FB.bareRefs[q]||0)};
     }).sort(function(a,b){return b.count-a.count;});
     var highVol = freq.filter(function(f){return f.count >= HIGH_THRESH;});
     var medVol  = freq.filter(function(f){return f.count >= MED_THRESH && f.count < HIGH_THRESH;});
-    var hasMcq  = G.mcq && G.mcq.length > 0;
+    var topQExp = freq.length > 0 ? freq[0] : null;
+    var pctReachedExp = sortedQs.length > 0 ? Math.round(sortedQs.length / Math.max(FB.maxQUsed || sortedQs[sortedQs.length-1] || 1, 1) * 100) : 0;
 
-    body += docxPara("Key Findings", {bold:true, sz:24, spAfter:80, color:"A31515"});
+    function kpiCell(label, value, sub, w) {
+      var ns = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>';
+      var lp = '<w:p>' + ns + '<w:r><w:rPr><w:b/><w:color w:val="888888"/><w:sz w:val="14"/><w:szCs w:val="14"/><w:caps/></w:rPr><w:t>' + esc(label) + '</w:t></w:r></w:p>';
+      var vp = '<w:p>' + ns + '<w:r><w:rPr><w:b/><w:color w:val="0a5a9c"/><w:sz w:val="44"/><w:szCs w:val="44"/></w:rPr><w:t>' + esc(String(value)) + '</w:t></w:r></w:p>';
+      var sp2 = sub ? '<w:p>' + ns + '<w:r><w:rPr><w:color w:val="888888"/><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t>' + esc(sub) + '</w:t></w:r></w:p>' : '';
+      return '<w:tc><w:tcPr><w:tcW w:w="' + w + '" w:type="dxa"/>' +
+             '<w:tcBorders><w:top w:val="single" w:sz="4" w:color="e8e8e8"/><w:left w:val="single" w:sz="4" w:color="e8e8e8"/><w:bottom w:val="single" w:sz="4" w:color="e8e8e8"/><w:right w:val="single" w:sz="4" w:color="e8e8e8"/></w:tcBorders>' +
+             '<w:shd w:val="clear" w:color="auto" w:fill="FAFAFA"/>' +
+             '<w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar>' +
+             '</w:tcPr>' + lp + vp + sp2 + '</w:tc>';
+    }
 
-    // Response overview
+    function kpiCellLocked(label, w) {
+      var ns = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>';
+      var lp = '<w:p>' + ns + '<w:r><w:rPr><w:b/><w:color w:val="bbbbbb"/><w:sz w:val="14"/><w:szCs w:val="14"/><w:caps/></w:rPr><w:t>' + esc(label) + '</w:t></w:r></w:p>';
+      var vp = '<w:p>' + ns + '<w:r><w:rPr><w:color w:val="cccccc"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr><w:t>[MCQ required]</w:t></w:r></w:p>';
+      var sp2 = '<w:p>' + ns + '<w:r><w:rPr><w:color w:val="bbbbbb"/><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t>Run MCQ analysis to calculate</w:t></w:r></w:p>';
+      return '<w:tc><w:tcPr><w:tcW w:w="' + w + '" w:type="dxa"/>' +
+             '<w:tcBorders><w:top w:val="single" w:sz="4" w:color="e0e0e0"/><w:left w:val="single" w:sz="4" w:color="e0e0e0"/><w:bottom w:val="single" w:sz="4" w:color="e0e0e0"/><w:right w:val="single" w:sz="4" w:color="e0e0e0"/></w:tcBorders>' +
+             '<w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/>' +
+             '<w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar>' +
+             '</w:tcPr>' + lp + vp + sp2 + '</w:tc>';
+    }
+
+    var colW3 = Math.round(9713 / 3);
+    var tblHdr = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="9713" w:type="dxa"/>' +
+      '<w:tblBorders><w:top w:val="none" w:sz="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:color="auto"/><w:insideH w:val="none" w:sz="0" w:color="auto"/><w:insideV w:val="none" w:sz="0" w:color="auto"/></w:tblBorders>' +
+      '<w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPr>';
+
+    body += tblHdr;
+    body += '<w:tr>' +
+      kpiCell('Students responded', sourceRows, '', colW3) +
+      kpiCell('Questions reached', sortedQs.length, pctReachedExp + '% of Q1–Q' + (FB.maxQUsed || sortedQs[sortedQs.length-1] || '?'), colW3) +
+      kpiCell('Students w/ Q# feedback', studentsWithQFeedbackExp, pctStudentsWithQExp + '% of respondents', colW3) +
+    '</w:tr>';
+
+    var mcqKpiCell = hasMcqExp
+      ? kpiCell('Flagged Qs w/ feedback', fcKpi + ' of ' + tfKpi, fcKpi === 0 ? 'No overlap with MCQ flags' : 'question' + (fcKpi === 1 ? '' : 's') + ' flagged in both', colW3)
+      : kpiCellLocked('Flagged Qs w/ feedback', colW3);
+
+    body += '<w:tr>' +
+      kpiCell('Total attributions', totalAttr, FB.general.length + ' in General', colW3) +
+      kpiCell('Most commented', topQExp ? 'Q' + topQExp.q : '—', topQExp ? commentLabel(topQExp.commentCount, topQExp.bareCount) : '', colW3) +
+      mcqKpiCell +
+    '</w:tr>';
+    body += '</w:tbl>';
+    body += docxPara(xmlSafe(fbCeilingNote().replace(/\u00b7/g, "-")), {sz:18, color:"999999", spAfter:160});
+
+    // ── Key Findings — structured table (Item 3) ──────────────────────────
+    body += docxPara("Key Findings", {bold:true, sz:24, spAfter:60, color:"A31515"});
     body += docxPara(
-      sourceRows + " students submitted feedback. " +
-      sortedQs.length + " of the exam questions received at least one comment, " +
-      "representing " + Math.round(sortedQs.length / Math.max(sortedQs[sortedQs.length-1]||1, 1) * 100) + "% of questions up to Q" + (sortedQs[sortedQs.length-1]||"?") + ". " +
-      "A total of " + totalAttr + " question-specific attributions were recorded; some students commented on multiple questions in a single entry.",
-      {sz:22, spAfter:80}
+      sourceRows + " students responded; " + sortedQs.length + " questions received comments (" + pctReachedExp + "% of the exam).",
+      {sz:22, spAfter:100}
     );
 
-    // High volume questions
+    var volRows = [], volFills = [];
     if (highVol.length > 0) {
-      var highList = highVol.map(function(f){return "Q" + f.q + " (" + f.count + ")";}).join(", ");
-      body += docxPara(
-        "High-volume questions (" + HIGH_THRESH + "+ responses): " + highList + ". " +
-        "These questions generated the most student feedback and may warrant priority review.",
-        {sz:22, spAfter:80}
-      );
+      volRows.push(["High volume  (" + HIGH_THRESH + "+ responses)", highVol.map(function(f){ return "Q" + f.q + " (" + f.count + ")"; }).join(",  ")]);
+      volFills.push("FFF3F3");
     }
-
-    // Medium volume
     if (medVol.length > 0) {
-      var medList = medVol.map(function(f){return "Q" + f.q + " (" + f.count + ")";}).join(", ");
-      body += docxPara(
-        "Moderate-volume questions (" + MED_THRESH + "\u2013" + (HIGH_THRESH-1) + " responses): " + medList + ".",
-        {sz:22, spAfter:80}
-      );
+      volRows.push(["Moderate volume  (" + MED_THRESH + "–" + (HIGH_THRESH-1) + " responses)", medVol.map(function(f){ return "Q" + f.q + " (" + f.count + ")"; }).join(",  ")]);
+      volFills.push(null);
     }
-
-    // MCQ cross-reference if available
-    if (hasMcq) {
-      var overlap = highVol.filter(function(f){
-        var flag = getMcqFlag(f.q);
-        return flag && flag !== 'OK';
+    if (hasMcqExp) {
+      var overlap = highVol.concat(medVol).filter(function(f){
+        var flag = getMcqFlag(f.q); return flag && flag !== 'OK';
       });
       if (overlap.length > 0) {
-        var overlapList = overlap.map(function(f){
-          return "Q" + f.q + " (" + getMcqFlag(f.q) + ")";
-        }).join(", ");
-        body += docxPara(
-          "Questions flagged in both MCQ analysis and student feedback: " + overlapList + ". " +
-          "These questions are statistical outliers that also generated student concern \u2014 strongest candidates for item review.",
-          {sz:22, spAfter:80, color:"A31515"}
-        );
-      } else {
-        body += docxPara(
-          "No overlap was found between MCQ-flagged questions and high-volume feedback questions.",
-          {sz:22, spAfter:80}
-        );
+        volRows.push(["⚑  Also MCQ-flagged", overlap.map(function(f){ return "Q" + f.q + " (" + getMcqFlag(f.q) + ")"; }).join(",  ")]);
+        volFills.push("FFF3F3");
       }
     }
-
-    // General feedback note
     if (FB.general.length > 0) {
-      body += docxPara(
-        FB.general.length + " comments were not attributed to a specific question and are included in the General Feedback section. " +
-        "These cover topics such as image quality, exam logistics, and general content concerns.",
-        {sz:22, spAfter:160}
-      );
+      volRows.push(["General / unattributed", FB.general.length + " comment" + (FB.general.length === 1 ? "" : "s") + " — see General Feedback section"]);
+      volFills.push(null);
     }
-    body += docxPara("", {spAfter:40});
+    if (volRows.length > 0) {
+      body += docxTable(["Category", "Questions"], volRows, [2400, 7313], {rowFills: volFills});
+    }
+    body += docxPara("", {spAfter:160});
 
     // Comments by question
     body += docxPara("Comments by Question", {bold:true, sz:24, spAfter:80, color:"A31515"});
     sortedQs.forEach(function(q) {
-      var comments = FB.grouped[q];
+      var comments = FB.grouped[q] || [];
       var flagNote = "";
       var mcqFlag = getMcqFlag(q);
       if (mcqFlag && mcqFlag !== "OK") flagNote = " [MCQ flag: " + mcqFlag + "]";
@@ -7392,6 +8350,7 @@ function exportFeedbackReport() {
     }
 
     var safeTitle = xmlSafe(title || "Feedback_Report").replace(/[^a-zA-Z0-9_\- ]/g,"_");
+    body += docxReportByline(ts);
     buildDocx(body, null, safeTitle, null).then(function(blob) {
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
@@ -7417,7 +8376,10 @@ function exportFeedbackReport() {
 var _origResetAll = resetAll;
 resetAll = function() {
   _origResetAll();
-  FB = {raw:[],parsed:[],pending:[],grouped:{},bareRefs:{},general:[],examTitle:'',examDate:'',ready:false};
+  FB = {raw:[],parsed:[],pending:[],grouped:{},bareRefs:{},general:[],examTitle:'',examDate:'',manualMaxQ:null,maxQUsed:null,maxQSource:null,ready:false};
+  var fbMaxQInput = document.getElementById('fb-max-q');
+  if (fbMaxQInput) fbMaxQInput.value = '';
+  fbRefreshQCountField();
   // Hide feedback tab, restore Analysis/Reports tabs
   var tabFb = document.getElementById('tab-feedback-main');
   if (tabFb) tabFb.style.display = 'none';
