@@ -1375,10 +1375,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '2.0';
-var APP_BUILD       = '20260708-01';
+var APP_BUILD       = '20260710-01';
 var APP_FAQ_VERSION = '2.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 8, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 8, 2026'; // Update each version close
+var APP_FAQ_DATE    = 'July 10, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 10, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -6611,7 +6611,6 @@ function switchSetupTab(tab) {
   }
 }
 
-// Detect language of a comment (EN/FR/mixed)
 // Extract question references from a comment fragment
 // Split a raw comment into per-question fragments
 // Returns [{qNum, text}] — qNum is null if no question detected
@@ -6643,7 +6642,7 @@ function isBareRef(text, qNum) {
   // Strip Q# reference from front
   var stripped = t.replace(new RegExp('^(?:#|[Qq](?:uestion)?\\s*\\.?\\s*#?\\s*)?' + qNum + '\\s*(?:\\\\?[:\\-\\)\\.\\,]+)?\\s*'), '').trim();
   stripped = stripped.replace(/^[Qq]\s*$/, '').trim();
-  if (stripped.length < 4) return true;
+  if (stripped.length < 3) return true;
   // Ends with dangling preposition/conjunction (incomplete sentence)
   if (/\b(?:of|with|and|or|but|to|in|for|from|by|at|on|as|a|the)\s*$/i.test(stripped)) return true;
   // Ends with reference-only words suggesting no real content
@@ -7268,6 +7267,186 @@ function runFeedbackAnalysis() {
 }
 
 // Finalise feedback — group, show results tab
+// ── Auto-categorization ──────────────────────────────────────────────────
+// Keyword tables for auto-categorization of feedback comments.
+// Priority rule: Translation > Content > Other.
+// Never overwrites a manually set _classif value.
+var FB_CATEG_KEYWORDS = {
+  translation: [
+    // Explicit translation / version signals
+    'translat', 'mistranslat',
+    'traduction', 'traduit', 'mal traduit', 'mal traduite',
+    'pas bien traduit', 'pas bien traduite',
+    'not translated properly', 'not translated correctly',
+    'erreur de traduction',
+    // Version language references
+    'french version', 'english version', 'version française', 'version anglaise',
+    'french wording', 'english wording',
+    'en français', 'en anglais',
+    'french question', 'english question',
+    'french stem', 'english stem',
+    'french option', 'english option',
+    'the french', 'the english version',
+    'la version en', 'la question en',
+    'version fr', 'version en',
+    'français est', 'anglais est',
+    // Mismatch / discrepancy signals
+    'not the same', 'pas pareil', 'pas la même', 'pas la meme',
+    'not equivalent', 'ne correspond pas', 'does not match',
+    'differ between', 'differs between',
+    'different wording', 'different meaning', 'sens différent', 'sens different',
+    'signification oppos', 'meaning oppos',
+    'wording differ', 'wording is different', 'worded differently',
+    'reads differently', 'reads different',
+    'discrepan', 'inconsisten',
+    'not consistent with',
+    'asking different', 'demande pas la même chose',
+    'question en français ne', 'question en anglais ne',
+    // One language missing or incomplete
+    'only in the french', 'only in french', 'only in the english', 'only in english',
+    'in the french translation', 'in the french version',
+    'in the english translation', 'in the english version',
+    'not in the english', 'not in the french',
+    'not provided in english', 'not provided in french',
+    'not written in english', 'not written in french',
+    'included in french', 'included in english',
+    'présent en français', 'present in french',
+    'read the french', 'read the english',
+    'cant read french', "can't read french",
+    // French grammar / phrasing issues
+    'la tournure', 'tournure de phrase',
+    'double négation', 'double negation', 'double-négation', 'double negatif', 'double négatif',
+    // Bilingual / cohort references
+    'french and english', 'anglais et français', 'français et anglais',
+    'both versions', 'les deux versions', 'two versions',
+    'bilingue', 'bilingual',
+    'francophone', 'anglophone',
+    'cohorte franco', 'cohorte anglo',
+    'langue', 'langage',
+    // Better/clearer in one language
+    'better in english', 'better in french',
+    'clearer in english', 'clearer in french',
+    'poorly worded in'
+  ],
+  content: [
+    // Two / multiple correct answers
+    'two correct answer', 'two correct', 'deux bonnes réponses', 'deux bonnes reponses',
+    'deux réponses correctes', 'deux reponses correctes',
+    'both correct', 'both acceptable', 'two acceptable',
+    'both a and', 'both b and', 'both c and', 'both d and', 'both e and',
+    'a and d both', 'a and c both', 'b and c both',
+    'both seem correct', 'both are correct', 'both could be correct',
+    'both would be', 'two possible answer', 'multiple correct',
+    'more than one', 'all of the above', 'none of the above',
+    'deux des choix', 'two of the answer',
+    // Duplicate / repeated answer options
+    'same answer', 'same option', 'même réponse', 'deux choix pareils',
+    'answer repeated', 'repeated answer', 'repeated option',
+    'options b and e are the same', 'b and e are the same',
+    'two of the options', 'two of the answers',
+    // Answer key / correctness
+    'answer key', 'correct answer', 'clé de réponse', 'bonne réponse',
+    'answer should be', 'correct answer should',
+    'answer is wrong', 'wrong answer', 'réponse est erronée',
+    'not correct', 'not the correct',
+    'incorrect', 'wrong', 'faux', 'erroné', 'erronée',
+    'not accurate', 'inaccurate', 'inexact',
+    // Guidelines / evidence
+    'guideline', 'new guideline', 'updated guideline', 'newest guideline',
+    '2025 guideline', 'latest guideline', 'recent guideline', 'current guideline',
+    'old guideline', 'previous guideline', 'older guideline',
+    'according to guideline', 'according to new',
+    'per new guideline', 'per the guideline', 'as per guideline',
+    'evidence', 'literature',
+    'outdated', 'désuet', 'out of date', 'no longer',
+    // Stem / question quality
+    'ambiguous', 'ambiguë', 'ambigu',
+    'unclear', 'pas clair', 'peu clair', 'not clear',
+    'vague', 'confusing', 'confus', 'misleading', 'trompeur',
+    'poorly written', 'mal écrit', 'mal rédigé',
+    'wording', 'poorly worded', 'confusing wording', 'unclear wording',
+    'wording is confus', 'wording unclear', 'wording confus',
+    'stem', 'question stem', 'lead-in',
+    'incomplete', 'incomplet',
+    'missing information', 'not enough information', 'not enough context',
+    'not enough info', 'insufficient information',
+    // Missing image / exhibit
+    'no image', 'no picture', 'no photo', 'no graph', 'no chart',
+    'growth chart', 'no growth chart', 'no cxr', 'no ct', 'no x-ray', 'no xray',
+    'no imaging', 'missing image', 'missing picture', 'missing chart',
+    'missing growth chart', 'missing the growth chart',
+    'image not', 'image is not', 'picture not', 'chart not',
+    'no associated image', 'no associated imaging',
+    'cannot see', 'hard to see', 'difficult to see',
+    // Image quality
+    'blurry', 'blurred', 'pixelated', 'pixelat', 'grainy',
+    'hard to read', 'difficult to read',
+    'cant see', "can't see", 'could not see', 'unable to see',
+    'too small', 'very small', 'miniscule',
+    'poor quality', 'poor resolution', 'low resolution',
+    'poor image', 'image quality', 'image resolution',
+    'zoom in', 'zoomed in',
+    'cannot read', "can't read", 'unable to read',
+    // Missing question text
+    'no question', 'no actual question', 'missing question',
+    'no question written', 'forgot to write', 'forgot to include',
+    'did not ask', 'does not ask', 'no question asked',
+    'just a statement', 'only a statement',
+    'not written', 'question is missing', 'actual question',
+    // Missing reference / normal values
+    'normal value', 'reference value', 'normal range', 'reference range',
+    'no normal', 'no normals',
+    'were told', 'were promised', 'promised', 'told we would',
+    // Distractor / option issues
+    'distractor', 'answer option', 'answer choice',
+    'none of the options', 'aucune option',
+    'choix de réponse', 'choix de reponse',
+    // Not covered / out of scope
+    'not covered', 'never taught', 'not in curriculum',
+    'never learned', 'not in objective', 'not in our objective',
+    'not in the objective', 'hors programme', 'hors objectif',
+    'out of scope', 'beyond scope', 'not within scope',
+    'not discussed', 'was not discussed', 'not presented',
+    'not part of', 'not expected', 'not on the breakdown',
+    'not in the block', 'not this block',
+    'not on our breakdown', 'not expected to know',
+    // Duplicate questions
+    'duplicate', 'same question', 'repeat question', 'repeated question',
+    'same as question', 'same as q', 'repeat of', 'is a repeat',
+    'already asked', 'asked twice',
+    // Factual errors
+    'should be', 'should say', 'should read',
+    'says x but', 'says y but',
+    // Curriculum / figure issues
+    'image', 'figure', 'photo', 'picture', 'graph', 'table',
+    'not in curriculum', 'au-delà', 'beyond'
+  ]
+};
+
+function autoCategorizeFb() {
+  if (!FB.parsed || !FB.parsed.length) return;
+  var kw = FB_CATEG_KEYWORDS;
+
+  FB.parsed.forEach(function(p) {
+    // Never overwrite a manual classification
+    if (p._classif) return;
+    // Only categorize comments that have actual text
+    if (!p.text || p.text.trim().length < 3) return;
+
+    var t = p.text.toLowerCase();
+
+    // Translation takes priority
+    var isTranslation = kw.translation.some(function(k){ return t.indexOf(k) !== -1; });
+    if (isTranslation) { p._classif = 'translation'; return; }
+
+    var isContent = kw.content.some(function(k){ return t.indexOf(k) !== -1; });
+    if (isContent) { p._classif = 'content'; return; }
+
+    // Everything else stays unclassified for now — Other is manual only
+    // (avoids noise from a catch-all; revisit post-testing)
+  });
+}
+
 function finaliseFeedback() {
   // Commit any Q# values typed/staged but not yet applied in the mapping screen
   if (FB.pending && FB.pending.length) {
@@ -7282,6 +7461,7 @@ function finaliseFeedback() {
     });
   }
   groupComments();
+  autoCategorizeFb();
   FB.ready = true;
   renderFbKpiZone();
   // Populate the banner card using the unified renderBanner (handles MCQ-only,
@@ -7297,7 +7477,15 @@ function finaliseFeedback() {
   var tabReports = document.getElementById('tab-reports');
   if (tabReports) tabReports.style.display = '';
 
-  // Show Feedback Report segment in Reports tab, update to rightmost active
+  // Show Feedback Report segment; hide MCQ/DIF/Full buttons if no MCQ data
+  var rpMcq = document.getElementById('rp-btn-mcq');
+  var rpDif = document.getElementById('rp-btn-dif');
+  var rpFull = document.getElementById('rp-btn-full');
+  if (!hasMcqData) {
+    if (rpMcq) rpMcq.style.display = 'none';
+    if (rpDif) rpDif.style.display = 'none';
+    if (rpFull) rpFull.style.display = 'none';
+  }
   var rpFb = document.getElementById('rp-btn-feedback');
   if (rpFb) rpFb.style.display = '';
 
@@ -7624,8 +7812,31 @@ function renderFbKpiZone() {
     '</div>';
   kpiGrid += arcKpi;
 
-  // Card 3: Total attributions
-  kpiGrid += fbKpi(totalAttr, 'Total attributions', FB.general.length + ' in General');
+  // Card 3: Total attributions — inline attributed + general, plus categorization row
+  var _nContent = FB.parsed.filter(function(p){ return p._classif === 'content'; }).length;
+  var _nTranslation = FB.parsed.filter(function(p){ return p._classif === 'translation'; }).length;
+  var _nOther = FB.parsed.filter(function(p){ return p._classif === 'other'; }).length;
+  var _nClassified = _nContent + _nTranslation + _nOther;
+  var _attrKpi = '<div style="background:var(--c-bg);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:14px 16px">' +
+    '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Total attributions</div>' +
+    '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">' +
+      '<span style="font-size:32px;font-weight:700;color:var(--c-fb);line-height:1">' + totalAttr + '</span>' +
+      '<span style="font-size:11px;color:var(--c-muted)">Attributed +&nbsp;&nbsp;' + FB.general.length + ' General comments</span>' +
+    '</div>';
+  var _nUncategorized = FB.parsed.filter(function(p){ return p.status !== 'discard' && !p._classif; }).length;
+  if (_nClassified > 0 || _nUncategorized > 0) {
+    var _cParts = [];
+    if (_nContent)      _cParts.push('<span style="color:#a0510a;font-weight:600">' + _nContent + ' Content</span>');
+    if (_nTranslation)  _cParts.push('<span style="color:#0a5a9c;font-weight:600">' + _nTranslation + ' Translation</span>');
+    if (_nOther)        _cParts.push('<span style="color:#4b5563;font-weight:600">' + _nOther + ' Other</span>');
+    if (_nUncategorized) _cParts.push('<span style="color:var(--c-muted)">' + _nUncategorized + ' Uncategorized</span>');
+    _attrKpi += '<div style="border-top:1px solid rgba(0,0,0,.07);margin-top:8px;padding-top:6px">' +
+      '<div style="font-size:10px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Comment categorization</div>' +
+      '<div style="font-size:11px">' + _cParts.join('<span style="color:var(--c-muted)"> · </span>') + '</div>' +
+    '</div>';
+  }
+  _attrKpi += '</div>';
+  kpiGrid += _attrKpi;
 
   // Card 4: Most commented
   kpiGrid += fbKpi(topQ ? 'Q' + topQ.q : '\u2014', 'Most commented', topQ ? commentLabel(topQ.commentCount, topQ.bareCount) : '');
@@ -7756,7 +7967,18 @@ function renderFeedbackReportPreview(container) {
     html += '<div style="font-size:13px;font-weight:700;margin-bottom:6px">Question ' + item.q;
     html += ' <span style="font-weight:400;color:var(--c-muted);font-size:12px">— ' + commentLabel(comments.length, bareCount) + '</span></div>';
     comments.slice(0, 5).forEach(function(c) {
-      html += '<div style="font-size:12px;color:var(--c-secondary);padding:4px 0 4px 12px;border-left:2px solid var(--c-border);margin-bottom:4px;white-space:pre-wrap;word-break:break-word">' + escHtml(c.text) + '</div>';
+      var _rc = FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
+      var _rcBadge = '';
+      if (_rc) {
+        var _rcStyles = {
+          content:     'background:#fff3e0;color:#a0510a;border:1px solid #f5c07a',
+          translation: 'background:#e3f2fd;color:#0a5a9c;border:1px solid #90caf9',
+          other:       'background:#f3f4f6;color:#4b5563;border:1px solid #d1d5db'
+        };
+        var _rcLabels = {content:'Content',translation:'Translation',other:'Other'};
+        _rcBadge = '<span style="' + (_rcStyles[_rc]||'') + ';font-size:10px;font-weight:700;border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:middle">' + (_rcLabels[_rc]||'') + '</span>';
+      }
+      html += '<div style="font-size:12px;color:var(--c-secondary);padding:4px 0 4px 12px;border-left:2px solid var(--c-border);margin-bottom:4px;white-space:pre-wrap;word-break:break-word">' + _rcBadge + escHtml(c.text) + '</div>';
     });
     if (comments.length > 5) html += '<div style="font-size:11px;color:var(--c-muted);padding-left:12px">+ ' + (comments.length-5) + ' more comment' + (comments.length-5===1?'':'s') + '</div>';
     if (bareCount > 0) html += '<div style="font-size:11px;color:var(--c-muted);padding-left:12px;margin-top:4px">' + bareCount + ' student' + (bareCount===1?' referenced':'s referenced') + ' this question without comment.</div>';
@@ -7912,6 +8134,7 @@ function renderFeedbackTab(view) {
         html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + _mvLabel + '</button>';
         html += '<button onclick="fbMoveToGeneral(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0d7a7a;border:1px solid #0d7a7a;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">General</button>';
         html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+        html += fbClassifyDropdownHtml(c.idx);
         html += '</span>';
         html += '</div>';
         html += fbBadgeTrayHtml(c.idx, staged, err, 'fbStageRemoveReassign', 'fbReassign');
@@ -7943,6 +8166,7 @@ function renderFeedbackTab(view) {
         var _mvLabelG = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move';
         html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + _mvLabelG + '</button>';
         html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+        html += fbClassifyDropdownHtml(c.idx);
         html += '</span>';
         html += '</div>';
         html += fbBadgeTrayHtml(c.idx, staged, err, 'fbStageRemoveReassign', 'fbReassign');
@@ -8057,6 +8281,7 @@ function renderFeedbackTab(view) {
             var mvL = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move';
             html += '<button onclick="fbReassign(' + c.idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + mvL + '</button>';
             html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+            html += fbClassifyDropdownHtml(c.idx);
             html += '</span></div>';
             html += fbBadgeTrayHtml(c.idx, staged, err, 'fbStageRemoveReassign', 'fbReassign');
             html += '</div>';
@@ -8280,7 +8505,18 @@ function exportFeedbackReport() {
       : kpiCellLocked('Flagged Qs w/ feedback', colW3);
 
     body += '<w:tr>' +
-      kpiCell('Total attributions', totalAttr, FB.general.length + ' in General', colW3) +
+      (function(){
+        var _wCnt = FB.parsed.filter(function(p){return p._classif==='content';}).length;
+        var _wTr  = FB.parsed.filter(function(p){return p._classif==='translation';}).length;
+        var _wOth = FB.parsed.filter(function(p){return p._classif==='other';}).length;
+        var _wSub = FB.general.length + ' in General';
+        var _wParts = [];
+        if (_wCnt) _wParts.push(_wCnt + ' Content');
+        if (_wTr)  _wParts.push(_wTr  + ' Translation');
+        if (_wOth) _wParts.push(_wOth + ' Other');
+        if (_wParts.length) _wSub += ' | Categorized: ' + _wParts.join(' - ');
+        return kpiCell('Total attributions', totalAttr, _wSub, colW3);
+      })() +
       kpiCell('Most commented', topQExp ? 'Q' + topQExp.q : '—', topQExp ? commentLabel(topQExp.commentCount, topQExp.bareCount) : '', colW3) +
       mcqKpiCell +
     '</w:tr>';
@@ -8332,7 +8568,9 @@ function exportFeedbackReport() {
       var expLabel = commentLabel(comments.length, expBareCount);
       body += docxPara("Question " + q + flagNote + " — " + expLabel, {bold:true, sz:22, spAfter:60, color:"1A1F24"});
       comments.forEach(function(c) {
-        body += docxPara("• " + xmlSafe(c.text), {spAfter:40, sz:22});
+        var _cl = FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
+        var _clLabel = _cl ? {content:'[Content] ',translation:'[Translation] ',other:'[Other] '}[_cl] || '' : '';
+        body += docxPara("• " + _clLabel + xmlSafe(c.text), {spAfter:40, sz:22});
       });
       if (expBareCount > 0) {
         body += docxPara(expBareCount + " student" + (expBareCount>1?"s":"") + " referenced this question without comment.", {sz:20, color:"888888", spAfter:40});
@@ -8345,7 +8583,9 @@ function exportFeedbackReport() {
       body += docxPara("General Feedback", {bold:true, sz:24, spAfter:80, color:"A31515"});
       body += docxPara("The following comments were not attributed to a specific question.", {sz:22, spAfter:60, color:"888888"});
       FB.general.forEach(function(c) {
-        body += docxPara("• " + xmlSafe(c.text), {spAfter:40, sz:22});
+        var _clG = FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
+        var _clGLabel = _clG ? {content:'[Content] ',translation:'[Translation] ',other:'[Other] '}[_clG] || '' : '';
+        body += docxPara("• " + _clGLabel + xmlSafe(c.text), {spAfter:40, sz:22});
       });
     }
 
@@ -8410,6 +8650,104 @@ resetAll = function() {
   var fbContent = document.getElementById('fb-results-content');
   if (fbContent) fbContent.innerHTML = '';
 };
+
+// ── Comment Classification ────────────────────────────────────────────────
+// Classify a comment as 'content', 'translation', 'other', or null (clear).
+// Auto-saves immediately; re-renders KPI zone and current view.
+function fbClassifyComment(idx, val) {
+  if (!FB.parsed[idx]) return;
+  FB.parsed[idx]._classif = (FB.parsed[idx]._classif === val) ? null : val;
+  renderFbKpiZone();
+  renderBanner();
+  renderFeedbackTabKeep(_fbView);
+}
+
+// Returns either a styled badge (if classified) or a "Categorize ▾" dropdown.
+function fbClassifyDropdownHtml(idx) {
+  var val = FB.parsed[idx] ? (FB.parsed[idx]._classif || null) : null;
+  var CLASSIF_COLORS = {
+    content:     {bg:'#fff3e0', color:'#a0510a', border:'#f5c07a'},
+    translation: {bg:'#e3f2fd', color:'#0a5a9c', border:'#90caf9'},
+    other:       {bg:'#f3f4f6', color:'#4b5563', border:'#d1d5db'}
+  };
+  var CLASSIF_LABELS = {content:'Content', translation:'Translation', other:'Other'};
+  var opts = ['content','translation','other'];
+
+  var dropItems = opts.map(function(v) {
+    var cc = CLASSIF_COLORS[v];
+    var isActive = val === v;
+    return '<button class="fc-opt" data-idx="' + idx + '" data-val="' + v + '" ' +
+      'style="display:block;width:100%;text-align:left;padding:5px 12px;font-size:11px;font-weight:' + (isActive?'700':'500') + ';color:' + cc.color + ';background:' + (isActive?cc.bg:'transparent') + ';border:none;cursor:pointer;white-space:nowrap">' +
+      (isActive ? '\u2713 ' : '') + CLASSIF_LABELS[v] + '</button>';
+  }).join('');
+
+  if (val) {
+    var c = CLASSIF_COLORS[val];
+    var clearBtn = '<div style="border-top:1px solid var(--c-border);margin:3px 0"></div>' +
+      '<button class="fc-opt" data-idx="' + idx + '" data-val="' + val + '" data-clear="1" ' +
+      'style="display:block;width:100%;text-align:left;padding:5px 12px;font-size:11px;color:var(--c-muted);background:transparent;border:none;cursor:pointer">Clear</button>';
+    return '<div style="position:relative;display:inline-block">' +
+      '<button class="fc-toggle" data-idx="' + idx + '" ' +
+      'style="font-size:10px;font-weight:700;background:' + c.bg + ';color:' + c.color + ';border:1px solid ' + c.border + ';border-radius:4px;padding:2px 7px;cursor:pointer;white-space:nowrap">' +
+      CLASSIF_LABELS[val] + ' \u25be</button>' +
+      '<div class="fc-drop" id="fc-dd-' + idx + '" style="display:none;position:fixed;background:#fff;border:1px solid var(--c-border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:9999;min-width:130px;padding:4px 0">' +
+        dropItems + clearBtn +
+      '</div></div>';
+  }
+
+  return '<div style="position:relative;display:inline-block">' +
+    '<button class="fc-toggle" data-idx="' + idx + '" ' +
+    'style="font-size:10px;font-weight:500;background:transparent;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 7px;cursor:pointer;white-space:nowrap">Categorize \u25be</button>' +
+    '<div class="fc-drop" id="fc-dd-' + idx + '" style="display:none;position:fixed;background:#fff;border:1px solid var(--c-border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:9999;min-width:130px;padding:4px 0">' +
+      dropItems +
+    '</div></div>';
+}
+
+// Delegated handler for classification dropdown toggle and option selection
+document.addEventListener('click', function(e) {
+  var toggle = e.target.closest('.fc-toggle');
+  var opt    = e.target.closest('.fc-opt');
+
+  if (toggle) {
+    e.stopPropagation();
+    var tidx = toggle.getAttribute('data-idx');
+    var dd = document.getElementById('fc-dd-' + tidx);
+    if (!dd) return;
+    var isOpen = dd.style.display === 'block';
+    // Close all first
+    document.querySelectorAll('.fc-drop').forEach(function(el){ el.style.display='none'; });
+    if (!isOpen) {
+      // Position fixed relative to toggle button
+      var rect = toggle.getBoundingClientRect();
+      dd.style.top  = (rect.bottom + 2) + 'px';
+      dd.style.right = (window.innerWidth - rect.right) + 'px';
+      dd.style.left = 'auto';
+      dd.style.display = 'block';
+    }
+    return;
+  }
+
+  if (opt) {
+    e.stopPropagation();
+    var oidx  = parseInt(opt.getAttribute('data-idx'), 10);
+    var oval  = opt.getAttribute('data-val');
+    var clear = opt.getAttribute('data-clear');
+    document.querySelectorAll('.fc-drop').forEach(function(el){ el.style.display='none'; });
+    if (clear) {
+      // Clear = set to null by toggling current value
+      if (FB.parsed[oidx]) FB.parsed[oidx]._classif = null;
+      renderFbKpiZone();
+      renderBanner();
+      renderFeedbackTabKeep(_fbView);
+    } else {
+      fbClassifyComment(oidx, oval);
+    }
+    return;
+  }
+
+  // Click elsewhere — close all
+  document.querySelectorAll('.fc-drop').forEach(function(el){ el.style.display='none'; });
+});
 
 // ── END FEEDBACK MODULE ───────────────────────────────────────────────────
 </script>
