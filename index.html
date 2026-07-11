@@ -1003,6 +1003,14 @@ th{position:relative;white-space:normal}
         </button>
       </div>
 
+      <!-- Feedback report options — only shown when Feedback Report tab is active -->
+      <div id="fb-report-options" style="display:none;margin-bottom:10px">
+        <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--c-muted);cursor:pointer;user-select:none">
+          <input type="checkbox" id="fb-show-categories" checked onchange="onFbShowCategoriesChange()" style="accent-color:var(--c-fb);width:13px;height:13px;cursor:pointer">
+          Show comment categories in report
+        </label>
+      </div>
+
       <!-- Report description — updates with toggle -->
       <div id="report-description" style="margin-bottom:12px">
         <div id="report-desc-title" style="font-size:14px;font-weight:700;color:var(--c-primary);margin-bottom:2px">MCQ Item Analysis Report</div>
@@ -1374,11 +1382,11 @@ th{position:relative;white-space:normal}
 "use strict";
 
 // ── App version — single source of truth ─────────────────────────────────
-var APP_VERSION     = '2.0';
-var APP_BUILD       = '20260710-01';
+var APP_VERSION     = '2.1-dev';
+var APP_BUILD       = '20260711-01';
 var APP_FAQ_VERSION = '2.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 10, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 10, 2026'; // Update each version close
+var APP_FAQ_DATE    = 'July 11, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 11, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -5575,6 +5583,9 @@ function switchReportPreview(which) {
   var bodyEl  = document.getElementById('report-desc-body');
   if (titleEl) titleEl.textContent = meta.title;
   if (bodyEl)  bodyEl.textContent  = meta.desc;
+  // Show category toggle only for feedback report
+  var fbOpts = document.getElementById('fb-report-options');
+  if (fbOpts) fbOpts.style.display = (which === 'feedback') ? '' : 'none';
 }
 function switchReportPreviewByClick(which) {
   preserveScrollDuring(function(){ switchReportPreview(which); });
@@ -7290,7 +7301,7 @@ var FB_CATEG_KEYWORDS = {
     'la version en', 'la question en',
     'version fr', 'version en',
     'français est', 'anglais est',
-    // Mismatch / discrepancy signals
+    // Mismatch signals — REMOVED 'discrepan', 'inconsisten' (too generic — false positives)
     'not the same', 'pas pareil', 'pas la même', 'pas la meme',
     'not equivalent', 'ne correspond pas', 'does not match',
     'differ between', 'differs between',
@@ -7298,16 +7309,18 @@ var FB_CATEG_KEYWORDS = {
     'signification oppos', 'meaning oppos',
     'wording differ', 'wording is different', 'worded differently',
     'reads differently', 'reads different',
-    'discrepan', 'inconsisten',
     'not consistent with',
     'asking different', 'demande pas la même chose',
     'question en français ne', 'question en anglais ne',
+    'même chose',
     // One language missing or incomplete
     'only in the french', 'only in french', 'only in the english', 'only in english',
+    'only written in french', 'only written in english',
     'in the french translation', 'in the french version',
     'in the english translation', 'in the english version',
     'not in the english', 'not in the french',
     'not provided in english', 'not provided in french',
+    'in english was not provided', 'in french was not provided',
     'not written in english', 'not written in french',
     'included in french', 'included in english',
     'présent en français', 'present in french',
@@ -7339,11 +7352,21 @@ var FB_CATEG_KEYWORDS = {
     'both would be', 'two possible answer', 'multiple correct',
     'more than one', 'all of the above', 'none of the above',
     'deux des choix', 'two of the answer',
+    'two right answers', 'multiple right answers', 'has two right',
+    'multiple answers seem', 'seem correct', 'multiple answers',
+    'feels like both', 'feel like both',
+    'all answers are correct', 'all answers correct', 'toutes les réponses sont',
+    'none are correct', 'none is correct', 'aucun des choix', 'aucun choix',
+    'technically correct', 'both technically',
+    'are possible', 'could be possible', 'are both possible',
+    'are correct', 'is correct', 'sont corrects', 'sont correctes',
     // Duplicate / repeated answer options
     'same answer', 'same option', 'même réponse', 'deux choix pareils',
     'answer repeated', 'repeated answer', 'repeated option',
+    'answers are the same', 'options are the same', 'the same thing', 'are identical',
     'options b and e are the same', 'b and e are the same',
     'two of the options', 'two of the answers',
+    'est la même question', 'même question que',
     // Answer key / correctness
     'answer key', 'correct answer', 'clé de réponse', 'bonne réponse',
     'answer should be', 'correct answer should',
@@ -7351,6 +7374,9 @@ var FB_CATEG_KEYWORDS = {
     'not correct', 'not the correct',
     'incorrect', 'wrong', 'faux', 'erroné', 'erronée',
     'not accurate', 'inaccurate', 'inexact',
+    'supposed to be', 'should it be', 'should this be', 'should it say',
+    'does it mean to say', 'mean to say',
+    'contradictoire', 'ce qui est contradictoire', 'is contradictory',
     // Guidelines / evidence
     'guideline', 'new guideline', 'updated guideline', 'newest guideline',
     '2025 guideline', 'latest guideline', 'recent guideline', 'current guideline',
@@ -7361,7 +7387,7 @@ var FB_CATEG_KEYWORDS = {
     'outdated', 'désuet', 'out of date', 'no longer',
     // Stem / question quality
     'ambiguous', 'ambiguë', 'ambigu',
-    'unclear', 'pas clair', 'peu clair', 'not clear',
+    'unclear', 'pas clair', 'peu clair', 'pas super clair', 'not clear', 'not entirely clear',
     'vague', 'confusing', 'confus', 'misleading', 'trompeur',
     'poorly written', 'mal écrit', 'mal rédigé',
     'wording', 'poorly worded', 'confusing wording', 'unclear wording',
@@ -7369,15 +7395,42 @@ var FB_CATEG_KEYWORDS = {
     'stem', 'question stem', 'lead-in',
     'incomplete', 'incomplet',
     'missing information', 'not enough information', 'not enough context',
-    'not enough info', 'insufficient information',
+    'not enough info', 'insufficient information', 'adequate information',
+    'no mention of', 'does not mention', 'ne mentionne pas',
+    "doesn't specify", 'does not specify', 'ne spécifie pas',
+    'makes no sense', 'ne fait pas de sens', "n'a pas de sens",
+    'question est bizarre', 'est bizarre', 'la question est bizarre',
+    'mal posée', 'question mal posée', 'poorly posed',
+    'not complete', 'is not complete', 'incomplete answer', 'incomplete option',
+    "doesn't say", 'doesnt say', 'ne dit pas',
+    'needs to be more clear', 'needs to be clearer', 'be more clear', 'need to be clearer',
+    'what does', 'what is meant by', 'unsure of what', 'unsure what this means',
+    'unfair', 'not fair',
+    'more info', 'used more info', 'could use more', 'more context',
+    'do not remember learning', 'doesnt specify', 'does not specify serum',
+    'veulent dire la même chose',
+    'not a lot of info', 'not enough context to', 'not a lot of context',
+    'more patient history', 'need more history', 'not enough history',
+    'unrealistic', 'seems unrealistic',
     // Missing image / exhibit
     'no image', 'no picture', 'no photo', 'no graph', 'no chart',
-    'growth chart', 'no growth chart', 'no cxr', 'no ct', 'no x-ray', 'no xray',
+    'growth chart', 'growth curve', 'no growth chart', 'no growth curve',
+    'courbe de croissance',
+    'no cxr', 'no ct', 'no x-ray', 'no xray',
     'no imaging', 'missing image', 'missing picture', 'missing chart',
     'missing growth chart', 'missing the growth chart',
+    'missing the cxr', 'missing the ct', 'missing the scan',
+    'missing the image', 'missing pics',
     'image not', 'image is not', 'picture not', 'chart not',
     'no associated image', 'no associated imaging',
     'cannot see', 'hard to see', 'difficult to see',
+    'je ne vois pas', 'pas inclue', "n'est pas inclue",
+    'not an option', 'no option for', 'missing option',
+    'not available as an answer', 'not an available answer',
+    'more information is required', 'information is required',
+    'results not provided', 'results were not provided', 'results not shown',
+    'was there meant to be', 'meant to be included',
+    'already given a', 'already done', 'already had a', 'already provided',
     // Image quality
     'blurry', 'blurred', 'pixelated', 'pixelat', 'grainy',
     'hard to read', 'difficult to read',
@@ -7387,6 +7440,8 @@ var FB_CATEG_KEYWORDS = {
     'poor image', 'image quality', 'image resolution',
     'zoom in', 'zoomed in',
     'cannot read', "can't read", 'unable to read',
+    'pointing to', 'pointing at', 'arrow is pointing', 'what is it pointing',
+    'hard to tell if pointing',
     // Missing question text
     'no question', 'no actual question', 'missing question',
     'no question written', 'forgot to write', 'forgot to include',
@@ -7402,22 +7457,34 @@ var FB_CATEG_KEYWORDS = {
     'none of the options', 'aucune option',
     'choix de réponse', 'choix de reponse',
     // Not covered / out of scope
-    'not covered', 'never taught', 'not in curriculum',
-    'never learned', 'not in objective', 'not in our objective',
-    'not in the objective', 'hors programme', 'hors objectif',
-    'out of scope', 'beyond scope', 'not within scope',
+    'not covered', 'never taught', 'not taught', 'were not taught', 'was not taught',
+    'not formally taught',
+    'never learned', 'did not learn', 'we did not learn',
+    'do not remember learning', "don't remember learning", "don't recall learning",
+    'do not recall learning', 'je ne me souviens pas', 'ne me souviens pas',
+    "on n'a pas appris", "n'avons pas appris", 'pas appris', 'on apas appris',
+    'not in objective', 'not in our objective', 'not in the objective',
+    'pas dans nos objectifs', 'pas dans les objectifs', 'hors objectifs',
+    'ni discuté en classe', 'pas discuté en classe',
+    'not in curriculum', 'hors programme', 'hors objectif',
+    'out of scope', 'beyond scope', 'beyond the scope', 'not within scope',
     'not discussed', 'was not discussed', 'not presented',
     'not part of', 'not expected', 'not on the breakdown',
-    'not in the block', 'not this block',
-    'not on our breakdown', 'not expected to know',
+    'not in the block', 'not this block', 'not on our breakdown',
+    'not expected to know', 'not supposed to be included', 'not supposed to be on',
+    'unrelated to', 'not related to',
+    'quel est le lien', 'lien avec la',
+    'erreur de grammaire', 'erreurs de grammaire', 'grammar error', 'grammatical error',
+    'not a familiar term', 'unfamiliar term',
+    'anatomy question', 'anatomy q',
+    'should not be asked', 'should be removed', 'should probably be removed',
     // Duplicate questions
     'duplicate', 'same question', 'repeat question', 'repeated question',
     'same as question', 'same as q', 'repeat of', 'is a repeat',
     'already asked', 'asked twice',
-    // Factual errors
+    // Factual errors / wrong info in question
     'should be', 'should say', 'should read',
-    'says x but', 'says y but',
-    // Curriculum / figure issues
+    // Curriculum / figure issues — 'image' kept: image issues are always content, never translation
     'image', 'figure', 'photo', 'picture', 'graph', 'table',
     'not in curriculum', 'au-delà', 'beyond'
   ]
@@ -7710,15 +7777,26 @@ function renderFbKpiZone() {
   var freq = sortedQs.map(function(q){ var cc=(FB.grouped[q]||[]).length, bc=FB.bareRefs[q]||0; return {q:q,count:cc+bc,commentCount:cc,bareCount:bc}; })
     .sort(function(a,b){return b.count-a.count;});
   var topQ = freq.length > 0 ? freq[0] : null;
-  var pctReached = sortedQs.length > 0 ? Math.round(sortedQs.length / (sortedQs[sortedQs.length-1] || 1) * 100) : 0;
+
+  // Context-aware ceiling for Questions Reached KPI
+  var hasMcqData = !!(G._lastN && G.mcq && G.mcq.length);
+  var _qCeiling, _qCeilingLabel;
+  if (hasMcqData && G.nQ > 0) {
+    _qCeiling = G.nQ;
+    _qCeilingLabel = 'from MCQ analysis';
+  } else if (FB.manualMaxQ && FB.manualMaxQ > 0) {
+    _qCeiling = FB.manualMaxQ;
+    _qCeilingLabel = 'manually set';
+  } else {
+    _qCeiling = sortedQs.length > 0 ? sortedQs[sortedQs.length - 1] : 150;
+    _qCeilingLabel = 'estimated from comments';
+  }
+  var pctReached = sortedQs.length > 0 ? Math.round(sortedQs.length / _qCeiling * 100) : 0;
 
   var seen = {};
   FB.parsed.forEach(function(p){ if (p.qNums.length > 0 && p.status !== 'discard') seen[p.rawIdx] = true; });
   var studentsWithQFeedback = Object.keys(seen).length;
   var pctStudentsWithQ = sourceRows > 0 ? Math.round(studentsWithQFeedback / sourceRows * 100) : 0;
-
-  // Use same condition as finaliseFeedback for consistency
-  var hasMcqData = !!(G._lastN && G.mcq && G.mcq.length);
   var totalEnrolled = hasMcqData ? G._lastN : 0;
   var concernFlagged = 0, totalConcern = 0, easyFlagged = 0, totalEasy = 0;
   if (hasMcqData) {
@@ -7789,7 +7867,8 @@ function renderFbKpiZone() {
     '<div style="display:flex;align-items:center;gap:6px">' +
       '<div style="flex-shrink:0">' +
         '<div style="font-size:28px;font-weight:700;color:' + arcColor + ';line-height:1;margin-bottom:4px">' + sortedQs.length + '</div>' +
-        '<div style="font-size:10px;color:var(--c-muted);white-space:nowrap">' + arcPct + '% of Q1–Q' + (FB.maxQUsed || '?') + '</div>' +
+        '<div style="font-size:10px;color:var(--c-muted);white-space:nowrap">' + arcPct + '% of Q1–Q' + _qCeiling + '</div>' +
+      '<div style="font-size:9px;color:var(--c-muted);white-space:nowrap;font-style:italic">' + _qCeilingLabel + '</div>' +
       '</div>' +
       '<div style="flex:1;display:flex;justify-content:center">' +
         '<svg width="80" height="80" viewBox="0 0 80 80">' +
@@ -7804,9 +7883,9 @@ function renderFbKpiZone() {
         '</svg>' +
       '</div>' +
       '<div style="flex-shrink:0;display:flex;flex-direction:column;gap:3px">' +
-        '<div style="font-size:8px;color:#b0b0b0;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#2e7d32;display:inline-block;flex-shrink:0"></span>Strong &gt;70%</div>' +
-        '<div style="font-size:8px;color:#b0b0b0;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#0d7a7a;display:inline-block;flex-shrink:0"></span>Moderate 41–70%</div>' +
-        '<div style="font-size:8px;color:#b0b0b0;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#e8a800;display:inline-block;flex-shrink:0"></span>Low ≤40%</div>' +
+        '<div style="font-size:8px;color:#5a6472;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#2e7d32;display:inline-block;flex-shrink:0"></span>Strong &gt;70%</div>' +
+        '<div style="font-size:8px;color:#5a6472;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#0d7a7a;display:inline-block;flex-shrink:0"></span>Moderate 41–70%</div>' +
+        '<div style="font-size:8px;color:#5a6472;display:flex;align-items:center;gap:3px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#e8a800;display:inline-block;flex-shrink:0"></span>Low ≤40%</div>' +
       '</div>' +
     '</div>' +
     '</div>';
@@ -7824,7 +7903,7 @@ function renderFbKpiZone() {
       '<span style="font-size:11px;color:var(--c-muted)">Attributed +&nbsp;&nbsp;' + FB.general.length + ' General comments</span>' +
     '</div>';
   var _nUncategorized = FB.parsed.filter(function(p){ return p.status !== 'discard' && !p._classif; }).length;
-  if (_nClassified > 0 || _nUncategorized > 0) {
+  if ((_nClassified > 0 || _nUncategorized > 0) && fbCategoriesVisible()) {
     var _cParts = [];
     if (_nContent)      _cParts.push('<span style="color:#a0510a;font-weight:600">' + _nContent + ' Content</span>');
     if (_nTranslation)  _cParts.push('<span style="color:#0a5a9c;font-weight:600">' + _nTranslation + ' Translation</span>');
@@ -7956,10 +8035,10 @@ function renderFeedbackReportPreview(container) {
   }
   html += '</div>';
 
-  // Comments by question (top 10 for preview)
+  // Comments by question — all questions, sorted by question number ascending
   html += '<div style="margin-bottom:20px">';
   html += '<div style="font-size:14px;font-weight:700;color:var(--c-accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Comments by Question</div>';
-  var previewQs = freq.slice(0, 10);
+  var previewQs = freq.slice().sort(function(a,b){return a.q-b.q;});
   previewQs.forEach(function(item) {
     var comments = FB.grouped[item.q] || [];
     var bareCount = FB.bareRefs[item.q] || 0;
@@ -7967,7 +8046,7 @@ function renderFeedbackReportPreview(container) {
     html += '<div style="font-size:13px;font-weight:700;margin-bottom:6px">Question ' + item.q;
     html += ' <span style="font-weight:400;color:var(--c-muted);font-size:12px">— ' + commentLabel(comments.length, bareCount) + '</span></div>';
     comments.slice(0, 5).forEach(function(c) {
-      var _rc = FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
+      var _rc = fbCategoriesVisible() && FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
       var _rcBadge = '';
       if (_rc) {
         var _rcStyles = {
@@ -7984,7 +8063,7 @@ function renderFeedbackReportPreview(container) {
     if (bareCount > 0) html += '<div style="font-size:11px;color:var(--c-muted);padding-left:12px;margin-top:4px">' + bareCount + ' student' + (bareCount===1?' referenced':'s referenced') + ' this question without comment.</div>';
     html += '</div>';
   });
-  if (freq.length > 10) html += '<div style="font-size:12px;color:var(--c-muted);font-style:italic">+ ' + (freq.length-10) + ' more questions — download the Word report for the full document.</div>';
+
   html += '</div>';
 
   html += '<div style="text-align:center;padding:20px 0;border-top:1px solid var(--c-border);font-size:11px;color:var(--c-muted)">' + fbCeilingNote() + '</div>';
@@ -8458,11 +8537,22 @@ function exportFeedbackReport() {
 
     var freq = sortedQs.map(function(q){
       return {q:q, count:(FB.grouped[q]||[]).length + (FB.bareRefs[q]||0), comments:(FB.grouped[q]||[]).length, bare:(FB.bareRefs[q]||0)};
-    }).sort(function(a,b){return b.count-a.count;});
+    }).sort(function(a,b){return a.q-b.q;});
     var highVol = freq.filter(function(f){return f.count >= HIGH_THRESH;});
     var medVol  = freq.filter(function(f){return f.count >= MED_THRESH && f.count < HIGH_THRESH;});
     var topQExp = freq.length > 0 ? freq[0] : null;
-    var pctReachedExp = sortedQs.length > 0 ? Math.round(sortedQs.length / Math.max(FB.maxQUsed || sortedQs[sortedQs.length-1] || 1, 1) * 100) : 0;
+    // Context-aware ceiling for Word export KPI
+    var _wQCeiling, _wQCeilingLabel;
+    var _wHasMcq = (typeof G !== 'undefined' && G && G._lastN && G.nQ && G.nQ > 0);
+    if (_wHasMcq) {
+      _wQCeiling = G.nQ; _wQCeilingLabel = 'from MCQ analysis';
+    } else if (FB.manualMaxQ && FB.manualMaxQ > 0) {
+      _wQCeiling = FB.manualMaxQ; _wQCeilingLabel = 'manually set';
+    } else {
+      _wQCeiling = sortedQs.length > 0 ? sortedQs[sortedQs.length-1] : 150;
+      _wQCeilingLabel = 'estimated from comments';
+    }
+    var pctReachedExp = sortedQs.length > 0 ? Math.round(sortedQs.length / _wQCeiling * 100) : 0;
 
     function kpiCell(label, value, sub, w) {
       var ns = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>';
@@ -8496,7 +8586,7 @@ function exportFeedbackReport() {
     body += tblHdr;
     body += '<w:tr>' +
       kpiCell('Students responded', sourceRows, '', colW3) +
-      kpiCell('Questions reached', sortedQs.length, pctReachedExp + '% of Q1–Q' + (FB.maxQUsed || sortedQs[sortedQs.length-1] || '?'), colW3) +
+      kpiCell('Questions reached', sortedQs.length, pctReachedExp + '% of Q1–Q' + _wQCeiling + ' · ' + _wQCeilingLabel, colW3) +
       kpiCell('Students w/ Q# feedback', studentsWithQFeedbackExp, pctStudentsWithQExp + '% of respondents', colW3) +
     '</w:tr>';
 
@@ -8514,7 +8604,7 @@ function exportFeedbackReport() {
         if (_wCnt) _wParts.push(_wCnt + ' Content');
         if (_wTr)  _wParts.push(_wTr  + ' Translation');
         if (_wOth) _wParts.push(_wOth + ' Other');
-        if (_wParts.length) _wSub += ' | Categorized: ' + _wParts.join(' - ');
+        if (_wParts.length && fbCategoriesVisible()) _wSub += ' | Categorized: ' + _wParts.join(' - ');
         return kpiCell('Total attributions', totalAttr, _wSub, colW3);
       })() +
       kpiCell('Most commented', topQExp ? 'Q' + topQExp.q : '—', topQExp ? commentLabel(topQExp.commentCount, topQExp.bareCount) : '', colW3) +
@@ -8568,7 +8658,7 @@ function exportFeedbackReport() {
       var expLabel = commentLabel(comments.length, expBareCount);
       body += docxPara("Question " + q + flagNote + " — " + expLabel, {bold:true, sz:22, spAfter:60, color:"1A1F24"});
       comments.forEach(function(c) {
-        var _cl = FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
+        var _cl = fbCategoriesVisible() && FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
         var _clLabel = _cl ? {content:'[Content] ',translation:'[Translation] ',other:'[Other] '}[_cl] || '' : '';
         body += docxPara("• " + _clLabel + xmlSafe(c.text), {spAfter:40, sz:22});
       });
@@ -8583,7 +8673,7 @@ function exportFeedbackReport() {
       body += docxPara("General Feedback", {bold:true, sz:24, spAfter:80, color:"A31515"});
       body += docxPara("The following comments were not attributed to a specific question.", {sz:22, spAfter:60, color:"888888"});
       FB.general.forEach(function(c) {
-        var _clG = FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
+        var _clG = fbCategoriesVisible() && FB.parsed[c.idx] ? FB.parsed[c.idx]._classif : null;
         var _clGLabel = _clG ? {content:'[Content] ',translation:'[Translation] ',other:'[Other] '}[_clG] || '' : '';
         body += docxPara("• " + _clGLabel + xmlSafe(c.text), {spAfter:40, sz:22});
       });
@@ -8652,6 +8742,17 @@ resetAll = function() {
 };
 
 // ── Comment Classification ────────────────────────────────────────────────
+// Returns true if the "show categories" checkbox is checked (default: true)
+function fbCategoriesVisible() {
+  var cb = document.getElementById('fb-show-categories');
+  return !cb || cb.checked;
+}
+// Called when the checkbox changes — re-renders preview
+function onFbShowCategoriesChange() {
+  var fbReportDiv = document.getElementById('feedback-report');
+  if (fbReportDiv && FB.ready) renderFeedbackReportPreview(fbReportDiv);
+}
+
 // Classify a comment as 'content', 'translation', 'other', or null (clear).
 // Auto-saves immediately; re-renders KPI zone and current view.
 function fbClassifyComment(idx, val) {
@@ -8660,6 +8761,9 @@ function fbClassifyComment(idx, val) {
   renderFbKpiZone();
   renderBanner();
   renderFeedbackTabKeep(_fbView);
+  // Keep UI report preview in sync with manual categorization changes
+  var fbReportDiv = document.getElementById('feedback-report');
+  if (fbReportDiv) renderFeedbackReportPreview(fbReportDiv);
 }
 
 // Returns either a styled badge (if classified) or a "Categorize ▾" dropdown.
@@ -9010,9 +9114,9 @@ document.addEventListener('click', function(e) {
 
           <!-- Theme selector FAQ entry -->
           <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">
+            <div class="faq-q" onclick="toggleFAQ(this)">
               <span>Can I change the colour theme of the app?</span>
-              <span class="faq-chevron">+</span>
+              <span class="faq-icon">+</span>
             </div>
             <div class="faq-a" style="display:none">
               Yes. Open <strong>Settings</strong> (hamburger menu, top right) and choose a theme from the <strong>Colour Theme</strong> dropdown under <em>Appearance</em>. Two options are available: <strong>uOttawa Theme</strong> (garnet, the default) and <strong>Elentra Theme</strong> (purple). Your choice is saved automatically and restored the next time you open the tool.
@@ -9199,11 +9303,15 @@ document.addEventListener('click', function(e) {
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggleFAQ(this)">
-              <span>What's the difference between the MCQ Report and the Full Report?</span>
+              <span>What reports are available and where do I find them?</span>
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              The <strong>MCQ Report</strong> covers item-level statistics, flagged questions, and too-easy questions — it's the standard report sent to exam directors. The <strong>Full Report</strong> combines everything: the MCQ analysis plus the DIF analysis, the Exam Overview section, and all tables in a single Word document. Use the Full Report when the exam director needs everything in one file. The Full Report tab is only available when DIF analysis is enabled.
+              All reports are in the <strong>Reports</strong> tab. Use the report switcher at the top to select which report to preview, then click <strong>Download Word</strong> to export.<br><br>
+              <strong>MCQ Report</strong> — item-level statistics, flagged questions, and too-easy questions. The standard report sent to exam directors.<br><br>
+              <strong>DIF Report</strong> — differential item functioning analysis comparing English and French student performance. Only available when DIF is enabled.<br><br>
+              <strong>Full Report</strong> — combines the MCQ and DIF reports into a single Word document. Only available when DIF is enabled.<br><br>
+              <strong>Feedback Report</strong> — all student comments organised by question number in ascending order, with a summary and key findings section. Only available after running a feedback analysis.
             </div>
           </div>
 
@@ -9234,6 +9342,87 @@ document.addEventListener('click', function(e) {
             </div>
             <div class="faq-a">
               Not currently — the tool runs entirely in your browser and does not save session data between visits. If you close the tab or browser, you'll need to re-upload and re-run the analysis. Make sure to download your Word and CSV exports before closing. Session history is planned for a future version.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Student Feedback -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--c-accent);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--c-accent)">Student Feedback</div>
+        <div style="display:flex;flex-direction:column;gap:1px">
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the Student Feedback feature?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The <strong>Student Feedback</strong> tab lets you upload a QuestionMark feedback export (.xlsx) and automatically organise student comments by question number. The tool parses free-text comments, identifies which questions each comment refers to, and groups them into a structured report. You can review, reassign, and discard comments before exporting a Word report. If an MCQ analysis is also loaded in the same session, flagged questions are automatically cross-referenced in the feedback results.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What file do I need to upload for feedback?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              You need the <strong>QuestionMark feedback export</strong> (.xlsx) — the same raw export you receive from QuestionMark for the notes/feedback question. Upload it in the <strong>Feedback</strong> tab under the Student Feedback section. No preparation is needed before uploading.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Should I set a question count ceiling before running the feedback analysis?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              It is strongly recommended. Enter the total number of questions on the exam in the <strong>Question count</strong> field in the Feedback setup area before clicking <strong>Parse &amp; Analyse Feedback</strong>. This tells the parser the valid range of question numbers (Q1 through your ceiling) and prevents it from picking up stray numbers in comments as question references.<br><br>
+              If you have already run an MCQ analysis in the same session, the question count is set automatically and the field is locked. If you leave the field blank, the tool defaults to a ceiling of 150, which will produce a lower percentage in the Questions Reached indicator than reality.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What happens after I click Parse &amp; Analyse Feedback?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The tool parses every student comment and attributes each one to one or more question numbers based on the text. Comments that could not be attributed to a specific question are routed to a <strong>pending review</strong> screen where you can manually assign them to a question number, mark them as General, or discard them.<br><br>
+              Once you have reviewed the pending items, click <strong>Apply &amp; Generate Report</strong>. The tool then builds the feedback report and takes you to the <strong>Feedback</strong> tab showing the results by frequency. You can switch between the Frequency, By Question, and Most Commented views using the tabs in the Feedback section.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Can I reassign or discard a comment after the report is generated?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Yes — the <strong>By Question</strong> view shows every comment with controls to reassign it to a different question number, move it to General, or discard it. Discarded comments appear in the <strong>Discarded</strong> tab and can be recovered at any time. Changes are reflected immediately in the report preview and in the Word export.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the Feedback Report and how do I export it?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The <strong>Feedback Report</strong> is a structured Word document listing all comments organised by question number, in ascending order. It includes a summary section, key findings (high and moderate volume questions), all comments per question, and any General feedback. To export it, go to the <strong>Reports</strong> tab, select <strong>Feedback Report</strong> in the report switcher, and click <strong>Download Word</strong>.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What does the "Show comment categories in report" checkbox do?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              When checked (the default), comment category badges — <strong>Content</strong>, <strong>Translation</strong>, and <strong>Other</strong> — appear alongside each comment in the report preview and in the Word export. These badges are assigned automatically when the report is generated, and can be changed or cleared manually in the By Question view.<br><br>
+              Unchecking the box hides all category badges from both the preview and the Word export without removing the underlying categorizations. This is useful when you want to share a clean report before the categorization review is complete. The checkbox appears in the Reports tab when the Feedback Report is selected.
             </div>
           </div>
 
