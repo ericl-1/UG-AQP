@@ -16,7 +16,7 @@
   /* ── Structural / brand tokens (theme-swappable) ── */
   --c-primary:       #2a3444;   /* body text, headings — dark neutral ink */
   --c-secondary:     #4a5a66;   /* secondary text, sub-labels */
-  --c-muted:         #63727e;   /* muted text, placeholders, icons */
+  --c-muted:         #566069;   /* muted text, placeholders, icons */
   --c-faint:         #63727e;   /* alias for muted — footer, captions */
   --c-accent:        #a31515;   /* primary brand — buttons, active states */
   --c-accent-dark:   #8b1010;   /* hover, emphasis */
@@ -35,9 +35,9 @@
   --s-ok-bg:         #eaf3de;
   --s-hard:          #c0392b;
   --s-hard-bg:       #fff0f0;
-  --s-credited:      #a07200;
+  --s-credited:      #7a5500;
   --s-credited-bg:   #fff8dc;
-  --s-lowdisc:       #8a5400;
+  --s-lowdisc:       #6b3f00;
   --s-lowdisc-bg:    #fdf0da;
   --s-easy:          #185fa5;
   --s-easy-bg:       #e8f4fd;
@@ -61,7 +61,7 @@
 :root[data-theme="elentra"]{
   --c-primary:       #4e3475;
   --c-secondary:     #4d4562;
-  --c-muted:         #746d8a;
+  --c-muted:         #635b7a;
   --c-faint:         #746d8a;
   --c-accent:        #6d5fa8;
   --c-accent-dark:   #5c4ea0;
@@ -1853,11 +1853,11 @@ th{position:relative;white-space:normal}
 "use strict";
 
 // ── App version — single source of truth ─────────────────────────────────
-var APP_VERSION     = '2.9';
-var APP_BUILD       = '20260714-05';
-var APP_FAQ_VERSION = '2.9';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 14, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 14, 2026'; // Update each version close
+var APP_VERSION     = '3.0';
+var APP_BUILD       = '20260715-01';
+var APP_FAQ_VERSION = '3.0';           // Update when FAQ content changes
+var APP_FAQ_DATE    = 'July 15, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 15, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -2858,6 +2858,22 @@ function parseResults(text, xlsxRows, isCsv) {
     ], ''); return;
   }
 
+  // Extract Elentra IDs from wording row (rows[1]) HTML
+  // Format: <font color="white">Question ID: 123456</font> at start of each question cell
+  // Build a map: scoreCol → elentraId string (empty if absent)
+  var elentraIdByCol = {};
+  var wordingRow = rows[1] || [];
+  for (var wi = 0; wi < wordingRow.length; wi++) {
+    var wCell = String(wordingRow[wi] || '');
+    var eidMatch = wCell.match(/Question\s+ID:\s*(\d+)/i);
+    if (eidMatch) elentraIdByCol[wi] = eidMatch[1];
+  }
+  // Map to question order: questions[qi].scoreCol → elentraId
+  G.elentraIds = questions.map(function(q) {
+    // Try scoreCol directly, then adjacent cols (merged cell offset)
+    return elentraIdByCol[q.scoreCol] || elentraIdByCol[q.scoreCol - 1] || elentraIdByCol[q.scoreCol + 1] || '';
+  });
+
   // Parse students
   G.students = [];
   G.nQ = questions.length;
@@ -3613,7 +3629,7 @@ function exportSessionRecord() {
   var s2R = (G.mcq||[]).map(function(r) {
     var dif = (G.dif||[]).find(function(d){return d.qi===r.num-1;});
     var isDel = r.excluded==='delete';
-    return [r.num,'',r.key||'',(r.altKeys&&r.altKeys.length)?r.altKeys.join('+'):'',
+    return [r.num,r.elentraId||'',r.key||'',(r.altKeys&&r.altKeys.length)?r.altKeys.join('+'):'',
       isDel?'':(r.p!=null?(Math.round(r.p*100)/100).toFixed(2):''),
       isDel?'':(r.rpbis!=null?(Math.round(r.rpbis*100)/100).toFixed(2):''),
       r.flag||'',r.excluded==='credit'?'Credit':isDel?'Delete':'Include',r.reason||'',
@@ -3989,7 +4005,7 @@ function _runAnalysis() {
     // Deleted questions — minimal record, no stats
     if (qExclDisp === 'delete') {
       var dAltKeys = (excl[i] && excl[i].altKeys) ? excl[i].altKeys : [];
-      G.mcq.push({ num:i+1, q:G.qLabels[i]||String(i+1), key:key[i]?key[i].toUpperCase():'?', p:null, rpbis:null, flag:'', rec:'', excluded:'delete', reason:qExclReason, altKeys:dAltKeys, altReason:'', status:G.qStatus[i] });
+      G.mcq.push({ num:i+1, q:G.qLabels[i]||String(i+1), key:key[i]?key[i].toUpperCase():'?', p:null, rpbis:null, flag:'', rec:'', excluded:'delete', reason:qExclReason, altKeys:dAltKeys, altReason:'', status:G.qStatus[i], elentraId:(G.elentraIds&&G.elentraIds[i])||'' });
       continue;
     }
 
@@ -4058,7 +4074,7 @@ function _runAnalysis() {
       p:p, rpbis:rpbis, flag:flag, rec:rec, pct:Math.round(p*100),
       topWrong:topWrong, status:G.qStatus[i], distCounts:distCounts, noResp:noResp, n:n,
       excluded: qExclDisp !== 'include' ? qExclDisp : '', reason: qExclReason,
-      altKeys: qAltKeys, altReason: qAltReason});
+      altKeys: qAltKeys, altReason: qAltReason, elentraId:(G.elentraIds&&G.elentraIds[i])||''});
   }
 
   // Build index of non-deleted questions for Cronbach (deleted cols are all-zeros, inflating k)
@@ -4522,7 +4538,7 @@ function renderNewSummary(n, avg, alpha, nE, nF) {
           +'<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;color:var(--c-secondary);width:74px;flex-shrink:0">Poor disc.</div><div style="flex:1;height:6px;background:var(--c-border);border-radius:3px"><div style="height:6px;border-radius:3px;background:#ef9f27;width:'+bw(nPoor)+'%"></div></div><div style="font-size:12px;font-weight:700;color:#854f0b;min-width:24px;text-align:right">'+nPoor+'</div></div>'
           +(G_DIF_ENABLED&&nDIF>0?'<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;color:var(--c-secondary);width:74px;flex-shrink:0">DIF flagged</div><div style="flex:1;height:6px;background:var(--c-border);border-radius:3px"><div style="height:6px;border-radius:3px;background:#5c6bc0;width:'+bw(nDIF)+'%"></div></div><div style="font-size:12px;font-weight:700;color:#3949ab;min-width:24px;text-align:right">'+nDIF+'</div></div>':'')
           +(nCredited>0||nDeleted>0?'<div style="border-top:1px solid var(--c-border);margin-top:2px;padding-top:6px"></div>':'')
-          +(nCredited>0?'<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;color:var(--c-secondary);width:74px;flex-shrink:0">Credited</div><div style="flex:1;height:6px;background:var(--c-border);border-radius:3px"><div style="height:6px;border-radius:3px;background:#e8a800;width:'+bw(nCredited)+'%"></div></div><div style="font-size:12px;font-weight:700;color:#a07200;min-width:24px;text-align:right">'+nCredited+'</div></div>':'')
+          +(nCredited>0?'<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;color:var(--c-secondary);width:74px;flex-shrink:0">Credited</div><div style="flex:1;height:6px;background:var(--c-border);border-radius:3px"><div style="height:6px;border-radius:3px;background:#e8a800;width:'+bw(nCredited)+'%"></div></div><div style="font-size:12px;font-weight:700;color:#7a5500;min-width:24px;text-align:right">'+nCredited+'</div></div>':'')
           +(nDeleted>0?'<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;color:var(--c-secondary);width:74px;flex-shrink:0">Deleted</div><div style="flex:1;height:6px;background:var(--c-border);border-radius:3px"><div style="height:6px;border-radius:3px;background:var(--c-accent);opacity:.6;width:'+bw(nDeleted)+'%"></div></div><div style="font-size:12px;font-weight:700;color:var(--c-accent);min-width:24px;text-align:right">'+nDeleted+'</div></div>':'')
         +'</div>'
         +(G_DIF_ENABLED
@@ -4567,7 +4583,7 @@ function renderWhatsNext(nFlagged, nEasy, nDIF, difEnabled) {
     // There are items to review
     var parts = [];
     if (nFlagged > 0) parts.push(nFlagged + ' question' + (nFlagged===1?' needs':' need') + ' review');
-    if (nEasy > 0)    parts.push(nEasy + ' too easy');
+    if (nEasy > 0)    parts.push(nEasy + ' too-easy question' + (nEasy===1?'':'s'));
     if (hasDIF)       parts.push(nDIF + ' DIF flag' + (nDIF===1?'':'s'));
 
     bar.style.background = '#fffbf0';
@@ -4611,7 +4627,7 @@ function renderWhatsNextFeedback() {
     bar.style.borderColor = '#c8e6c9';
     icon.textContent = '✓';
     icon.style.color = '#2e6e1a';
-    text.innerHTML = '<strong style="color:#2e6e1a">Feedback looks ready.</strong> ' + byQ + ' question' + (byQ===1?' attribution':'attributions') + (gen > 0 ? ', ' + gen + ' general comment' + (gen===1?'':'s') : '') + '. You can export the feedback report.';
+    text.innerHTML = '<strong style="color:#2e6e1a">Feedback looks ready.</strong> ' + byQ + ' comment' + (byQ===1?'':' s') + ' linked to questions' + (gen > 0 ? ', ' + gen + ' general comment' + (gen===1?'':'s') : '') + '. You can export the feedback report.';
     btn.style.display = 'inline-block';
     btn.textContent = 'Go to Reports →';
     btn.onclick = function() { var t=document.getElementById('tab-reports'); if(t) switchMainTabByClick('reports',t); };
@@ -4859,11 +4875,14 @@ function renderMCQTable(filter) {
     else if(filter==='dif'){if(G.dif){var drow=G.dif.filter(function(d){return d.num===rows[i].num;}); if(drow.length&&drow[0].imp){filtered.push(rows[i]);}}}
     else{filtered.push(rows[i]);}
   }
+  var hasElentraIds = G.mcq.some(function(r){ return r.elentraId; });
+  var eidTh = hasElentraIds ? '<th style="width:72px;font-size:10px;white-space:normal;line-height:1.3" data-tip="Elentra item ID — the unique identifier for this question in the Elentra item bank.">Elentra ID</th>' : '';
+  var eidCell = function(r) { return hasElentraIds ? '<td style="font-size:11px;color:var(--c-secondary);text-align:center">' + (r.elentraId || '—') + '</td>' : ''; };
   var html=
     '<thead><tr>'+
     '<th style="width:20px;text-align:center"><button id="btn-expand-all" onclick="toggleExpandAll()" data-tip="Click to expand or collapse distractor analysis for all questions." style="display:inline-flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;"><svg id="expand-all-arrow" width="11" height="11" viewBox="0 0 11 11" fill="none" style="transition:transform .2s"><polygon points="1,1 10,5.5 1,10" fill="var(--c-accent-dark)"/></svg></button></th>'+
     '<th data-tip="Question number as it appears in the results file.">#</th>'+
-    '<th style="width:36px" data-tip="The correct answer letter from the answer key file. If an alternate key is set, shows as A (+D).">Key</th>'+
+    eidTh+'<th style="width:36px" data-tip="The correct answer letter from the answer key file. If an alternate key is set, shows as A (+D).">Key</th>'+
     '<th data-tip="Difficulty index (p-value): proportion of students who answered correctly. Ideal range 0.35–0.95. Below 0.35 = Difficult; 0.96 or above = Too easy.">Difficulty (p)</th>'+
     '<th data-tip="Discrimination index (point-biserial correlation): measures how well this question separates strong from weak students. Above 0.25 = good; 0.15–0.25 = acceptable; below 0.15 = low; negative = red flag (stronger students chose wrong answer).">Discrimination</th>'+
     '<th style="min-width:80px" data-tip="The reason this question was flagged based on UGME analysis thresholds. Possible values: Difficult, Poor discrimination, Low discrimination, Too easy. A DIF badge also appears here if the question shows a significant EN/FR performance gap, independent of the other flag types. Note: Check Key is a Recommendation, not a Reason for Flag — it appears in the Recommendation column when difficulty is below 0.25 and discrimination is below 0.15, regardless of which flag applies.">Reason for Flag</th>'+
@@ -4879,6 +4898,7 @@ function renderMCQTable(filter) {
       html+='<tr style="background:#fafafa;cursor:default">'+
         '<td></td>'+
         '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#c0392b;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Deleted</span></td>'+
+        eidCell(r)+
         '<td><b>'+fmtKey(r.key,r.altKeys)+'</b></td>'+
         '<td colspan="5" style="font-size:12px;color:var(--c-muted);font-style:italic">Excluded from analysis</td>'+
         '<td style="font-size:11px;color:var(--c-muted);font-style:italic">'+(r.reason?'Reason: '+r.reason:'')+'</td>'+
@@ -4890,7 +4910,8 @@ function renderMCQTable(filter) {
     if (r.excluded === 'credit') {
       html+='<tr style="background:#fffbea;cursor:default">'+
         '<td><span class="expand-btn" onclick="toggleDist('+r.num+')" id="expand-btn-'+r.num+'" data-tip="Click to show distractor analysis for this question.">&#9654;</span></td>'+
-        '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#a07200;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td>'+
+        '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td>'+
+        eidCell(r)+
         '<td><b>'+fmtKey(r.key,r.altKeys)+'</b></td>'+
         '<td>'+fmt(r.p,2)+' <span style="color:#777;font-size:10px">('+r.pct+'%)</span></td>'+
         '<td>'+fmt(r.rpbis,2)+'</td>'+
@@ -4920,6 +4941,7 @@ function renderMCQTable(filter) {
     html+='<tr'+rc+' style="cursor:default">'+
       '<td><span class="expand-btn" onclick="toggleDist('+r.num+')" id="expand-btn-'+r.num+'" data-tip="Click to show distractor analysis for this question.">&#9654;</span></td>'+
       '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left">'+r.num+'</td>'+
+      eidCell(r)+
       '<td><b>'+fmtKey(r.key,r.altKeys)+'</b></td>'+
       '<td>'+fmt(r.p,2)+' <span style="color:#777;font-size:10px">('+r.pct+'%)</span></td>'+
       '<td>'+fmt(r.rpbis,2)+'</td>'+
@@ -5086,7 +5108,7 @@ function renderMCQReport(avg, alpha) {
     if (r.excluded === 'delete') {
       t3+='<tr style="background:#f2f2f2"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#c0392b;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Deleted</span></td><td style="text-align:center">'+r.key+'</td><td colspan="2" style="font-style:italic;color:var(--c-muted)">Excluded from analysis</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else if (r.excluded === 'credit') {
-      t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#a07200;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
+      t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else {
       var isDIF=G_DIF_ENABLED&&G.dif&&G.dif.some(function(d){return d.num===r.num&&d.imp;});
       var rowFill=r.flag==='Too easy'?' class="row-easy"':r.flag?' class="row-flagged"':isDIF?' class="row-dif"':'';
@@ -5182,7 +5204,7 @@ function renderFullReport(avg, alpha) {
     if (r.excluded === 'delete') {
       t3+='<tr style="background:#f2f2f2"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#c0392b;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Deleted</span></td><td style="text-align:center">'+r.key+'</td><td colspan="2" style="font-style:italic;color:var(--c-muted)">Excluded from analysis</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else if (r.excluded === 'credit') {
-      t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#a07200;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
+      t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else {
       var isDIF=G_DIF_ENABLED&&G.dif&&G.dif.some(function(d){return d.num===r.num&&d.imp;});
       var rowFill=r.flag==='Too easy'?' class="row-easy"':r.flag?' class="row-flagged"':isDIF?' class="row-dif"':'';
@@ -5289,7 +5311,7 @@ function renderFullReport(avg, alpha) {
             +(nFlagged>0?badge(nFlagged+' flagged','#fff4e6','#b25400'):'')
             +(nEasy>0?badge(nEasy+' easy','#e8f4fd','#0a5a9c'):'')
             +(nDIF>0?badge(nDIF+' DIF','#e8eaf6','#3949ab'):'')
-            +(nCredited>0?badge(nCredited+' credited','#fff8dc','#a07200'):'')
+            +(nCredited>0?badge(nCredited+' credited','#fff8dc','#7a5500'):'')
             +(nDeleted>0?badge(nDeleted+' deleted','#fce8e8','var(--c-accent)'):'')
             +(nFlagged===0&&nEasy===0&&(!G_DIF_ENABLED||nDIF===0)&&nCredited===0&&nDeleted===0?badge('All OK','#eaf3de','#2e6e1a'):'')
           +'</div>'
@@ -5315,7 +5337,7 @@ function renderFullReport(avg, alpha) {
             +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Poor disc.</div>'+miniBar(_bw(nPoor),'#ef9f27')+'<div style="font-size:10px;font-weight:700;color:#854f0b;min-width:18px;text-align:right">'+nPoor+'</div></div>'
             +(G_DIF_ENABLED&&nDIF>0?'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">DIF flagged</div>'+miniBar(_bw(nDIF),'#5c6bc0')+'<div style="font-size:10px;font-weight:700;color:#3949ab;min-width:18px;text-align:right">'+nDIF+'</div></div>':'')
             +(nCredited>0||nDeleted>0?'<div style="border-top:1px solid var(--c-border);margin-top:2px;padding-top:5px"></div>':'')
-            +(nCredited>0?'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Credited</div>'+miniBar(_bw(nCredited),'#e8a800')+'<div style="font-size:10px;font-weight:700;color:#a07200;min-width:18px;text-align:right">'+nCredited+'</div></div>':'')
+            +(nCredited>0?'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Credited</div>'+miniBar(_bw(nCredited),'#e8a800')+'<div style="font-size:10px;font-weight:700;color:#7a5500;min-width:18px;text-align:right">'+nCredited+'</div></div>':'')
             +(nDeleted>0?'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Deleted</div>'+miniBar(_bw(nDeleted),'var(--c-accent)')+'<div style="font-size:10px;font-weight:700;color:var(--c-accent);min-width:18px;text-align:right">'+nDeleted+'</div></div>':'')
           +'</div>'
           +(G_DIF_ENABLED?'<div style="border-top:1px solid var(--c-border);margin-top:10px;padding-top:8px">'
@@ -5397,9 +5419,13 @@ function renderFullReport(avg, alpha) {
 
 // ── Render: DIF table ─────────────────────────────────────────────────────
 function renderDIFTable() {
+  var difHasEid = G.mcq && G.mcq.some(function(r){ return r.elentraId; });
+  var difEidTh = difHasEid ? '<th style="width:72px;font-size:10px;white-space:normal;line-height:1.3" data-tip="Elentra item ID.">Elentra ID</th>' : '';
+  var difEidCell = function(mcqR) { return difHasEid ? '<td style="font-size:11px;color:var(--c-secondary);text-align:center">' + (mcqR.elentraId || '—') + '</td>' : ''; };
   var html=
     '<thead><tr>'+
     '<th style="width:36px" data-tip="Question number.">#</th>'+
+    difEidTh+
     '<th style="width:54px" data-tip="Chi-square from Block 1 (total score only).">B1 &#967;&sup2;</th>'+
     '<th style="width:48px" data-tip="Nagelkerke R-squared from Block 1.">B1 R&sup2;</th>'+
     '<th style="width:54px" data-tip="Chi-square from Block 3 (score + language + interaction).">B3 &#967;&sup2;</th>'+
@@ -5424,6 +5450,7 @@ function renderDIFTable() {
     if (mcqR.excluded === 'delete') {
       html+='<tr style="background:#fafafa">'+
         '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left;white-space:nowrap">'+mcqR.num+'&nbsp;&nbsp;<span style="background:#c0392b;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Deleted</span></td>'+
+        difEidCell(mcqR)+
         '<td colspan="11" style="font-size:12px;color:var(--c-muted);font-style:italic">Excluded from analysis</td>'+
         '<td style="font-size:11px;color:var(--c-muted);font-style:italic">'+(mcqR.reason?'Reason: '+mcqR.reason:'')+'</td>'+
       '</tr>';
@@ -5433,7 +5460,8 @@ function renderDIFTable() {
     // Credited question — show badge, skip DIF stats
     if (mcqR.excluded === 'credit') {
       html+='<tr style="background:#fffbea">'+
-        '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left;white-space:nowrap">'+mcqR.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#a07200;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td>'+
+        '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left;white-space:nowrap">'+mcqR.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td>'+
+        difEidCell(mcqR)+
         '<td colspan="11" style="font-size:12px;color:var(--c-muted);font-style:italic">Excluded from analysis</td>'+
         '<td style="font-size:11px;color:var(--c-muted);font-style:italic">'+(mcqR.reason?'Reason: '+mcqR.reason:'')+'</td>'+
       '</tr>';
@@ -5446,6 +5474,7 @@ function renderDIFTable() {
     var rc=r.imp?' class="row-dif"':'';
     html+='<tr'+rc+'>'+
       '<td style="font-size:13px;font-weight:700;color:var(--c-accent-dark);text-align:left">'+r.num+'</td>'+
+      difEidCell(mcqR)+
       '<td>'+r.chi1+'</td><td>'+r.r1+'</td><td>'+r.chi3+'</td><td>'+r.r3+'</td>'+
       '<td>'+r.cd+'</td><td>'+r.rd+'</td><td>'+r.sig+'</td>'+
       '<td>'+(r.imp?'<span class="badge b-dif">Yes &mdash; DIF</span>':'<span class="badge b-ok">No</span>')+'</td>'+
@@ -5823,8 +5852,8 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     body+=docxPara('Questions flagged as possibly problematic, requiring director review.',{italic:true,sz:22,spAfter:100});
     if(flagged2.length){
       var t1rows3=[];
-      for(i2=0;i2<flagged2.length;i2++){var r3=flagged2[i2]; var comment3=r3.flag.indexOf('Difficult')>=0?r3.pct+'% answered correctly':r3.flag.indexOf('Poor')>=0?'Negative discrimination':''; t1rows3.push([r3.num,r3.flag,comment3,r3.topWrong&&r3.p<0.25?r3.topWrong:'',r3.rec]);}
-      body+=docxTable(['Q#','Reason for flagging','Comments','Best students chose','Recommendation'],t1rows3,[700,1900,2200,1500,2413],{centreCols:[0,3]});
+      for(i2=0;i2<flagged2.length;i2++){var r3=flagged2[i2]; var comment3=r3.flag.indexOf('Difficult')>=0?r3.pct+'% answered correctly':r3.flag.indexOf('Poor')>=0?'Negative discrimination':''; t1rows3.push([r3.num,r3.elentraId||'',r3.flag,comment3,r3.topWrong&&r3.p<0.25?r3.topWrong:'',r3.rec]);}
+      body+=docxTable(['Q#','Elentra ID','Reason for flagging','Comments','Best students chose','Recommendation'],t1rows3,[700,900,1700,2000,1200,2213],{centreCols:[0,1,4]});
     } else { body+=docxPara('No flagged items.',{italic:true,sz:22,spAfter:160}); }
     body+=docxPara('',{spAfter:80});
     if(easy2.length){
@@ -5838,14 +5867,14 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     for(i2=0;i2<G.mcq.length;i2++){
       var r3=G.mcq[i2];
       if (r3.excluded === 'delete') {
-        t3rows3.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r3.num, r3.key, 'Excluded from analysis', '—', r3.reason?'Reason: '+r3.reason:'']);
+        t3rows3.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r3.num, r3.elentraId||'', r3.key, 'Excluded from analysis', '—', r3.reason?'Reason: '+r3.reason:'']);
         t3fills3.push('F2F2F2');
       } else if (r3.excluded === 'credit') {
-        t3rows3.push(['[BADGE:A07200:FFF8DC:Credited]'+r3.num, r3.key, fmt(r3.p,2), fmt(r3.rpbis,2), r3.reason?'Reason: '+r3.reason:'']);
+        t3rows3.push(['[BADGE:7A5500:FFF8DC:Credited]'+r3.num, r3.elentraId||'', r3.key, fmt(r3.p,2), fmt(r3.rpbis,2), r3.reason?'Reason: '+r3.reason:'']);
         t3fills3.push('FFF8DC');
       } else {
         var altN3 = (r3.altKeys&&r3.altKeys.length) ? 'Alt. answer(s) accepted: '+r3.altKeys.join(', ')+(r3.altReason?' — '+r3.altReason:'') : '';
-        t3rows3.push([r3.num, r3.key+(r3.altKeys&&r3.altKeys.length?' (+'+r3.altKeys.join('+')+')'  :''), fmt(r3.p,2), fmt(r3.rpbis,2), altN3]);
+        t3rows3.push([r3.num, r3.elentraId||'', r3.key+(r3.altKeys&&r3.altKeys.length?' (+'+r3.altKeys.join('+')+')'  :''), fmt(r3.p,2), fmt(r3.rpbis,2), altN3]);
         t3fills3.push(r3.flag==='Too easy'?'E8F4FD':r3.flag?'FFF0F0':null);
       }
     }
@@ -5855,7 +5884,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
       '<w:r><w:rPr><w:b/><w:color w:val="C0392B"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Flagged</w:t></w:r>'+
       '<w:r><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve"> | </w:t></w:r>'+
       '<w:r><w:rPr><w:b/><w:color w:val="185FA5"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Too easy</w:t></w:r></w:p>';
-    body+=docxTable(['Question','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'],t3rows3,[1500,1200,1800,2200,2513],{centreCols:[0,1,2,3],rowFills:t3fills3});
+    body+=docxTable(['Question','Elentra ID','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'],t3rows3,[900,1200,900,1500,2200,2513],{centreCols:[0,1,2,3,4],rowFills:t3fills3});
     body+=docxPara('',{spAfter:200});
 
     // Section 3: DIF
@@ -5869,8 +5898,8 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     if(difFlagged2.length){
       body+=docxPara('DIF Results — '+(title||'This Exam'),{bold:true,sz:24,spAfter:80});
       body+=docxPara('The following question'+(difFlagged2.length!==1?'s':'')+' had a statistically significant value of DIF (p < 0.01):',{sz:24,spAfter:120});
-      var difRows3=difFlagged2.map(function(r3){return [r3.num,r3.ePct+'%',r3.fPct+'%',r3.fPct>r3.ePct?'FR students performed better':'EN students performed better',r3.disc];});
-      body+=docxTable(['Question','EN % Correct','FR % Correct','Interpretation','Discrimination'],difRows3,[1000,1500,1500,3813,900],{centreCols:[0,1,2,4]});
+      var difRows3=difFlagged2.map(function(r3){ var mcqMatch=G.mcq.find(function(m){return m.num===r3.num;}); return [r3.num,mcqMatch?mcqMatch.elentraId||'':'',r3.ePct+'%',r3.fPct+'%',r3.fPct>r3.ePct?'FR students performed better':'EN students performed better',r3.disc]; });
+      body+=docxTable(['Question','Elentra ID','EN % Correct','FR % Correct','Interpretation','Discrimination'],difRows3,[900,1000,1200,1200,3413,900],{centreCols:[0,1,2,3,5]});
       body+=docxPara('',{spAfter:120});
     } else {
       body+=docxPara('No items with statistically significant DIF were detected (p < 0.01).',{italic:true,sz:24,spAfter:160});
@@ -5950,9 +5979,9 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
         else if(r.flag.indexOf('Poor')>=0){comment='Negative discrimination';}
         else if(r.flag.indexOf('Low')>=0){comment='Low discrimination';}
         var bw=(r.topWrong&&r.p<getThresh('checkp'))?r.topWrong:'';
-        t1rows.push([r.num, r.flag, comment, bw, r.rec]);
+        t1rows.push([r.num, r.elentraId||'', r.flag, comment, bw, r.rec]);
       }
-      body += docxTable(['Question','Reason for flagging','Comments','Best students also chose','Recommendation'], t1rows, [800,2000,2000,1200,2713], {centreCols:[0,3]});
+      body += docxTable(['Question','Elentra ID','Reason for flagging','Comments','Best students also chose','Recommendation'], t1rows, [700,900,1700,1800,1100,2213], {centreCols:[0,1,4]});
     } else {
       body += docxPara('No flagged items.', {italic:true, sz:22, spAfter:160});
     }
@@ -5978,18 +6007,18 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     for(i=0;i<G.mcq.length;i++){
       var r=G.mcq[i];
       if (r.excluded === 'delete') {
-        t3rows.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r.num, r.key, 'Excluded from analysis', '—', r.reason?'Reason: '+r.reason:'']);
+        t3rows.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r.num, r.elentraId||'', r.key, 'Excluded from analysis', '—', r.reason?'Reason: '+r.reason:'']);
         t3fills.push('F2F2F2');
       } else if (r.excluded === 'credit') {
-        t3rows.push(['[BADGE:A07200:FFF8DC:Credited]'+r.num, r.key, fmt(r.p,2), fmt(r.rpbis,2), r.reason?'Reason: '+r.reason:'']);
+        t3rows.push(['[BADGE:7A5500:FFF8DC:Credited]'+r.num, r.elentraId||'', r.key, fmt(r.p,2), fmt(r.rpbis,2), r.reason?'Reason: '+r.reason:'']);
         t3fills.push('FFF8DC');
       } else {
         var altNF = (r.altKeys&&r.altKeys.length) ? 'Alt. answer(s) accepted: '+r.altKeys.join(', ')+(r.altReason?' — '+r.altReason:'') : '';
-        t3rows.push([r.num, r.key+(r.altKeys&&r.altKeys.length?' (+'+r.altKeys.join('+')+')'  :''), fmt(r.p,2), fmt(r.rpbis,2), altNF]);
+        t3rows.push([r.num, r.elentraId||'', r.key+(r.altKeys&&r.altKeys.length?' (+'+r.altKeys.join('+')+')'  :''), fmt(r.p,2), fmt(r.rpbis,2), altNF]);
         t3fills.push(r.flag==='Too easy'?'E8F4FD':r.flag?'FFF0F0':null);
       }
     }
-    body += docxTable(['Question','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'], t3rows, [1500,1200,1800,2200,2513], {centreCols:[0,1,2,3], rowFills:t3fills});
+    body += docxTable(['Question','Elentra ID','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'], t3rows, [900,1200,900,1500,2200,2513], {centreCols:[0,1,2,3,4], rowFills:t3fills});
 
     body += docxReportByline(genTs2);
         buildDocx(body, null, title, chartB64M?[{id:'rChrtM',filename:'chart.png',b64:chartB64M}]:null).then(function(blob){
@@ -6033,6 +6062,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
         body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr>'+
           '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• Question </w:t></w:r>'+
           '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+r.num+'</w:t></w:r>'+
+          (function(){ var mcqMatch=G.mcq&&G.mcq.find(function(m){return m.num===r.num;}); return mcqMatch&&mcqMatch.elentraId ? '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> (ID '+esc(mcqMatch.elentraId)+')</w:t></w:r>' : ''; })()+
           '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> had a statistically significant value of DIF.</w:t></w:r>'+
           '<w:br/>'+
           '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+esc(r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.')+'</w:t></w:r>'+
@@ -6570,9 +6600,14 @@ function renderReviewQueue() {
       ' onchange="toggleReviewed(' + q.num + ')" ' +
       'style="width:18px;height:18px;accent-color:#2e7d32;cursor:pointer;flex-shrink:0">';
 
-    // Q number
+    // Q number + Elentra ID
+    html += '<div style="min-width:32px;flex-shrink:0">';
     html += '<div style="font-size:14px;font-weight:700;color:' + (isDone ? 'var(--c-muted)' : 'var(--c-primary)') +
-      ';min-width:32px;flex-shrink:0' + (isDone ? ';text-decoration:line-through' : '') + '">Q' + q.num + '</div>';
+      (isDone ? ';text-decoration:line-through' : '') + '">Q' + q.num + '</div>';
+    if (q.elentraId) {
+      html += '<div style="font-size:10px;color:var(--c-secondary);margin-top:1px">ID\u202f' + q.elentraId + '</div>';
+    }
+    html += '</div>';
 
     // Flag badge + stats
     html += '<div style="flex:1;min-width:0">';
@@ -6824,12 +6859,12 @@ function checkRunReady() {
         var mcqMissing = [];
         if (!G.nQ) mcqMissing.push(isScantron ? 'Scantron file' : 'results file');
         if (!G.key.length && !isScantron) mcqMissing.push('answer key');
-        notReadyText = 'Step 1 — upload MCQ files' + (mcqMissing.length ? ': ' + mcqMissing.join(' and ') : '') + ', then validate.';
+        notReadyText = 'Step 1 — upload MCQ files' + (mcqMissing.length ? ': ' + mcqMissing.join(' and ') : '') + ', then click Looks good.';
       } else if (!fbValidated) {
         // Stage 2: MCQ ready, feedback not yet validated
         var fbParsed = !!(FB && FB.parsed && FB.parsed.length > 0);
         notReadyText = fbParsed
-          ? 'Step 3 — validate feedback data to continue.'
+          ? 'Step 3 — click Validate feedback to continue.'
           : 'Step 2 — upload and validate feedback file to continue.';
       } else {
         notReadyText = 'Ready to run.';
@@ -7443,6 +7478,21 @@ document.addEventListener('click', function(e) {
 
 // ── Release Notes ─────────────────────────────────────────────────────────
 var RELEASE_NOTES = [
+  {
+    version: '3.0',
+    builds: [
+      {
+        build: '20260715-01',
+        date:  'July 15, 2026',
+        notes: [
+          'Elentra ID support — the app now reads Elentra item IDs embedded in the QM results file wording row (format: Question ID: XXXXXX in hidden white text). IDs are extracted automatically at parse time and stored on each question. The Elentra ID column appears in the Item Analysis table, DIF table, and Review Queue when at least one question carries an ID (hidden entirely when none are present). The column is also populated in CSV exports and added to all Word report tables: MCQ Table 1 (flagged), MCQ Table 3 (all questions), Full report Table 1, Full report Table 3, Full report DIF flagged table, and standalone DIF report prose bullets.',
+          'Colour accessibility pass — muted text lifted in both themes for improved legibility at small sizes: garnet --c-muted #63727e → #566069 (6.42:1 on white, up from 4.95:1); Elentra --c-muted #746d8a → #635b7a (6.35:1 on white, up from 4.89:1). Low discrimination badge text darkened: #8a5400 → #6b3f00 (7.98:1 on amber bg, up from 5.57:1). Credited badge text darkened everywhere: #a07200 → #7a5500 (6.3:1 on cream bg, up from 4.02:1 — previously failing WCAG AA at 9px). Elentra ID and Review Queue ID display promoted from var(--c-muted) to var(--c-secondary) as these are data values, not decorative labels.',
+          'Progress messaging audit — four microcopy fixes: footer hint "then validate" → "then click Looks good"; footer hint "validate feedback data" → "click Validate feedback to continue"; What\'s Next "2 too easy" → "2 too-easy questions"; What\'s Next feedback "question attributions" → "comments linked to questions".',
+          'FAQ expanded — nine new entries added to the Reading the Results section covering: KPI cards (mean score, reliability, flagged count, DIF count); flag reason badges and what each means; "Best students chose" column and Check Key recommendation; distractor analysis (expand rows); Review Queue tab; Elentra ID column; What\'s Next banner; column resize handles. Two new entries added to Running the Analysis: "What is Combined analysis?" and "How does the Combined analysis setup work step by step?"',
+        ]
+      }
+    ]
+  },
   {
     version: '2.9',
     builds: [
@@ -11693,6 +11743,32 @@ document.addEventListener('click', function(e) {
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is Combined analysis and when should I use it?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              <strong>Combined analysis</strong> runs both the MCQ item analysis and the student feedback analysis together in a single session. Use it when you have both a QM results file and a feedback export for the same exam and want the results linked — flagged questions in the MCQ analysis will be automatically cross-referenced in the feedback report.<br><br>
+              To use it, select <strong>Combined analysis</strong> on the Analysis type step during setup. The upload area will show both MCQ and feedback upload zones together. You confirm the MCQ files first, then upload and validate the feedback, and finally click <strong>Run combined analysis</strong> to generate all results at once.<br><br>
+              If you only have one of the two files, use <strong>MCQ item analysis</strong> or <strong>Student feedback</strong> as standalone modes instead.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>How does the Combined analysis setup work step by step?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Combined analysis follows a staged setup to make sure both files are validated before running:<br><br>
+              <strong>Step 1 — MCQ files.</strong> Upload your QM results file and answer key. The upload panel will show a readiness summary. When everything looks correct, click <strong>Looks good</strong> to confirm. A green banner will appear and the feedback upload zone below will unlock.<br><br>
+              <strong>Step 2 — Feedback file.</strong> Upload your QM feedback export (.xlsx) in the feedback zone that has now unlocked. The footer hint will guide you: it shows <em>Step 2 — upload and validate feedback file to continue</em>.<br><br>
+              <strong>Step 3 — Validate feedback.</strong> After the file loads, a pre-flight panel appears. If there are pending items to review, click <strong>Review comments</strong> to assign or discard them, then click <strong>Apply &amp; Generate Report</strong> to return. If there are no pending items, the panel shows a validate button directly. The footer hint will change to <em>Step 3 — click Validate feedback to continue</em>.<br><br>
+              Once both are confirmed, the <strong>Run combined analysis</strong> button activates. Click it to run both analyses and land on the Item Analysis tab with all results loaded.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
               <span>Do I need to enable DIF analysis, or can I skip it?</span>
               <span class="faq-icon">+</span>
             </div>
@@ -11785,6 +11861,104 @@ document.addEventListener('click', function(e) {
             </div>
             <div class="faq-a">
               The tool only counts students whose stream code matches the EN or FR codes set in the Data Source &amp; DIF section. Students with a different, blank, or unrecognised stream code are excluded. Check your language codes there, and click <em>details</em> under the upload confirmation for a diagnostic breakdown showing exactly which rows were included and which were excluded and why.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What do the KPI cards at the top of the results screen show?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The four KPI cards give a quick summary of exam health at a glance:<br><br>
+              <strong>Mean Score</strong> — the average percentage correct across all scored students, excluding credited and deleted questions. A green indicator means the mean is in the expected range; amber or red means it may be worth noting in the report.<br><br>
+              <strong>Reliability (Cronbach's α)</strong> — a measure of how consistently the exam performed across students. Values above 0.70 are acceptable. Below 0.70 shows a warning — the report will note this automatically.<br><br>
+              <strong>Flagged Questions</strong> — the total number of questions flagged for review (Difficult, Poor discrimination, Low discrimination, Too easy). Click the card or use the filter below the table to focus on flagged items.<br><br>
+              <strong>DIF Flags</strong> — the number of questions showing a statistically significant performance gap between English and French students. Only visible when DIF analysis is enabled. Each card has an info icon (ⓘ) that explains what the value means and what the threshold is.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What do the flag reasons in the Item Analysis table mean?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Each flagged question shows a coloured badge in the Reason for Flag column:<br><br>
+              <strong>Difficult</strong> (red) — fewer than 35% of students answered correctly. May reflect genuinely hard content, but can also indicate an ambiguous question or key error, especially when discrimination is also low.<br><br>
+              <strong>Poor discrimination</strong> (red) — the discrimination index is negative, meaning students who scored well overall tended to answer this question wrong. This is a red flag for a possible key error.<br><br>
+              <strong>Low discrimination</strong> (amber) — the discrimination index is between 0 and 0.15. The question is not clearly separating stronger from weaker students, which may reduce exam reliability.<br><br>
+              <strong>Too easy</strong> (blue) — 96% or more of students answered correctly. The question does not contribute meaningfully to differentiating students.<br><br>
+              <strong>DIF</strong> (indigo) — the question shows a statistically significant performance gap between English and French students. DIF flags are independent of the other flag types — a question can carry both a difficulty flag and a DIF flag simultaneously.<br><br>
+              Clicking any badge opens a context panel explaining what it means and what the current threshold is.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What does the "Best students chose" column show?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              This column appears for questions where difficulty is below 0.25 <em>and</em> discrimination is below 0.15 — the combination most likely to indicate a key error or ambiguous question. It shows the most popular wrong answer among the top-performing students on the exam.<br><br>
+              If the top quartile of students consistently chose a different answer than the key, it may mean the marked correct answer is wrong, or the question is genuinely ambiguous. The <strong>Check Key</strong> recommendation appears alongside this column when these conditions are met, prompting the exam director to verify the answer key.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the distractor analysis and how do I open it?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The distractor analysis shows how students were distributed across each answer choice for a given question. Click the <strong>▶</strong> arrow at the left of any row in the Item Analysis table to expand it. You will see a bar for each answer option (A, B, C, D, E) showing the proportion of students who chose it, with the correct answer highlighted.<br><br>
+              This helps identify which wrong answers were attractive to students, which can reveal whether a distractor was misleading or whether the question wording may be ambiguous. Use <strong>Expand all</strong> at the top of the table to open distractor panels for all questions at once.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the Review Queue and how does it work?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The <strong>Review Queue</strong> tab appears after an MCQ analysis is run and shows all flagged and too-easy questions as a checklist. It gives you a focused workspace for working through each item one at a time — you can check off questions as you review them, with the tab label tracking your progress live (e.g. "☑ Review Queue (3/7)").<br><br>
+              Each item in the queue shows the question number, flag reason badge, difficulty and discrimination values, and the recommendation. If Elentra IDs are present, the ID is shown below the question number to make it easy to locate the question directly in Elentra.<br><br>
+              The checklist resets with each new analysis or when you click Start Over. It is not saved between sessions.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the Elentra ID column?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The <strong>Elentra ID</strong> column shows the unique item bank identifier for each question in Elentra, the Faculty's item authoring system. When an ID is present, it appears in the Item Analysis table, DIF table, Review Queue, and all Word and CSV exports — making it easy to locate and open the exact question in Elentra without searching by text.<br><br>
+              The ID is read automatically from the question wording in the QM results file, where it is embedded as hidden text at the start of each question. Not all questions will have an ID — the column is only shown when at least one question carries one, and shows a dash for questions without one.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the "What's next" banner above the results?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The <strong>What's next</strong> banner appears at the top of the results screen and updates automatically as you switch tabs. It gives a short, context-aware prompt so you always know what to do next:<br><br>
+              On the <strong>Item Analysis</strong> tab — if questions are flagged, it summarises the count and type (e.g. "3 questions need review, 2 too-easy questions, 1 DIF flag") with a shortcut to filter to flagged items. If no flags, it shows a green all-clear and links to the Reports tab.<br><br>
+              On the <strong>Feedback</strong> tab — if any question has high comment volume (8 or more comments), it highlights those questions as a priority. Otherwise it confirms the feedback is ready to export.<br><br>
+              On the <strong>Reports</strong> and <strong>Review Queue</strong> tabs the banner is hidden.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Can I resize the columns in the Item Analysis table?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Yes. Hover over the right edge of any column header — the cursor will change to a resize handle. Click and drag to widen or narrow that column. This is useful when the Recommendation or Comments columns contain longer text. Column widths reset when the analysis is re-run or the page is refreshed.
             </div>
           </div>
 
