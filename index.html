@@ -446,19 +446,19 @@ th{position:relative;white-space:normal}
       </g>
 
       <!-- 4. Letters A, Q, P — appear one by one -->
-      <text id="sp-letter-a" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="50" font-weight="700" fill="#ffffff" style="opacity:0"><tspan x="64" y="56">A</tspan></text>
-      <text id="sp-letter-q" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="50" font-weight="700" fill="#ffffff" style="opacity:0"><tspan x="101" y="56">Q</tspan></text>
-      <text id="sp-letter-p" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="50" font-weight="700" fill="#ffffff" style="opacity:0"><tspan x="138" y="56">P</tspan></text>
+      <text id="sp-letter-a" font-family="Arial,'Aptos Display','Aptos',Calibri,'Segoe UI',sans-serif" font-size="50" font-weight="700" fill="#ffffff" style="opacity:0"><tspan x="64" y="56">A</tspan></text>
+      <text id="sp-letter-q" font-family="Arial,'Aptos Display','Aptos',Calibri,'Segoe UI',sans-serif" font-size="50" font-weight="700" fill="#ffffff" style="opacity:0"><tspan x="100" y="56">Q</tspan></text>
+      <text id="sp-letter-p" font-family="Arial,'Aptos Display','Aptos',Calibri,'Segoe UI',sans-serif" font-size="50" font-weight="700" fill="#ffffff" style="opacity:0"><tspan x="139" y="56">P</tspan></text>
 
       <!-- 5. Full name — fades in as one unit -->
       <text id="sp-fullname" x="64" y="72" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="9.5" font-weight="400" fill="rgba(255,255,255,.55)" letter-spacing="1.4" style="opacity:0">ASSESSMENT QUALITY PLATFORM</text>
 
       <!-- 6. Green circle — fades in -->
-      <circle id="sp-check-circle" cx="181" cy="38" r="13" fill="#1e6e30" style="opacity:0"/>
+      <circle id="sp-check-circle" cx="192" cy="38" r="13" fill="#1e6e30" style="opacity:0"/>
 
       <!-- 7. Checkmark stroke — draws on -->
-      <path id="sp-checkmark" d="M174 38 L179 44 L189 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
-        stroke-dasharray="22" stroke-dashoffset="22" style="opacity:1"/>
+      <path id="sp-checkmark" d="M185 38 L190 44 L200 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="22" stroke-dashoffset="22" style="opacity:0"/>
     </svg>
 
     <!-- Progress -->
@@ -560,12 +560,15 @@ th{position:relative;white-space:normal}
     { pct: 100, label: 'Ready',                    delay: 6100, draw: function() {
         // 6. Green circle fades in
         anim(document.getElementById('sp-check-circle'), {opacity:'1'}, 400, 'ease', 0);
-        // 7. Checkmark draws on — the final touch
+        // 7. Checkmark: make visible then draw on
         setTimeout(function() {
           var ck = document.getElementById('sp-checkmark');
           if (ck) {
-            ck.style.transition = 'stroke-dashoffset 500ms cubic-bezier(.4,0,.2,1)';
-            ck.style.strokeDashoffset = '0';
+            ck.style.opacity = '1';
+            setTimeout(function() {
+              ck.style.transition = 'stroke-dashoffset 500ms cubic-bezier(.4,0,.2,1)';
+              ck.style.strokeDashoffset = '0';
+            }, 50);
           }
         }, 450);
     }},
@@ -650,9 +653,9 @@ th{position:relative;white-space:normal}
         <circle cx="38" cy="21" r="2.5" fill="#fff"/>
         <path d="M36 24 L38 19 L40 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
-      <text font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="50" font-weight="700" fill="var(--c-primary)"><tspan x="64" y="56">A</tspan><tspan>Q</tspan><tspan>P</tspan></text>
-      <circle cx="181" cy="38" r="13" fill="#1e6e30" opacity=".92"/>
-      <path d="M174 38 L179 44 L189 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text font-family="Arial,'Aptos Display','Aptos',Calibri,'Segoe UI',sans-serif" font-size="50" font-weight="700" fill="var(--c-primary)"><tspan x="64" y="56">A</tspan><tspan x="100" y="56">Q</tspan><tspan x="139" y="56">P</tspan></text>
+      <circle cx="192" cy="36" r="13" fill="#1e6e30" opacity=".92"/>
+      <path d="M185 36 L190 42 L200 29" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       <text x="64" y="72" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="9.5" font-weight="400" fill="var(--c-muted)" letter-spacing="1.4">ASSESSMENT QUALITY PLATFORM</text>
     </svg>
     <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
@@ -739,9 +742,9 @@ th{position:relative;white-space:normal}
         <circle cx="38" cy="21" r="2.5" fill="#fff"/>
         <path d="M36 24 L38 19 L40 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
-      <text font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="50" font-weight="700" fill="var(--c-primary)"><tspan x="64" y="56">A</tspan><tspan>Q</tspan><tspan>P</tspan></text>
-      <circle cx="181" cy="38" r="13" fill="#1e6e30" opacity=".92"/>
-      <path d="M174 38 L179 44 L189 31" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text font-family="Arial,'Aptos Display','Aptos',Calibri,'Segoe UI',sans-serif" font-size="50" font-weight="700" fill="var(--c-primary)"><tspan x="64" y="56">A</tspan><tspan x="100" y="56">Q</tspan><tspan x="139" y="56">P</tspan></text>
+      <circle cx="192" cy="36" r="13" fill="#1e6e30" opacity=".92"/>
+      <path d="M185 36 L190 42 L200 29" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       <text x="64" y="72" font-family="'Aptos Display','Aptos',Calibri,'Segoe UI',Arial,sans-serif" font-size="9.5" font-weight="400" fill="var(--c-muted)" letter-spacing="1.4">ASSESSMENT QUALITY PLATFORM</text>
     </svg>
     <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
@@ -1850,9 +1853,9 @@ th{position:relative;white-space:normal}
 "use strict";
 
 // ── App version — single source of truth ─────────────────────────────────
-var APP_VERSION     = '2.8';
-var APP_BUILD       = '20260714-03';
-var APP_FAQ_VERSION = '2.8';           // Update when FAQ content changes
+var APP_VERSION     = '2.9';
+var APP_BUILD       = '20260714-05';
+var APP_FAQ_VERSION = '2.9';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'July 14, 2026'; // Update when FAQ content changes
 var APP_RN_DATE     = 'July 14, 2026'; // Update each version close
 
@@ -5545,7 +5548,7 @@ function getCoordinatorByline() {
 }
 
 // Shared "Report generated" byline for all Word exports.
-// Format: "Report generated [date] by [name] using Exam Results Analysis Tool"
+// Format: "Report generated [date] by [name] using Assessment Quality Platform (AQP)"
 // The app name is rendered in two styled runs to match the nav bar wordmark.
 // Wordmark PNG (logo + title) extracted from reference report — used in all Word export bylines
 var _DOCX_WORDMARK_B64 = "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";
@@ -7440,6 +7443,31 @@ document.addEventListener('click', function(e) {
 
 // ── Release Notes ─────────────────────────────────────────────────────────
 var RELEASE_NOTES = [
+  {
+    version: '2.9',
+    builds: [
+      {
+        build: '20260714-05',
+        date:  'July 14, 2026',
+        notes: [
+          'AQP logo polish — splash screen checkmark path hidden at opacity:0 on load (eliminates faint white artifact before animation fires). AQP letter positions set to absolute x coordinates across all logo instances (splash, home header, setup header) so spacing is consistent regardless of font rendering. Green checkmark badge repositioned to cx=192 in all contexts, giving a clear visible gap between the P and the badge.',
+        ]
+      },
+      {
+        build: '20260714-04',
+        date:  'July 14, 2026',
+        notes: [
+          'AQP rebrand — the tool is now named Assessment Quality Platform (AQP). The new logo features a garnet shield containing rising bars and a trend line (representing assessment analytics), with the AQP acronym in bold and a green checkmark badge (representing quality validation). The full name “Assessment Quality Platform” appears as a spaced-caps subtitle. All instances of the old “Assessment Quality Platform (AQP)” name and icon have been replaced throughout the app: home header, setup header, results nav bar, splash screen, app footer, About screen, report previews, Word export wordmark, favicon, and browser tab title.',
+          'Splash screen logo animation — the splash now draws the AQP logo element by element in sync with the progress bar: shield fades in → bars rise one by one → trend line draws across → dot and arrow appear → A fades in → Q fades in → P fades in → full name fades in → green circle appears → checkmark draws on as the final touch. Total sequence runs approximately 7 seconds with clear visible steps.',
+          'Splash screen exit animation — the splash disintegrates on exit: content scales up, blurs, and floats upward before the dark background dissolves and the home panel fades in beneath.',
+          'Results nav bar wordmark — the nav bar now shows the AQP shield icon + AQP bold + green checkmark + “ASSESSMENT QUALITY PLATFORM” subtitle. When an analysis is loaded, the subtitle line updates to the results context (“MCQ Item Analysis Results”, “Student Feedback Analysis Results”, or “Exam Analysis Results”) and the platform name is hidden. The logo itself never changes.',
+          'Word export wordmark — the “Report generated with” block in all Word exports now shows the new AQP logo PNG (shield with bars, AQP + checkmark, Assessment Quality Platform subtitle).',
+          'Favicon — updated to a garnet rounded square containing the AQP shield with white checkmark.',
+          'GitHub repository renamed — deployed at https://ericl-1.github.io/UG-AQP/',
+        ]
+      }
+    ]
+  },
   {
     version: '2.8',
     builds: [
@@ -11343,7 +11371,7 @@ document.addEventListener('click', function(e) {
       <div>
         <div style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">About</div>
         <p style="font-size:13px;line-height:1.75;color:var(--c-secondary);margin:0">
-          The <strong style="color:var(--c-primary)">Exam Results Analysis Tool</strong> automates MCQ item analysis and DIF reporting for UGME exams at the University of Ottawa Faculty of Medicine. Upload a QuestionMark or Scantron export and receive item statistics, score distributions, and formatted Word reports in seconds. For methodology details, see <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none">FAQ / Help</a> or <strong>How This Works</strong> on the setup screen.
+          The <strong style="color:var(--c-primary)">Assessment Quality Platform (AQP)</strong> automates MCQ item analysis, DIF reporting, and student feedback analysis for UGME exams at the University of Ottawa Faculty of Medicine. Upload a QuestionMark or Scantron export and receive item statistics, score distributions, and formatted Word reports in seconds. For methodology details, see <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none">FAQ / Help</a> or <strong>How This Works</strong> on the setup screen.
         </p>
       </div>
 
