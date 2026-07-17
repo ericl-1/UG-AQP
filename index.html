@@ -92,8 +92,10 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 /* ── Setup screen — reusable section-card system (matches Fluent demo) ── */
 .exam-fields{display:grid;grid-template-columns:minmax(200px,360px) minmax(160px,240px) 150px;gap:16px;max-width:800px}
 .field-label{font-size:12.5px;color:var(--c-secondary);font-weight:600;display:block;margin-bottom:4px}
-.field-input{width:100%;padding:7px 10px;border:1px solid var(--c-border-2);border-radius:6px;font-size:14px;font-family:var(--font);color:var(--c-primary);background:var(--c-surface);transition:border-color .12s}
+.required-marker{color:var(--c-accent);font-weight:700;margin-left:2px;font-size:13px}
+.field-input{width:100%;padding:7px 10px;border:1px solid var(--c-border-2);border-radius:6px;font-size:14px;font-family:var(--font);color:var(--c-primary);background:var(--c-surface);transition:border-color .12s,box-shadow .12s}
 .field-input:focus{outline:none;border-color:var(--c-accent)}
+.field-input.field-error{border-color:var(--c-accent);box-shadow:0 0 0 3px rgba(163,21,21,.12)}
 :focus-visible{outline:3px solid var(--c-accent);outline-offset:2px;border-radius:3px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
@@ -319,6 +321,12 @@ th{position:relative;white-space:normal}
 /* ── Unified button system ── */
 .btn-dl-primary{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:10px;border:none;background:var(--c-accent);color:var(--c-bg);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;font-family:var(--font)}
 .btn-dl-primary:hover{background:var(--c-accent-dark)}
+/* Glass button — for buttons on coloured/dark backgrounds */
+.btn-glass-dark{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:rgba(255,255,255,.92);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
+.btn-glass-dark:hover{background:rgba(255,255,255,.22)}
+/* Glass button — for buttons on white/light backgrounds */
+.btn-glass-light{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.045);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
+.btn-glass-light:hover{background:rgba(0,0,0,.075)}
 .btn-dl-secondary{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:10px;border:1px solid var(--c-border-2);background:var(--c-bg);color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
 .btn-dl-secondary:hover{background:var(--c-surface);border-color:rgba(0,0,0,.3)}
 .btn-tpl:hover{background:var(--c-surface);color:var(--c-secondary);border-color:var(--c-secondary)}
@@ -337,7 +345,7 @@ th{position:relative;white-space:normal}
 .faq-icon{font-size:18px;font-weight:300;color:var(--c-muted);flex-shrink:0;width:20px;text-align:center}
 .faq-a{display:none;padding:12px 16px 14px;font-size:13px;line-height:1.75;color:var(--c-secondary);background:var(--c-surface);border:1px solid var(--c-border);border-top:none;border-radius:0 0 7px 7px}
 /* ── Segmented filter control ── */
-.seg-ctrl{display:inline-flex;background:var(--c-surface);border-radius:7px;padding:2px;gap:0}
+.seg-ctrl{display:inline-flex;background:var(--c-surface);border:1px solid var(--c-border-2);border-radius:7px;padding:2px;gap:0}
 .seg-btn{padding:4px 11px;border:none;border-radius:5px;background:transparent;color:var(--c-muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:all .15s;font-family:var(--font);white-space:nowrap;line-height:1.3}
 .seg-btn.seg-active{background:var(--c-bg);color:var(--c-accent);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .seg-btn:not(.seg-active):hover{color:var(--c-primary)}
@@ -407,10 +415,10 @@ th{position:relative;white-space:normal}
 .fb-map-row{display:flex;align-items:flex-start;gap:8px;padding:9px 14px;border-bottom:0.5px solid var(--c-border);background:var(--c-bg)}
 .fb-map-row.resolved{background:#f0fdf4;opacity:.7}
 .fb-map-comment{flex:1;font-size:12px;color:var(--c-secondary);line-height:1.55;white-space:pre-wrap;word-break:break-word}
-.fb-map-input{width:120px;flex-shrink:0;padding:5px 6px;border:1px solid var(--c-border);border-radius:6px;font-size:12px;text-align:left;color:var(--c-primary);font-family:var(--font)}
+.fb-map-input{width:120px;flex-shrink:0;padding:5px 6px;border:1px solid var(--c-border-2);border-radius:6px;font-size:12px;text-align:left;color:var(--c-primary);font-family:var(--font)}
 .btn-fb-gen{font-size:11px;font-weight:600;color:#0d7a7a;border:1px solid #0d7a7a;border-radius:8px;padding:4px 8px;background:var(--c-bg);cursor:pointer;white-space:nowrap;font-family:var(--font)}
 .btn-fb-gen:hover{background:#e0f5f5}
-.btn-fb-disc{font-size:11px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:8px;padding:4px 8px;background:var(--c-bg);cursor:pointer;font-family:var(--font)}
+.btn-fb-disc{font-size:11px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border-2);border-radius:8px;padding:4px 8px;background:var(--c-bg);cursor:pointer;font-family:var(--font)}
 .btn-fb-disc:hover{background:var(--c-surface)}
 .tab.tab-fb{position:relative}
 </style>
@@ -418,7 +426,7 @@ th{position:relative;white-space:normal}
 <body>
 
 <!-- ── Splash Screen ─────────────────────────────────────────────────────── -->
-<div id="splash-screen" style="position:fixed;inset:0;z-index:99999;background:#181818;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:all;transition:opacity .4s ease">
+<div id="splash-screen" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(155deg,#c41c1c 0%,#7a0a0a 40%,#2a0505 75%,#0e0202 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:all;transition:opacity .4s ease">
 
   <div style="display:flex;flex-direction:column;align-items:center;gap:36px;width:400px">
 
@@ -483,10 +491,10 @@ th{position:relative;white-space:normal}
     <div style="width:100%;opacity:0" id="sp-prog-wrap">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div id="sp-label" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.8px;text-transform:uppercase">Initialising</div>
-        <div id="sp-pct" style="font-size:11px;font-weight:700;color:var(--c-accent)">0%</div>
+        <div id="sp-pct" style="font-size:11px;font-weight:700;color:rgba(255,255,255,.88)">0%</div>
       </div>
       <div style="width:100%;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">
-        <div id="sp-fill" style="height:100%;width:0%;background:var(--c-accent);border-radius:2px;transition:width .45s cubic-bezier(.4,0,.2,1)"></div>
+        <div id="sp-fill" style="height:100%;width:0%;background:rgba(255,255,255,.85);border-radius:2px;transition:width .45s cubic-bezier(.4,0,.2,1)"></div>
       </div>
     </div>
 
@@ -540,7 +548,7 @@ th{position:relative;white-space:normal}
   // ── Progress steps — each draws the next logo element ────────────────────
   var steps = [
     { pct: 12, label: 'Loading theme\u2026',       delay: 600,  draw: function() {
-        // 1. Ring draws + handle fades in
+        // 1. Magnifier — ring draws + handle fades in
         var ring = document.getElementById('sp-ring');
         if (ring) {
           ring.style.transition = 'stroke-dashoffset 900ms cubic-bezier(.4,0,.2,1)';
@@ -549,49 +557,46 @@ th{position:relative;white-space:normal}
         anim(document.getElementById('sp-handle'), {opacity:'1'}, 500, 'ease', 100);
     }},
     { pct: 28, label: 'Loading libraries\u2026',   delay: 1800, draw: function() {
-        // 2. Bars rise one by one
-        anim(document.getElementById('sp-bar-1'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 0);
-        anim(document.getElementById('sp-bar-2'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 380);
-        anim(document.getElementById('sp-bar-3'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 760);
-    }},
-    { pct: 48, label: 'Preparing workspace\u2026', delay: 3100, draw: function() {
-        // 3. Trend line draws, then dot pops in
-        var tg = document.getElementById('sp-trend-group');
-        var tl = document.getElementById('sp-trend-line');
-        var td = document.getElementById('sp-trend-dot');
-        if (tg) tg.style.opacity = '1';
-        if (tl) {
-          tl.style.transition = 'stroke-dashoffset 700ms cubic-bezier(.4,0,.2,1)';
-          tl.style.strokeDashoffset = '0';
-        }
-        setTimeout(function() {
-          anim(td, {opacity:'1'}, 250, 'ease', 0);
-        }, 720);
-    }},
-    { pct: 65, label: 'Building interface\u2026',  delay: 4300, draw: function() {
-        // 4. Letters A, Q, P one by one
+        // 2. AQP letters A, Q, P
         anim(document.getElementById('sp-letter-a'), {opacity:'1'}, 350, 'ease', 0);
         anim(document.getElementById('sp-letter-q'), {opacity:'1'}, 350, 'ease', 450);
         anim(document.getElementById('sp-letter-p'), {opacity:'1'}, 350, 'ease', 900);
     }},
-    { pct: 80, label: 'Configuring tool\u2026',    delay: 5500, draw: function() {
-        // 5. Full name fades in
+    { pct: 50, label: 'Preparing workspace\u2026', delay: 2900, draw: function() {
+        // 3. Bars one by one inside magnifier, then trend line draws after
+        anim(document.getElementById('sp-bar-1'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 0);
+        anim(document.getElementById('sp-bar-2'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 380);
+        anim(document.getElementById('sp-bar-3'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 760);
+        setTimeout(function() {
+          var tg = document.getElementById('sp-trend-group');
+          var tl = document.getElementById('sp-trend-line');
+          var td = document.getElementById('sp-trend-dot');
+          if (tg) tg.style.opacity = '1';
+          if (tl) {
+            tl.style.transition = 'stroke-dashoffset 700ms cubic-bezier(.4,0,.2,1)';
+            tl.style.strokeDashoffset = '0';
+          }
+          setTimeout(function() { anim(td, {opacity:'1'}, 250, 'ease', 0); }, 720);
+        }, 1200);
+    }},
+    { pct: 70, label: 'Building interface\u2026',  delay: 5000, draw: function() {
+        // 4. Full name fades in
         anim(document.getElementById('sp-fullname'), {opacity:'1'}, 500, 'ease', 0);
     }},
-    { pct: 100, label: 'Ready',                    delay: 6300, draw: function() {
-        // 6. Green badge fades in
+    { pct: 88, label: 'Configuring tool\u2026',    delay: 5800, draw: function() {
+        // 5. Green circle appears
         anim(document.getElementById('sp-check-circle'), {opacity:'1'}, 400, 'ease', 0);
-        // 7. Checkmark draws on
-        setTimeout(function() {
-          var ck = document.getElementById('sp-checkmark');
-          if (ck) {
-            ck.style.opacity = '1';
-            setTimeout(function() {
-              ck.style.transition = 'stroke-dashoffset 500ms cubic-bezier(.4,0,.2,1)';
-              ck.style.strokeDashoffset = '0';
-            }, 50);
-          }
-        }, 450);
+    }},
+    { pct: 100, label: 'Ready',                    delay: 6500, draw: function() {
+        // 6. Checkmark draws on
+        var ck = document.getElementById('sp-checkmark');
+        if (ck) {
+          ck.style.opacity = '1';
+          setTimeout(function() {
+            ck.style.transition = 'stroke-dashoffset 500ms cubic-bezier(.4,0,.2,1)';
+            ck.style.strokeDashoffset = '0';
+          }, 50);
+        }
     }},
   ];
     var fill  = document.getElementById('sp-fill');
@@ -605,15 +610,15 @@ th{position:relative;white-space:normal}
       if (s.draw) s.draw();
       if (s.pct === 100) {
         setTimeout(function() {
-          if (label) label.style.color = 'var(--c-accent)';
-          if (pct)   pct.style.color   = 'var(--c-accent)';
+          if (label) label.style.color = 'rgba(255,255,255,.95)';
+          if (pct)   pct.style.color   = '#ffffff';
         }, 350);
       }
     }, s.delay);
   });
 
   // ── Exit: content fades out, home panel fades in beneath ─────────────────
-  var TOTAL_MS = 7000; // when to start exit (after all animations done)
+  var TOTAL_MS = 7500; // when to start exit (after all animations done)
   setTimeout(function() {
     var screen = document.getElementById('splash-screen');
     if (!screen) return;
@@ -803,7 +808,7 @@ th{position:relative;white-space:normal}
       <div class="section-body">
         <div class="exam-fields">
           <div>
-            <label for="exam-title" class="field-label" data-tip="Enter the full exam name. This appears in the banner and in all exported reports.">Exam title</label>
+            <label for="exam-title" class="field-label" data-tip="Enter the full exam name. This appears in the banner and in all exported reports.">Exam title<span class="required-marker" aria-label="required">*</span></label>
             <input type="text" id="exam-title" class="field-input" style="max-width:360px" placeholder="e.g. Unit I Part A Midterm - Winter 2026" oninput="updateSetupContinueBtn()">
           </div>
           <div>
@@ -816,7 +821,7 @@ th{position:relative;white-space:normal}
           </div>
         </div>
         <div style="margin-top:18px;display:flex;align-items:center;justify-content:flex-end;gap:12px">
-          <span id="setup-continue-hint" style="font-size:12px;color:var(--c-muted)">Enter an exam title to enable continue, or skip</span>
+          <span id="setup-continue-hint" style="font-size:12px;color:var(--c-muted)">Exam title is required</span>
           <button id="btn-setup-continue" onclick="advanceToStep2()"
             style="display:inline-flex;align-items:center;gap:6px;padding:9px 22px;border-radius:10px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;opacity:0.55">
             Continue
@@ -1025,7 +1030,7 @@ th{position:relative;white-space:normal}
           ondragover="event.preventDefault();this.style.borderColor='var(--c-accent)';this.style.background='var(--c-accent-tint)'"
           ondragleave="this.style.borderColor='';this.style.background=''"
           ondrop="this.style.borderColor='';this.style.background='';handleFeedbackDrop(event)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
           <div style="flex:1;min-width:0">
             <div class="upload-label" id="combined-fb-upload-label">Drop file here or click to browse</div>
             <div class="upload-hint">QuestionMark feedback export (.xlsx) — one row per student</div>
@@ -1098,7 +1103,7 @@ th{position:relative;white-space:normal}
         <div id="fb-upload-zone" class="upload-row-item" role="button" tabindex="0" aria-label="Upload student feedback file" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fb-file-input').click()}" onclick="document.getElementById('fb-file-input').click()"
           ondragover="event.preventDefault();this.style.borderColor='var(--c-accent)';this.style.background='var(--c-accent-tint)'" ondragleave="this.style.borderColor='';this.style.background=''" ondrop="handleFeedbackDrop(event)">
           <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
           </div>
           <div style="flex:1;min-width:0">
             <div id="fb-upload-label" class="upload-label">Drop file here or click to browse</div>
@@ -1237,7 +1242,7 @@ th{position:relative;white-space:normal}
   <div id="stale-bar" style="display:none;margin-bottom:10px;padding:9px 14px;background:#fff8e6;border:1px solid rgba(232,168,0,.35);border-radius:8px;font-size:12px;color:#5a3a00;font-weight:500;align-items:center;gap:10px">
     <span style="font-size:15px;flex-shrink:0">⚠</span>
     <span id="stale-bar-msg">These results may be outdated — settings were changed after the last analysis was run.</span>
-    <button onclick="goToSetup()" style="margin-left:auto;padding:4px 12px;border-radius:8px;border:1.5px solid #b85c00;background:transparent;color:#b85c00;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">&#8592; Back to Setup</button>
+    <button onclick="goToSetup()" style="margin-left:auto;padding:4px 12px;border-radius:8px;border:1px solid rgba(184,92,0,.35);background:rgba(184,92,0,.10);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#b85c00;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s">&#8592; Back to Setup</button>
   </div>
   <!-- Session Status strip — shows what's loaded and available -->
   <div id="session-status-bar" style="display:none;margin-bottom:8px;padding:7px 14px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:8px;font-size:11px;color:var(--c-muted);display:flex;align-items:center;gap:16px;flex-wrap:wrap"></div>
@@ -1347,11 +1352,11 @@ th{position:relative;white-space:normal}
             <div style="font-size:11.5px;color:var(--c-muted)">Key findings narrative, flagged questions table, and all-questions summary — Word (.docx)</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-            <button onclick="openReportPreviewModal('mcq')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
+            <button data-tip="Preview the MCQ Analysis Report before downloading" onclick="openReportPreviewModal('mcq')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
-            <button onclick="doExportReport('mcq')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
+            <button data-tip="Download the MCQ Analysis Report as a Word document (.docx)" onclick="doExportReport('mcq')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
             </button>
@@ -1367,11 +1372,11 @@ th{position:relative;white-space:normal}
             <div style="font-size:11.5px;color:var(--c-muted)">EN/FR performance comparison per question using 3-block logistic regression — Word (.docx)</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-            <button onclick="openReportPreviewModal('dif')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
+            <button data-tip="Preview the DIF Report before downloading" onclick="openReportPreviewModal('dif')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
-            <button onclick="doExportReport('dif')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
+            <button data-tip="Download the DIF Report as a Word document (.docx)" onclick="doExportReport('dif')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
             </button>
@@ -1387,11 +1392,11 @@ th{position:relative;white-space:normal}
             <div style="font-size:11.5px;color:var(--c-muted)">MCQ item analysis and DIF report combined in a single document — Word (.docx)</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-            <button onclick="openReportPreviewModal('combined')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
+            <button data-tip="Preview the Full Combined Report (MCQ + DIF) before downloading" onclick="openReportPreviewModal('combined')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
-            <button onclick="doExportReport('full')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
+            <button data-tip="Download the Full Combined Report as a Word document (.docx)" onclick="doExportReport('full')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
             </button>
@@ -1413,11 +1418,11 @@ th{position:relative;white-space:normal}
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-            <button onclick="openReportPreviewModal('feedback')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
+            <button data-tip="Preview the Feedback Report before downloading" onclick="openReportPreviewModal('feedback')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c-secondary);cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:var(--c-border-2);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='var(--c-secondary)'">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
-            <button onclick="exportFeedbackReport()" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
+            <button data-tip="Download the Feedback Report as a Word document (.docx)" onclick="exportFeedbackReport()" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
             </button>
@@ -1526,13 +1531,13 @@ th{position:relative;white-space:normal}
     </div>
 
     <!-- Right: version pill + build number -->
-    <div class="footer-version" style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
-      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,.08);box-shadow:0 1px 3px rgba(0,0,0,.05);border-radius:20px;padding:4px 12px 4px 8px">
+    <button onclick="openReleaseNotes()" title="View release notes" aria-label="View release notes" style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;font-family:var(--font)">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,.08);box-shadow:0 1px 3px rgba(0,0,0,.05);border-radius:20px;padding:4px 12px 4px 8px;transition:background .15s">
         <div style="width:7px;height:7px;border-radius:50%;background:#2e7d32"></div>
         <span data-appversion style="font-size:11px;font-weight:700;color:var(--c-secondary);letter-spacing:.3px"></span>
       </div>
       <div data-appbuild style="font-size:9.5px;color:var(--c-muted);letter-spacing:.4px;font-family:monospace"></div>
-    </div>
+    </button>
 
   </div>
 </div>
@@ -1551,7 +1556,7 @@ th{position:relative;white-space:normal}
           <div id="settings-modal-title" style="font-size:20px;font-weight:700;color:#fff;font-family:'Aptos Display','Aptos',Calibri,sans-serif;line-height:1">Settings</div>
         </div>
       </div>
-      <button onclick="cancelSettings()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
+      <button onclick="cancelSettings()" aria-label="Close" title="Close" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -1856,10 +1861,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260716-01';
+var APP_BUILD       = '20260717-07';
 var APP_FAQ_VERSION = '3.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 15, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 16, 2026'; // Update each version close
+var APP_FAQ_DATE    = 'July 17, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 17, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -7583,6 +7588,67 @@ var RELEASE_NOTES = [
     version: '3.0',
     builds: [
       {
+        build: '20260717-07',
+        date:  'July 17, 2026',
+        notes: [
+          'Required field validation — exam title: a red asterisk (*) now appears permanently next to the Exam Title label via the new .required-marker CSS class. Clicking Continue without a title applies the new .field-input.field-error class to the input (red border + subtle red glow), turns the hint text red and bold, and focuses the field so the user can type immediately. Typing in the field clears the error state instantly. The hint text was updated from "Enter an exam title to enable continue, or skip" to "Exam title is required". Two new CSS classes defined: .required-marker and .field-input.field-error.',
+          'Feedback — By Category view: a new "By Category" tab added to the feedback toolbar between Frequency and Flagged Qs. In this view, four category filter pills (Content, Translation, Other, Uncategorized) each show a live comment count and toggle on/off. Multiple categories can be active simultaneously; questions with no matching comments are skipped. State is stored in _fbCatFilter (persists across tab switches). The view piggybacks on the By Question rendering path so all existing controls — reassign, discard, re-categorise, bookmark star, Move★ to top, and search — work identically. General Feedback section is also filtered by category. A "By Category" FAQ entry was added to the Student Feedback section.',
+        ]
+      },
+      {
+        build: '20260717-06',
+        date:  'July 17, 2026',
+        notes: [
+          'About modal — limitations note added: a short italic line at the bottom of the About description notes that session history, multi-user access, and report archiving require a future backend integration, with a link to the FAQ for details.',
+          'FAQ — "Current limitations" section added with five entries: session data not saved on refresh/close, no retrieval of past sessions, no multi-user collaboration, no historical item tracking across exams, and no SharePoint/institutional archiving in the current version. Each answer explains the limitation plainly and, where applicable, notes it is planned for a future version. Section appears between Student Feedback and Troubleshooting.',
+        ]
+      },
+      {
+        build: '20260717-05',
+        date:  'July 17, 2026',
+        notes: [
+          'Splash screen — Ember gradient: background changed from flat near-black (#181818) to a four-stop warm garnet gradient (linear-gradient 155deg: bright crimson #c41c1c → deep garnet #7a0a0a → dark burgundy #2a0505 → near-black #0e0202). Inspired by the University of Ottawa brand identity. Theme-neutral — not tied to either garnet or Elentra purple app themes.',
+          'Splash screen — animation sequence reordered per UX review: (1) magnifier ring + handle, (2) AQP letters A / Q / P, (3) chart bars one by one inside the magnifier followed by the trend line, (4) full "Assessment Quality Platform" subtitle, (5) green check circle, (6) checkmark draws on. Green circle and checkmark now fire as distinct steps rather than one combined step. Total sequence extended to 7.5s to accommodate the revised order.',
+          'Splash screen — progress bar fill and percentage text changed from garnet (var(--c-accent)) to white (rgba(255,255,255,.85/.88)) for legibility against the dark Ember gradient. "Ready" label colour at completion changed from garnet to white for the same reason.',
+        ]
+      },
+      {
+        build: '20260717-04',
+        date:  'July 17, 2026',
+        notes: [
+          'Feedback upload zone icon — both the standalone and combined-analysis feedback upload zones now display a speech bubble SVG (message icon with two text lines) instead of the generic upload arrow. Matches the stroke style and accent colour of the QM results upload icon. Communicates "student comments" at a glance.',
+          'Glass button system — audited all button contexts across the app. Glass treatment confirmed already applied consistently: results nav bar (white glass on garnet/purple), home and setup screen header buttons (dark glass on white), modal close buttons (white glass on garnet/purple). One gap addressed: the stale results warning bar "Back to Setup" button now uses amber-tinted glass (rgba(184,92,0,.10) background, blur) matching the amber context. Two reusable CSS classes added — .btn-glass-dark (for coloured/dark backgrounds) and .btn-glass-light (for white/light backgrounds) — to standardise future glass button additions without repeating inline styles.',
+        ]
+      },
+      {
+        build: '20260717-03',
+        date:  'July 17, 2026',
+        notes: [
+          'Feedback screen border visibility — all feedback UI controls now use --c-border-2 (12% opacity, button-weight) instead of --c-border (7% opacity, hairline) for their borders. Affected: .btn-fb-disc (Discard button in mapping and results screens), .fb-map-input (Q# attribution input field), all inline Q# reassignment inputs in By Question / Most Commented / Discarded views, the search bar in the feedback toolbar, and inline Discard buttons in the feedback results views.',
+          'Segmented control border — .seg-ctrl (the pill-shaped view selector used throughout: feedback views, MCQ/DIF toggle, filter bar, score distribution toggle) now has an explicit border:1px solid var(--c-border-2). Previously relied on background contrast alone, which was insufficient on white card surfaces.',
+          'Bookmark star visibility — the unselected ★ bookmark button on comment rows now uses var(--c-muted) instead of var(--c-border) as its resting colour. The star is now clearly visible at rest while remaining visually distinct from the amber bookmarked state.',
+          'Tooltip and accessibility pass — five modal close × buttons (Settings, About, FAQ, Release Notes, Diagnostics) received aria-label="Close" and title="Close" for screen reader accessibility and hover tooltip. Eight report buttons in the Reports tab (four Preview and four Download) received data-tip tooltips describing what each button does.',
+        ]
+      },
+      {
+        build: '20260717-02',
+        date:  'July 17, 2026',
+        notes: [
+          'Version badge → release notes link: the version pill and build number in the results screen footer are now a clickable button that opens the Release Notes modal. Clicking a version number is asking "what changed?" — release notes is the direct answer.',
+          'About modal — updated description text to reflect the current scope and institutional language of the platform.',
+        ]
+      },
+      {
+        build: '20260717-01',
+        date:  'July 17, 2026',
+        notes: [
+          'Feedback comment classifier — Content as default: any substantive comment that is not Translation or Other is now classified as Content automatically, instead of being left Uncategorized. Validated across 4 exams and 508 comments with zero false positives; fixes 134 previously Uncategorized comments per session.',
+          'Feedback comment classifier — Translation expanded: definitional questions ("what does X mean?", "unsure of what X means") and grammar/language-quality signals ("erreurs de grammaire", "grammar error") moved from Content to Translation. Rule: if a student is asking for the meaning of a word or flagging a grammar/language issue, it is Translation regardless of whether the term is clinical. New patterns added: "dans la grammaire", "qu\'est-ce qu\'une", "what normal person uses". Regex added for "not sure what X means" to distinguish from "not sure what X is" (clinical reasoning).',
+          'Feedback comment classifier — Other auto-detection added for General Feedback: comments matching technical/access signals (screen sharing, internet connection, exam timing out), format/structure signals (evenly spread out, related questions together), or social signals (grade nicely, good summer) are now auto-classified as Other when they appear in General Feedback. Other is never auto-applied to attributed (Q#) comments — those are always Content or Translation.',
+          'Feedback comment classifier — keyword maintenance: "erreur de grammaire" and related grammar keywords removed from Content list (now in Translation). "what does" and related definitional keywords removed from Content list (now in Translation). Content keyword list and Translation keyword list otherwise unchanged.',
+        ]
+      },
+      {
         build: '20260716-01',
         date:  'July 16, 2026',
         notes: [
@@ -9252,17 +9318,25 @@ function updateSetupContinueBtn() {
   var hasTitle = title && title.value.trim().length > 0;
   btn.style.opacity = hasTitle ? '1' : '0.55';
   if (hint) hint.style.display = hasTitle ? 'none' : '';
+  // Clear error state as user types
+  if (title) title.classList.remove('field-error');
+  if (hint)  { hint.style.color = ''; hint.style.fontWeight = ''; }
 }
 
 function advanceToStep2() {
-  // Guard — require exam title (soft-required)
+  // Guard — exam title is required
   var title = document.getElementById('exam-title');
   if (!title || title.value.trim().length === 0) {
-    // Flash the hint and shake the button briefly
     var hint = document.getElementById('setup-continue-hint');
     var btn  = document.getElementById('btn-setup-continue');
-    if (hint) { hint.style.color = 'var(--c-accent)'; hint.style.fontWeight = '600'; hint.style.display = ''; setTimeout(function(){ if(hint){hint.style.color='';hint.style.fontWeight='';} }, 2000); }
+    // Red border on input
+    if (title) title.classList.add('field-error');
+    // Red error hint
+    if (hint) { hint.style.color = 'var(--c-accent)'; hint.style.fontWeight = '700'; hint.style.display = ''; }
+    // Brief button outline flash
     if (btn)  { btn.style.outline = '2px solid var(--c-accent)'; setTimeout(function(){ if(btn) btn.style.outline=''; }, 800); }
+    // Focus field so user can type immediately
+    if (title) title.focus();
     return;
   }
   // Revert Step 1 title to simple label now that it's confirmed
@@ -9772,7 +9846,16 @@ var FB_CATEG_KEYWORDS = {
     // Better/clearer in one language
     'better in english', 'better in french',
     'clearer in english', 'clearer in french',
-    'poorly worded in'
+    'poorly worded in',
+    // Definitional confusion — asking the meaning of a word (moved from Content)
+    // Rule: "what does X mean?" is always Translation regardless of whether X is clinical
+    'what does', 'what is meant by', 'unsure of what', 'unsure what this means',
+    // Grammar and language quality (moved from Content — these are language concerns)
+    'erreur de grammaire', 'erreurs de grammaire', 'grammar error', 'grammatical error',
+    // New patterns identified from 4-exam sample analysis
+    'dans la grammaire',       // catches "des erreurs dans la grammaire"
+    "qu'est-ce qu'une",        // student asking definition of a French word from the question
+    'what normal person uses', // student questioning unusual vocabulary choice
   ],
   content: [
     // Two / multiple correct answers
@@ -9837,7 +9920,8 @@ var FB_CATEG_KEYWORDS = {
     'not complete', 'is not complete', 'incomplete answer', 'incomplete option',
     "doesn't say", 'doesnt say', 'ne dit pas',
     'needs to be more clear', 'needs to be clearer', 'be more clear', 'need to be clearer',
-    'what does', 'what is meant by', 'unsure of what', 'unsure what this means',
+    // NOTE: 'what does', 'what is meant by', 'unsure of what', 'unsure what this means'
+    // moved to Translation — definitional confusion is always a language concern
     'unfair', 'not fair',
     'more info', 'used more info', 'could use more', 'more context',
     'do not remember learning', 'doesnt specify', 'does not specify serum',
@@ -9907,7 +9991,8 @@ var FB_CATEG_KEYWORDS = {
     'not expected to know', 'not supposed to be included', 'not supposed to be on',
     'unrelated to', 'not related to',
     'quel est le lien', 'lien avec la',
-    'erreur de grammaire', 'erreurs de grammaire', 'grammar error', 'grammatical error',
+    // NOTE: 'erreur de grammaire', 'erreurs de grammaire', 'grammar error', 'grammatical error'
+    // moved to Translation — grammar issues are language concerns, not content concerns
     'not a familiar term', 'unfamiliar term',
     'anatomy question', 'anatomy q',
     'should not be asked', 'should be removed', 'should probably be removed',
@@ -9920,6 +10005,22 @@ var FB_CATEG_KEYWORDS = {
     // Curriculum / figure issues — 'image' kept: image issues are always content, never translation
     'image', 'figure', 'photo', 'picture', 'graph', 'table',
     'not in curriculum', 'au-delà', 'beyond'
+  ],
+  // Other: applied to General Feedback comments only.
+  // Covers exam experience, logistics, technical issues, and off-topic social content.
+  // Never applied to attributed comments (Q#) — those are always Content if not Translation.
+  other: [
+    // Technical / access issues
+    'screen stopped sharing', 'stopped sharing my screen',
+    'log out of the exam',    'logged out of the exam',
+    'internet connection',    'tech support',
+    'exam kept timing out',   'timing out',
+    // Format / structure feedback
+    'evenly spread out',      'well-spread out',
+    'spread out between',     'related questions together',
+    // Social / off-topic
+    'grade nicely',           'good summer',
+    'have a good summer',
   ]
 };
 
@@ -9927,23 +10028,43 @@ function autoCategorizeFb() {
   if (!FB.parsed || !FB.parsed.length) return;
   var kw = FB_CATEG_KEYWORDS;
 
+  // Regex for definitional confusion: "not sure what X means" — Translation
+  // Narrower than 'not sure what' alone (avoids catching "not sure what the X is")
+  var rNotSureWhatMeans = /not sure what\b.{1,50}\bmeans?\b/i;
+
   FB.parsed.forEach(function(p) {
     // Never overwrite a manual classification
     if (p._classif) return;
-    // Only categorize comments that have actual text
+    // Only categorize comments with actual text
     if (!p.text || p.text.trim().length < 3) return;
 
-    var t = p.text.toLowerCase();
+    var t   = p.text.toLowerCase();
+    var isGeneral = (p.status === 'general' || (p.qNums && p.qNums.length === 0));
 
-    // Translation takes priority
-    var isTranslation = kw.translation.some(function(k){ return t.indexOf(k) !== -1; });
+    // ── 1. Translation (highest priority) ──────────────────────────────────
+    // Covers: EN↔FR issues, vocabulary/terminology confusion, grammar errors,
+    // spelling, word choice, and definitional questions ("what does X mean?")
+    var isTranslation = kw.translation.some(function(k){ return t.indexOf(k) !== -1; })
+                     || rNotSureWhatMeans.test(p.text);
     if (isTranslation) { p._classif = 'translation'; return; }
 
+    // ── 2. Other (General Feedback only) ───────────────────────────────────
+    // Covers: technical/access issues, exam format/structure feedback,
+    // off-topic social messages. Never auto-applied to attributed comments.
+    if (isGeneral) {
+      var isOther = kw.other.some(function(k){ return t.indexOf(k) !== -1; });
+      if (isOther) { p._classif = 'other'; return; }
+    }
+
+    // ── 3. Content keyword fast-exit ────────────────────────────────────────
     var isContent = kw.content.some(function(k){ return t.indexOf(k) !== -1; });
     if (isContent) { p._classif = 'content'; return; }
 
-    // Everything else stays unclassified for now — Other is manual only
-    // (avoids noise from a catch-all; revisit post-testing)
+    // ── 4. Content default ──────────────────────────────────────────────────
+    // Applied to attributed comments (Q#) only — validated at 0 false positives.
+    // General Feedback without a keyword match stays Uncategorized so that
+    // junk responses (initials, "thank you!", "all good") are not wrongly tagged.
+    if (!isGeneral) { p._classif = 'content'; }
   });
 }
 
@@ -10212,7 +10333,8 @@ function fbDiscardAll() {
 }
 
 // ── Feedback tab renderer ─────────────────────────────────────────────────
-var _fbView = 'freq'; // 'freq' | 'byq' | 'byv'
+var _fbView = 'freq'; // 'freq' | 'byq' | 'byv' | 'bycat' | 'flagged' | 'disc'
+var _fbCatFilter = ['content','translation','other','uncategorized']; // active categories for bycat view
 var _fbSearch = '';           // current search term
 var _fbFloatBookmarked = false; // float bookmarked comments to top
 
@@ -10534,6 +10656,13 @@ function renderFeedbackReportPreview(container) {
 }
 
 // ── Bookmark helpers ─────────────────────────────────────────────────────
+function fbToggleCatFilter(key) {
+  var idx = _fbCatFilter.indexOf(key);
+  if (idx !== -1) { _fbCatFilter.splice(idx, 1); }
+  else            { _fbCatFilter.push(key); }
+  renderFeedbackTabKeep('bycat');
+}
+
 function fbToggleBookmark(idx) {
   if (!FB.parsed[idx]) return;
   FB.parsed[idx]._bookmarked = !FB.parsed[idx]._bookmarked;
@@ -10548,9 +10677,9 @@ function fbBookmarkStarHtml(idx) {
   var bm = FB.parsed[idx] && FB.parsed[idx]._bookmarked;
   return '<button onclick="fbToggleBookmark(' + idx + ')" title="' + (bm ? 'Remove bookmark' : 'Bookmark this comment') + '" ' +
     'style="font-size:14px;background:none;border:none;cursor:pointer;padding:0 2px;line-height:1;color:' +
-    (bm ? '#e8a800' : 'var(--c-border)') + '" ' +
+    (bm ? '#e8a800' : 'var(--c-muted)') + '" ' +
     'onmouseover="this.style.color=&apos;' + (bm ? '#c07800' : '#e8a800') + '&apos;" ' +
-    'onmouseout="this.style.color=&apos;' + (bm ? '#e8a800' : 'var(--c-border)') + '&apos;">★</button>';
+    'onmouseout="this.style.color=&apos;' + (bm ? '#e8a800' : 'var(--c-muted)') + '&apos;">★</button>';
 }
 
 // ── Search helper ─────────────────────────────────────────────────────────
@@ -10660,6 +10789,7 @@ function renderFeedbackTab(view) {
   tbHtml += '<button class="seg-btn' + (_fbView==='byq'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'byq\')">By Question</button>';
   tbHtml += '<button class="seg-btn' + (_fbView==='byv'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'byv\')">Most Commented</button>';
   tbHtml += '<button class="seg-btn' + (_fbView==='freq'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'freq\')">Frequency</button>';
+  tbHtml += '<button class="seg-btn' + (_fbView==='bycat'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'bycat\')">By Category</button>';
   var hasMcqForTab = !!(G._lastN && G.mcq && G.mcq.length);
   if (hasMcqForTab) {
     tbHtml += '<button class="seg-btn' + (_fbView==='flagged'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'flagged\')" style="color:' + (_fbView==='flagged'?'':'var(--c-accent)') + '">&#9872; Flagged Qs</button>';
@@ -10667,15 +10797,14 @@ function renderFeedbackTab(view) {
   tbHtml += '<button class="seg-btn' + (_fbView==='disc'?' seg-active':'') + '" onclick="renderFeedbackTabKeep(\'disc\')">Discarded (' + nDiscarded + ')</button>';
   tbHtml += '</div>';
 
-  // ── Search input (byq/byv only) — fixed 260px, right beside tabs ──
-  if (_fbView === 'byq' || _fbView === 'byv') {
+  // ── Search input (byq/byv/bycat only) ──
+  if (_fbView === 'byq' || _fbView === 'byv' || _fbView === 'bycat') {
     tbHtml += '<div style="width:1px;height:18px;background:var(--c-border);margin:0 12px;flex-shrink:0"></div>';
     tbHtml += '<div style="position:relative;flex:1 1 260px;min-width:180px;max-width:400px">';
     tbHtml += '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--c-muted);pointer-events:none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
     tbHtml += '<input id="fb-search-input" type="text" placeholder="Search comments…" value="' + escHtml(_fbSearch) + '" ';
     tbHtml += 'onkeydown="if(event.key===\'Enter\'){_fbSearch=this.value.trim();renderFeedbackTabKeep(_fbView)}" ';
-    tbHtml += 'style="width:100%;padding:4px 28px 4px 26px;font-size:11px;border:1px solid var(--c-border);border-radius:6px;font-family:var(--font);color:var(--c-primary);background:var(--c-bg)">';
-    // Clear × inside the input when search is active
+    tbHtml += 'style="width:100%;padding:4px 28px 4px 26px;font-size:11px;border:1px solid var(--c-border-2);border-radius:6px;font-family:var(--font);color:var(--c-primary);background:var(--c-bg)">';
     if (_fbSearch) {
       tbHtml += '<button id="fb-search-clear" onclick="_fbSearch=\'\';renderFeedbackTabKeep(_fbView)" title="Clear search" ';
       tbHtml += 'style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;line-height:1;color:var(--c-muted);padding:0;display:flex;align-items:center">&times;</button>';
@@ -10686,8 +10815,8 @@ function renderFeedbackTab(view) {
   // ── Right-side group (Move★ + Volume) — pushed right, wraps as a unit ──
   tbHtml += '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0;row-gap:6px;margin-left:auto">';
 
-  // ── Move ★ bookmarked (byq/byv only) ──
-  if (_fbView === 'byq' || _fbView === 'byv') {
+  // ── Move ★ bookmarked (byq/byv/bycat only) ──
+  if (_fbView === 'byq' || _fbView === 'byv' || _fbView === 'bycat') {
     tbHtml += '<label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--c-muted);cursor:pointer;white-space:nowrap;margin-right:16px">';
     tbHtml += '<input type="checkbox" ' + (_fbFloatBookmarked ? 'checked' : '') + ' id="fb-float-bm-chk" style="accent-color:var(--c-accent);cursor:pointer">';
     tbHtml += 'Move ★ bookmarked to top</label>';
@@ -10741,7 +10870,45 @@ function renderFeedbackTab(view) {
       html += '<div style="font-size:12px;color:var(--c-muted)">+ <strong>' + FB.general.length + '</strong> comments in General Feedback section (visible in By Question view)</div>';
     }
 
-  } else if (_fbView === 'byv' || _fbView === 'byq') {
+  } else if (_fbView === 'byv' || _fbView === 'byq' || _fbView === 'bycat') {
+    // ── By Category filter pills (bycat only) ──────────────────────────────
+    if (_fbView === 'bycat') {
+      var catCounts = {content:0, translation:0, other:0, uncategorized:0};
+      sortedQs.forEach(function(q) {
+        (FB.grouped[q]||[]).forEach(function(c) {
+          var cl = c._classif || 'uncategorized';
+          catCounts[cl] = (catCounts[cl]||0) + 1;
+        });
+      });
+      (FB.general||[]).forEach(function(g) {
+        var p = FB.parsed[g.idx];
+        var cl = (p && p._classif) || 'uncategorized';
+        catCounts[cl] = (catCounts[cl]||0) + 1;
+      });
+      var catDefs = [
+        {key:'content',       label:'Content',       color:'#a0510a', bg:'rgba(160,81,10,.10)', border:'rgba(160,81,10,.4)'},
+        {key:'translation',   label:'Translation',   color:'#0a5a9c', bg:'rgba(10,90,156,.10)', border:'rgba(10,90,156,.4)'},
+        {key:'other',         label:'Other',         color:'#4b5563', bg:'rgba(75,85,99,.10)',  border:'rgba(75,85,99,.4)'},
+        {key:'uncategorized', label:'Uncategorized', color:'var(--c-muted)', bg:'var(--c-surface)', border:'var(--c-border-2)'},
+      ];
+      html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--c-border)">';
+      html += '<span style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap">Show:</span>';
+      catDefs.forEach(function(cd) {
+        var active = _fbCatFilter.indexOf(cd.key) !== -1;
+        var count  = catCounts[cd.key] || 0;
+        html += '<button onclick="fbToggleCatFilter(\'' + cd.key + '\')" ' +
+          'style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;' +
+          'background:' + (active ? cd.bg : 'transparent') + ';' +
+          'color:' + (active ? cd.color : 'var(--c-muted)') + ';' +
+          'border:1.5px solid ' + (active ? cd.border : 'var(--c-border-2)') + ';' +
+          'opacity:' + (count === 0 ? '.4' : '1') + '">' +
+          cd.label + ' <span style="font-size:10px;opacity:.75">(' + count + ')</span></button>';
+      });
+      if (_fbCatFilter.length === 0) {
+        html += '<span style="font-size:11px;color:var(--c-accent);font-weight:600;margin-left:4px">No categories selected — select at least one to see comments.</span>';
+      }
+      html += '</div>';
+    }
     // ── By Question / Most Commented ──
     var qs = _fbView === 'byv'
       ? sortedQs.slice().sort(function(a,b){
@@ -10752,6 +10919,13 @@ function renderFeedbackTab(view) {
       : sortedQs;
     qs.forEach(function(q) {
       var comments = (FB.grouped[q] || []).slice();
+      // Category filter — bycat view only
+      if (_fbView === 'bycat') {
+        comments = comments.filter(function(c) {
+          return _fbCatFilter.indexOf(c._classif || 'uncategorized') !== -1;
+        });
+        if (comments.length === 0) return; // skip questions with no matching comments
+      }
       // Search filter — skip section if no match, but show ALL comments with highlighting
       if (_fbSearch && _fbSearch.trim()) {
         var hasMatch = comments.some(function(c){ return fbMatchesSearch(c.text); });
@@ -10787,7 +10961,7 @@ function renderFeedbackTab(view) {
         html += '<div style="display:flex;align-items:center;gap:4px;padding-top:1px">';
         html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:24px">' + fbBookmarkStarHtml(c.idx) + '</div>';
         html += '<div style="display:inline-flex;align-items:center;flex-shrink:0;width:164px;padding-right:4px">';
-        html += '<input type="text" placeholder="Q# or 12, 45" style="width:100%;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
+        html += '<input type="text" placeholder="Q# or 12, 45" style="width:100%;padding:2px 5px;font-size:11px;border:1px solid var(--c-border-2);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
         html += '</div>';
         html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px">';
         html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
@@ -10800,7 +10974,7 @@ function renderFeedbackTab(view) {
         html += '<button onclick="fbMoveToGeneral(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:#0d7a7a;border:1px solid #0d7a7a;border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">General</button>';
         html += '</div>';
         html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:58px">';
-        html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+        html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border-2);border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
         html += '</div>';
         html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:96px">' + fbClassifyDropdownHtml(c.idx) + '</div>';
         html += '</div>'; // close controls
@@ -10817,10 +10991,17 @@ function renderFeedbackTab(view) {
     });
     // General section
     if (FB.general.length > 0) {
-      // Compute matching comments before opening any wrapper
-      var _genToShow = (_fbSearch && _fbSearch.trim())
-        ? FB.general.filter(function(c){ return fbMatchesSearch(c.text); })
-        : FB.general;
+      // Compute matching comments — category filter for bycat, search filter otherwise
+      var _genToShow = FB.general;
+      if (_fbView === 'bycat') {
+        _genToShow = _genToShow.filter(function(c) {
+          var cl = (FB.parsed[c.idx] && FB.parsed[c.idx]._classif) || 'uncategorized';
+          return _fbCatFilter.indexOf(cl) !== -1;
+        });
+      }
+      if (_fbSearch && _fbSearch.trim()) {
+        _genToShow = _genToShow.filter(function(c){ return fbMatchesSearch(c.text); });
+      }
       // Skip General section entirely if searching and no matches
       if (_genToShow.length > 0) {
         html += '<div class="fb-section">';
@@ -10842,7 +11023,7 @@ function renderFeedbackTab(view) {
           html += '<div style="display:flex;align-items:center;gap:4px;padding-top:1px">';
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:24px">' + fbBookmarkStarHtml(c.idx) + '</div>';
           html += '<div style="display:inline-flex;align-items:center;flex-shrink:0;width:164px;padding-right:4px">';
-          html += '<input type="text" placeholder="Q# or 12, 45" style="width:100%;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
+          html += '<input type="text" placeholder="Q# or 12, 45" style="width:100%;padding:2px 5px;font-size:11px;border:1px solid var(--c-border-2);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
           html += '</div>';
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px">';
           html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
@@ -10853,7 +11034,7 @@ function renderFeedbackTab(view) {
           html += '</div>';
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:60px"></div>';
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:58px">';
-          html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+          html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border-2);border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
           html += '</div>';
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:96px">' + fbClassifyDropdownHtml(c.idx) + '</div>';
           html += '</div>'; // close controls
@@ -10898,7 +11079,7 @@ function renderFeedbackTab(view) {
         html += '</div>';
         // Recovery controls
         html += '<div style="flex-shrink:0;display:flex;align-items:center;gap:4px;padding-top:2px">';
-        html += '<input type="text" placeholder="Q# or 12, 45" style="width:160px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + idx + ']._typed=this.value" value="' + (p._typed || '') + '">';
+        html += '<input type="text" placeholder="Q# or 12, 45" style="width:160px;padding:2px 5px;font-size:11px;border:1px solid var(--c-border-2);border-radius:4px;font-family:var(--font)" id="fb-ri-' + idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + idx + ']._typed=this.value" value="' + (p._typed || '') + '">';
         html += '<button onclick="fbStageAddReassign(' + idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
         var _mvLabelD = staged.length > 0 ? 'Move All (' + staged.length + ')' : 'Move to Q#';
         html += '<button onclick="fbUndiscardToQ(' + idx + ')" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer;white-space:nowrap">' + _mvLabelD + '</button>';
@@ -10971,7 +11152,7 @@ function renderFeedbackTab(view) {
             html += '<div style="display:flex;align-items:center;gap:4px;padding-top:1px">';
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:24px">' + fbBookmarkStarHtml(c.idx) + '</div>';
             html += '<div style="display:inline-flex;align-items:center;flex-shrink:0;width:164px;padding-right:4px">';
-            html += '<input type="text" placeholder="Q# or 12, 45" style="width:100%;padding:2px 5px;font-size:11px;border:1px solid var(--c-border);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
+            html += '<input type="text" placeholder="Q# or 12, 45" style="width:100%;padding:2px 5px;font-size:11px;border:1px solid var(--c-border-2);border-radius:4px;font-family:var(--font)" id="fb-ri-' + c.idx + '" oninput="this.value=this.value.replace(/[^0-9,;\\s]/g,\'\');FB.parsed[' + c.idx + ']._typed=this.value" value="' + (FB.parsed[c.idx]._typed || '') + '">';
             html += '</div>';
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px">';
             html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
@@ -10982,7 +11163,7 @@ function renderFeedbackTab(view) {
             html += '</div>';
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:60px"></div>';
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:58px">';
-            html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border);border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
+            html += '<button onclick="fbDiscardFromView(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:var(--c-muted);border:1px solid var(--c-border-2);border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap">Discard</button>';
             html += '</div>';
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:96px">' + fbClassifyDropdownHtml(c.idx) + '</div>';
             html += '</div>'; // close controls
@@ -11555,7 +11736,7 @@ document.addEventListener('click', function(e) {
             </div>
           </div>
         </div>
-        <button onclick="closeAbout()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s;align-self:flex-start" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
+        <button onclick="closeAbout()" aria-label="Close" title="Close" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s;align-self:flex-start" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
@@ -11568,8 +11749,9 @@ document.addEventListener('click', function(e) {
       <div>
         <div style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">About</div>
         <p style="font-size:13px;line-height:1.75;color:var(--c-secondary);margin:0">
-          The <strong style="color:var(--c-primary)">Assessment Quality Platform (AQP)</strong> automates MCQ item analysis, DIF reporting, and student feedback analysis for UGME exams at the University of Ottawa Faculty of Medicine. Upload a QuestionMark or Scantron export and receive item statistics, score distributions, and formatted Word reports in seconds. For methodology details, see <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none">FAQ / Help</a> or <strong>How This Works</strong> on the setup screen.
+          The <strong style="color:var(--c-primary)">Assessment Quality Platform (AQP)</strong> automates the generation and reporting of MCQ item, DIF, and student feedback analyses for UGME-related exams at the Faculty of Medicine of the University of Ottawa. The application allows uploading raw data from a QuestionMark or Scantron export and generates item statistics, score distributions, and formatted Word reports in seconds. For methodology details, instructions or guidance, see the <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none">FAQ / Help</a> page.
         </p>
+        <p style="font-size:12px;line-height:1.6;color:var(--c-muted);margin:10px 0 0;font-style:italic">Note: session history, multi-user access, and report archiving require a future backend integration — see the <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none;font-style:normal">FAQ</a> for current limitations.</p>
       </div>
 
       <div style="border-top:1px solid var(--c-border)"></div>
@@ -11624,7 +11806,7 @@ document.addEventListener('click', function(e) {
             <div style="font-size:11px;color:rgba(255,255,255,.8);margin-top:5px">Current as of <strong style="color:rgba(255,255,255,.9)" data-faqversion></strong> &nbsp;·&nbsp; Updated <span data-faqdate></span></div>
           </div>
         </div>
-        <button onclick="closeFAQ()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s;align-self:flex-start" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
+        <button onclick="closeFAQ()" aria-label="Close" title="Close" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s;align-self:flex-start" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
@@ -12223,6 +12405,18 @@ document.addEventListener('click', function(e) {
 
           <div class="faq-item">
             <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>What is the By Category view and how do I use it?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              The <strong>By Category</strong> view filters comments by their assigned category — Content, Translation, Other, or Uncategorized — so you can focus on one type at a time.<br><br>
+              At the top of the view, four category pills show the count for each category. Click a pill to toggle it on or off. Multiple categories can be active at the same time — for example, select Content and Uncategorized together to see everything that may still need clinical review. When a category pill is off, its comments are hidden. Questions with no matching comments are skipped automatically.<br><br>
+              The search bar, bookmark star, and "Move ★ bookmarked to top" all work the same way as in By Question. You can also reassign, discard, or re-categorise any comment directly from this view.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
               <span>What is the Feedback Report and how do I export it?</span>
               <span class="faq-icon">+</span>
             </div>
@@ -12239,6 +12433,65 @@ document.addEventListener('click', function(e) {
             <div class="faq-a">
               When checked (the default), comment category badges — <strong>Content</strong>, <strong>Translation</strong>, and <strong>Other</strong> — appear alongside each comment in the report preview and in the Word export. These badges are assigned automatically when the report is generated, and can be changed or cleared manually in the By Question view.<br><br>
               Unchecking the box hides all category badges from both the preview and the Word export without removing the underlying categorizations. This is useful when you want to share a clean report before the categorization review is complete. The checkbox appears inline on the Feedback report row in the Reports tab.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Current limitations -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--c-accent);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--c-accent)">Current limitations</div>
+        <div style="display:flex;flex-direction:column;gap:1px">
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Does the tool save my work if I close the tab or refresh?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              No — the current version stores no session data beyond your chosen colour theme. Closing the tab, refreshing, or a browser crash will lose all uploaded files, analysis results, question exceptions, and feedback categorisation for that session.<br><br>
+              <strong>Export your Word reports and CSV before closing the browser.</strong> Session persistence is planned for a future version.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Can I retrieve an analysis I ran in a previous session?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Not yet. Once a session ends, the results are not retrievable through the tool. If you need to keep a record of past analyses, export the Word reports and CSV at the end of every session and save them to your usual file storage. A session history feature is planned for a future version that includes a backend system.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Can multiple coordinators work on the same exam at the same time?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              No — the tool runs entirely in your browser with no accounts or shared sessions. Multiple users can open the tool simultaneously, but each works independently in their own browser. There is no collaboration or shared workspace in the current version. If two people need to review the same exam, share the exported Word reports manually. Multi-user access is planned for a future version.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Can I track how a question has performed across multiple exams?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Not yet. Historical item tracking requires an integration with Elentra (to match questions by item ID across sessions) and a backend to store results over time. Both are planned for a future version of the platform. For now, each session is fully independent — no data carries over between runs.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFAQ(this)">
+              <span>Can the tool save reports directly to SharePoint?</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-a">
+              Not in the current version. Reports are downloaded to your local browser as Word (.docx) or CSV files — there is no automatic saving to SharePoint or other institutional systems. SharePoint integration is planned for a future version and will enable session history, multi-user access, and institutional document archiving.
             </div>
           </div>
 
@@ -12367,7 +12620,7 @@ document.addEventListener('click', function(e) {
           <div style="font-size:10.5px;color:rgba(255,255,255,.8);margin-top:2px">Latest: <strong style="color:rgba(255,255,255,.9)" data-appversion></strong> &nbsp;·&nbsp; <span data-rndate></span></div>
         </div>
       </div>
-      <button onclick="closeReleaseNotes()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <button onclick="closeReleaseNotes()" aria-label="Close" title="Close" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <!-- Version selector -->
     <div style="padding:14px 28px;border-bottom:1px solid var(--c-border);flex-shrink:0">
@@ -12495,7 +12748,7 @@ document.addEventListener('click', function(e) {
         <div style="font-size:20px;font-weight:700;color:#fff">Upload Diagnostics</div>
         <div style="font-size:12px;color:rgba(255,255,255,.85);margin-top:3px">Detailed information about what was detected in each uploaded file.</div>
       </div>
-      <button onclick="closeDiagnosticsModal()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <button onclick="closeDiagnosticsModal()" aria-label="Close" title="Close" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <!-- Sections -->
     <div id="diag-modal-body" style="overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px;flex:1"></div>
