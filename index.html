@@ -91,6 +91,7 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 
 /* ── Setup screen — reusable section-card system (matches Fluent demo) ── */
 .exam-fields{display:grid;grid-template-columns:minmax(200px,360px) minmax(160px,240px) 150px;gap:16px;max-width:800px}
+@media(max-width:600px){.exam-fields{grid-template-columns:1fr;max-width:100%}}
 .field-label{font-size:12.5px;color:var(--c-secondary);font-weight:600;display:block;margin-bottom:4px}
 .required-marker{color:var(--c-accent);font-weight:700;margin-left:2px;font-size:13px}
 .field-input{width:100%;padding:7px 10px;border:1px solid var(--c-border-2);border-radius:6px;font-size:14px;font-family:var(--font);color:var(--c-primary);background:var(--c-surface);transition:border-color .12s,box-shadow .12s}
@@ -820,8 +821,8 @@ th{position:relative;white-space:normal}
             <input type="date" id="exam-date" class="field-input">
           </div>
         </div>
-        <div style="margin-top:18px;display:flex;align-items:center;justify-content:flex-end;gap:12px">
-          <span id="setup-continue-hint" style="font-size:12px;color:var(--c-muted)">Exam title is required</span>
+        <div style="margin-top:18px;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px 12px">
+          <span id="setup-continue-hint" style="font-size:12px;color:var(--c-muted)">Enter a title to continue</span>
           <button id="btn-setup-continue" onclick="advanceToStep2()"
             style="display:inline-flex;align-items:center;gap:6px;padding:9px 22px;border-radius:10px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;opacity:0.55">
             Continue
@@ -1861,10 +1862,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260717-07';
+var APP_BUILD       = '20260724-01';
 var APP_FAQ_VERSION = '3.0';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'July 17, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 17, 2026'; // Update each version close
+var APP_RN_DATE     = 'July 24, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -5127,7 +5128,7 @@ function renderMCQReport(avg, alpha) {
     else if(r.flag.indexOf('Low')>=0){comment='Low discrimination';}
     var bw=(r.topWrong&&r.p<getThresh('checkp'))?'<b>'+r.topWrong+'</b>':'';
     var color=r.flag.indexOf('Poor')>=0?'#993556':r.flag.indexOf('Difficult')>=0||r.flag.indexOf('Check')>=0?'#c0392b':'#b25400';
-    t1+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="color:'+color+';font-style:italic">'+r.flag+'</td><td>'+comment+'</td><td style="text-align:center">'+bw+'</td><td><b>'+r.rec+'</b></td></tr>';
+    t1+='<tr class="row-flagged"><td style="text-align:center"><b>'+r.num+'</b></td><td style="color:'+color+';font-style:italic">'+r.flag+'</td><td>'+comment+'</td><td style="text-align:center">'+bw+'</td><td><b>'+r.rec+'</b></td></tr>';
   }
   var t2='';
   if(easy.length){
@@ -5139,9 +5140,9 @@ function renderMCQReport(avg, alpha) {
   for(i=0;i<G.mcq.length;i++){
     var r=G.mcq[i];
     if (r.excluded === 'delete') {
-      t3+='<tr style="background:#f2f2f2"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Deleted</span></td><td style="text-align:center">'+r.key+'</td><td colspan="2" style="font-style:italic;color:var(--c-muted)">Excluded from analysis</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
+      t3+='<tr style="background:#f2f2f2"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Deleted</span></td><td style="text-align:center;font-size:11px;color:#5a6472">'+(r.elentraId||'')+'</td><td style="text-align:center">'+r.key+'</td><td colspan="2" style="font-style:italic;color:var(--c-muted)">Excluded from analysis</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else if (r.excluded === 'credit') {
-      t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
+      t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center;font-size:11px;color:#5a6472">'+(r.elentraId||'')+'</td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else {
       var isDIF=G_DIF_ENABLED&&G.dif&&G.dif.some(function(d){return d.num===r.num&&d.imp;});
       var rowFill=r.flag==='Too easy'?' class="row-easy"':r.flag?' class="row-flagged"':isDIF?' class="row-dif"':'';
@@ -5195,6 +5196,195 @@ function renderMCQReport(avg, alpha) {
 
 
 // ── Render: Full Report (combined MCQ + DIF) ──────────────────────────────
+// ── KPI Overview Canvas builder ───────────────────────────────────────────────
+// Draws the full Exam Overview card onto an offscreen canvas and returns base64 PNG.
+// Uses Canvas 2D API only — no html2canvas, works on file:// URLs with no CORS issues.
+function buildKpiOverviewCanvas(avg, alpha, chartCanvas) {
+  // ── Data ────────────────────────────────────────────────────────────────────
+  var nQ = G.nQ || 0;
+  var n  = G.students ? G.students.length : 0;
+  var eS = G._distE || [], fS = G._distF || [];
+  var nE = eS.length, nF = fS.length;
+  var eAvg = nE ? Math.round(eS.reduce(function(a,b){return a+b;},0)/nE) : 0;
+  var fAvg = nF ? Math.round(fS.reduce(function(a,b){return a+b;},0)/nF) : 0;
+  var alphaN = parseFloat(alpha)||0, avgN = parseFloat(avg)||0;
+  var nFlagged=0, nEasy=0, nDIF=0, nOk=0, nCredited=0, nDeleted=0, nDiff=0, nPoor=0;
+  if (G.mcq) for (var i=0;i<G.mcq.length;i++) {
+    var q=G.mcq[i];
+    if (q.excluded==='delete'){nDeleted++;continue;}
+    if (q.excluded==='credit'){nCredited++;continue;}
+    var fl=q.flag;
+    if (!fl){nOk++;continue;}
+    if (fl==='Too easy'){nEasy++;continue;}
+    nFlagged++;
+    if (fl.indexOf('Difficult')>=0) nDiff++;
+    else if (fl.indexOf('Poor')>=0||fl.indexOf('Low')>=0) nPoor++;
+  }
+  if (G_DIF_ENABLED&&G.dif) for (var i=0;i<G.dif.length;i++) if(G.dif[i].imp) nDIF++;
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  var GARNET='#A31515', TEAL='#0d7a7a', PURPLE='#5c4fc7', GREEN='#2e7d32';
+  var GRAY='#64748b', BORDER='rgba(0,0,0,0.1)';
+  function rr(cx, x, y, w, h, r) { // rounded rect path
+    cx.beginPath();
+    cx.moveTo(x+r,y); cx.lineTo(x+w-r,y); cx.quadraticCurveTo(x+w,y,x+w,y+r);
+    cx.lineTo(x+w,y+h-r); cx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    cx.lineTo(x+r,y+h); cx.quadraticCurveTo(x,y+h,x,y+h-r);
+    cx.lineTo(x,y+r); cx.quadraticCurveTo(x,y,x+r,y); cx.closePath();
+  }
+  function bdg(cx, text, x, y, bg, col) { // badge
+    cx.font = 'bold 9px Calibri,Arial,sans-serif';
+    var tw = cx.measureText(text).width;
+    cx.fillStyle=bg; rr(cx,x,y-11,tw+10,15,3); cx.fill();
+    cx.fillStyle=col; cx.fillText(text, x+5, y);
+    return tw+16;
+  }
+  function lbl(cx, text, x, y) { // small uppercase label
+    cx.fillStyle=GRAY; cx.font='700 8px Calibri,Arial,sans-serif';
+    cx.fillText(text.toUpperCase(), x, y);
+  }
+
+  var avgBadge  = avgN>=75?'Good':avgN>=60?'Acceptable':avgN>=50?'Low':'Concerning';
+  var avgBC     = avgN>=75?GREEN:avgN>=60?'#854f0b':avgN>=50?'#b52020':GARNET;
+  var avgBBg    = avgN>=75?'#eaf3de':avgN>=60?'#faeeda':avgN>=50?'#fce8e8':'#fcd4d4';
+  var alphaB    = alphaN>=0.8?'Good':alphaN>=0.7?'Acceptable':'Needs review';
+  var alphaBC   = alphaN>=0.8?GREEN:alphaN>=0.7?'#854f0b':GARNET;
+  var alphaBBg  = alphaN>=0.8?'#eaf3de':alphaN>=0.7?'#faeeda':'#fce8e8';
+
+  // ── Canvas setup ──────────────────────────────────────────────────────────
+  var dpr=2, W=880, H=460;
+  var cv=document.createElement('canvas');
+  cv.width=W*dpr; cv.height=H*dpr;
+  var c=cv.getContext('2d');
+  c.scale(dpr,dpr);
+  c.fillStyle='#fff'; c.fillRect(0,0,W,H);
+  c.strokeStyle=BORDER; c.lineWidth=1; rr(c,0,0,W,H,6); c.stroke();
+
+  var pad=16, ky=10;
+
+  // ── Accent bars ───────────────────────────────────────────────────────────
+  var cols4=[TEAL,GREEN,'#6a3fa0',GARNET];
+  var kx=[pad,230,440,650];
+  cols4.forEach(function(col,i){c.fillStyle=col;c.fillRect(kx[i],ky,45,3);});
+
+  // ── "Exam Overview" title ─────────────────────────────────────────────────
+  c.fillStyle=GARNET; c.font='bold 13px Calibri,Arial,sans-serif';
+  c.fillText('Exam Overview', pad, ky+20);
+
+  var ky2=ky+28;
+
+  // ── Students ──────────────────────────────────────────────────────────────
+  lbl(c,'Students',kx[0],ky2+10);
+  c.fillStyle='#1e293b'; c.font='bold 22px Calibri,Arial,sans-serif';
+  c.fillText(String(n), kx[0], ky2+38);
+  c.fillStyle=TEAL; c.font='9px Calibri,Arial,sans-serif';
+  c.fillText('■ EN '+nE, kx[0], ky2+52);
+  c.fillStyle=PURPLE;
+  c.fillText('■ FR '+nF, kx[0]+55, ky2+52);
+
+  // dividers
+  [215,425,635].forEach(function(dx){
+    c.strokeStyle=BORDER; c.lineWidth=1;
+    c.beginPath(); c.moveTo(dx,ky2); c.lineTo(dx,ky2+65); c.stroke();
+  });
+
+  // ── Exam Avg ──────────────────────────────────────────────────────────────
+  lbl(c,'Exam Avg.',kx[1],ky2+10);
+  c.fillStyle=avgBC; c.font='bold 22px Calibri,Arial,sans-serif';
+  c.fillText(avgN.toFixed(1)+'%', kx[1], ky2+38);
+  bdg(c, avgBadge, kx[1]+80, ky2+38, avgBBg, avgBC);
+  if (nE&&nF) { c.fillStyle=GRAY; c.font='9px Calibri,Arial,sans-serif'; c.fillText('EN '+eAvg+'% · FR '+fAvg+'%', kx[1], ky2+52); }
+
+  // ── Reliability ──────────────────────────────────────────────────────────
+  lbl(c,'Reliability (α)',kx[2],ky2+10);
+  c.fillStyle='#6a3fa0'; c.font='bold 22px Calibri,Arial,sans-serif';
+  c.fillText(alphaN.toFixed(2), kx[2], ky2+38);
+  bdg(c, alphaB, kx[2]+52, ky2+38, alphaBBg, alphaBC);
+  // Gauge bar
+  var gx=kx[2], gy=ky2+48, gw=170, gh=5;
+  var grad=c.createLinearGradient(gx,0,gx+gw,0);
+  grad.addColorStop(0,'#e24b4a'); grad.addColorStop(0.65,'#ef9f27'); grad.addColorStop(1,'#639922');
+  c.fillStyle=grad; rr(c,gx,gy,gw,gh,2); c.fill();
+  var ix=gx+Math.min(1,alphaN)*gw;
+  c.fillStyle='#fff'; c.strokeStyle='#6a3fa0'; c.lineWidth=1.5;
+  c.fillRect(ix-3,gy-3,6,gh+6); c.strokeRect(ix-3,gy-3,6,gh+6);
+  c.fillStyle=GRAY; c.font='8px Calibri,Arial,sans-serif';
+  c.fillText('0',gx,gy+16); c.fillText('0.70',gx+100,gy+16); c.fillText('1.0',gx+158,gy+16);
+
+  // ── Question Health ───────────────────────────────────────────────────────
+  lbl(c,'Question Health',kx[3],ky2+10);
+  c.fillStyle='#1e293b'; c.font='bold 18px Calibri,Arial,sans-serif';
+  c.fillText(String(nQ), kx[3], ky2+35);
+  c.fillStyle=GRAY; c.font='9px Calibri,Arial,sans-serif';
+  c.fillText('questions', kx[3]+30, ky2+35);
+  var bx=kx[3], by=ky2+42;
+  if (nFlagged>0) bx+=bdg(c,nFlagged+' flagged',bx,by,'#fff4e6','#b25400');
+  if (nEasy>0)    bx+=bdg(c,nEasy+' easy',bx,by,'#e8f4fd','#0a5a9c');
+  if (nDIF>0)     bdg(c,nDIF+' DIF',bx,by,'#e8eaf6','#3949ab');
+
+  // ── Horizontal separator ──────────────────────────────────────────────────
+  var sepY=ky2+76;
+  c.strokeStyle='rgba(0,0,0,0.15)'; c.lineWidth=2.5;
+  c.beginPath(); c.moveTo(pad,sepY); c.lineTo(W-pad,sepY); c.stroke();
+
+  // ── Chart area (left) + Breakdown (right) ────────────────────────────────
+  var chartAreaY=sepY+12, chartAreaH=H-chartAreaY-8;
+  var breakX=W-190;
+
+  // Score Distribution label + legend
+  lbl(c,'Score Distribution',pad,chartAreaY+10);
+  c.fillStyle=TEAL; c.font='8px Calibri,Arial,sans-serif'; c.fillText('■',pad,chartAreaY+22);
+  c.fillStyle=GRAY; c.font='8px Calibri,Arial,sans-serif';
+  c.fillText(' English (n='+nE+(nE?' · avg '+eAvg+'%':'')+')',pad+8,chartAreaY+22);
+  c.fillStyle=PURPLE; c.fillText('■',pad+140,chartAreaY+22);
+  c.fillStyle=GRAY; c.font='8px Calibri,Arial,sans-serif';
+  c.fillText(' French (n='+nF+(nF?' · avg '+fAvg+'%':'')+')',pad+148,chartAreaY+22);
+
+  // Draw existing chart canvas directly — no CORS, no html2canvas needed
+  if (chartCanvas) {
+    try { c.drawImage(chartCanvas, pad, chartAreaY+28, breakX-pad-16, chartAreaH-30); } catch(e){}
+  }
+
+  // Vertical divider
+  c.strokeStyle=BORDER; c.lineWidth=1;
+  c.beginPath(); c.moveTo(breakX-8,sepY+4); c.lineTo(breakX-8,H-8); c.stroke();
+
+  // Question Breakdown sidebar
+  var bkY=chartAreaY+10;
+  lbl(c,'Question Breakdown',breakX,bkY); bkY+=16;
+  var brows=[
+    {l:'Acceptable',v:nOk,      col:'#639922'},
+    {l:'Too easy',  v:nEasy,    col:'#378add'},
+    {l:'Difficult', v:nDiff,    col:'#e24b4a'},
+    {l:'Poor disc.',v:nPoor,    col:'#ef9f27'},
+  ];
+  if (G_DIF_ENABLED&&nDIF>0) brows.push({l:'DIF flagged',v:nDIF,col:'#5c6bc0'});
+  var mxV=Math.max.apply(null,brows.map(function(r){return r.v;}))||1;
+  var barMaxW=155;
+  brows.forEach(function(row){
+    c.fillStyle=GRAY; c.font='9px Calibri,Arial,sans-serif';
+    c.fillText(row.l, breakX, bkY+9);
+    var bw=Math.max(2,Math.round(row.v/mxV*barMaxW));
+    c.fillStyle=row.col; rr(c,breakX,bkY+12,bw,5,2); c.fill();
+    c.fillStyle='#1e293b'; c.font='bold 9px Calibri,Arial,sans-serif';
+    c.fillText(String(row.v), breakX+bw+4, bkY+18);
+    bkY+=24;
+  });
+  if (G_DIF_ENABLED) {
+    bkY+=4;
+    c.strokeStyle=BORDER; c.lineWidth=1;
+    c.beginPath(); c.moveTo(breakX,bkY); c.lineTo(W-pad,bkY); c.stroke();
+    bkY+=12;
+    lbl(c,'DIF Analysis · EN vs FR',breakX,bkY); bkY+=14;
+    c.fillStyle=nDIF>0?'#3949ab':GREEN; c.font='bold 16px Calibri,Arial,sans-serif';
+    c.fillText(String(nDIF), breakX, bkY);
+    c.fillStyle=GRAY; c.font='9px Calibri,Arial,sans-serif';
+    c.fillText(' item'+(nDIF!==1?'s':'')+' flagged', breakX+20, bkY);
+  }
+
+  return cv.toDataURL('image/png', 1.0);
+}
+
 function renderFullReport(avg, alpha) {
   var title   = document.getElementById('exam-title').value||'';
   var dateVal = document.getElementById('exam-date').value;
@@ -5226,8 +5416,8 @@ function renderFullReport(avg, alpha) {
   var t2='';
   if(easy.length){
     var nums=[]; for(i=0;i<easy.length;i++) nums.push(easy[i].num);
-    t2='<p style="margin-bottom:4px"><b>Table 2 &mdash; Too Easy Questions</b><br><i>Questions answered correctly by 96% or more of students. Please revise before using again.</i></p>'+
-       '<table style="width:95%;margin:0 auto 14px;border-collapse:collapse"><thead><tr><th>Question number</th></tr></thead><tbody><tr><td style="text-align:center">'+nums.join('&nbsp;&nbsp;&nbsp;')+'</td></tr></tbody></table>';
+    t2='<p style="margin-bottom:4px"><b>Table 2 - Too Easy Questions</b><br><i>Questions answered correctly by 96% or more of students. Please revise before using again.</i></p>'+
+       '<table style="width:95%;margin:0 auto 14px;border-collapse:collapse"><thead><tr><th>Question number</th></tr></thead><tbody><tr><td style="text-align:center;box-shadow:inset 8px 0 0 #185fa5">'+nums.join(', ')+'</td></tr></tbody></table>';
   }
 
   // Table 3
@@ -5242,7 +5432,7 @@ function renderFullReport(avg, alpha) {
       var isDIF=G_DIF_ENABLED&&G.dif&&G.dif.some(function(d){return d.num===r.num&&d.imp;});
       var rowFill=r.flag==='Too easy'?' class="row-easy"':r.flag?' class="row-flagged"':isDIF?' class="row-dif"':'';
       var altComF = (r.altKeys && r.altKeys.length) ? 'Alt. answer(s) accepted: ' + r.altKeys.join(', ') + (r.altReason ? ' — ' + r.altReason : '') : '';
-      t3+='<tr'+rowFill+'><td style="text-align:left">'+r.num+'</td><td style="text-align:center">'+fmtKey(r.key,r.altKeys)+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-size:11px;color:#5a6472;font-style:italic">'+altComF+'</td></tr>';
+      t3+='<tr'+rowFill+'><td style="text-align:center"><b>'+r.num+'</b></td><td style="text-align:center;font-size:11px;color:#5a6472">'+(r.elentraId||'')+'</td><td style="text-align:center">'+fmtKey(r.key,r.altKeys)+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-size:11px;color:#5a6472;font-style:italic">'+altComF+'</td></tr>';
     }
   }
 
@@ -5256,7 +5446,8 @@ function renderFullReport(avg, alpha) {
   var difTableRows='';
   for(i=0;i<difFlagged.length;i++){
     var r=difFlagged[i];
-    difTableRows+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="text-align:center">'+r.ePct+'%</td><td style="text-align:center">'+r.fPct+'%</td><td>'+(r.fPct>r.ePct?'FR students performed better':'EN students performed better')+'</td><td style="text-align:center">'+r.disc+'</td></tr>';
+    var difMcqMatch=G.mcq&&G.mcq.find(function(dm){return dm.num===r.num;});
+  difTableRows+='<tr><td style="text-align:center;box-shadow:inset 8px 0 0 #3949ab"><b>'+r.num+'</b></td><td style="text-align:center;font-size:11px;color:#5a6472">'+(difMcqMatch?difMcqMatch.elentraId||'':'')+'</td><td style="text-align:center">'+r.ePct+'%</td><td style="text-align:center">'+r.fPct+'%</td><td>'+(r.fPct>r.ePct?'FR students performed better':'EN students performed better')+'</td><td style="text-align:center">'+r.disc+'</td></tr>';
   }
 
   // ── Build Exam Overview inline snapshot ───────────────────────────────
@@ -5296,7 +5487,7 @@ function renderFullReport(avg, alpha) {
   function miniBar(pct,col){return '<div style="flex:1;height:5px;background:var(--c-border);border-radius:3px"><div style="height:5px;border-radius:3px;background:'+col+';width:'+pct+'%"></div></div>';}
 
   var overviewHtml =
-    '<div style="border:1px solid var(--c-border);border-radius:10px;padding:16px;background:#fff;margin:0 auto 20px;max-width:100%;font-family:Calibri,Arial,sans-serif">'
+    '<div id="full-report-overview" style="border:1px solid var(--c-border);border-radius:10px;padding:16px;background:#fff;margin:0 auto 20px;max-width:100%;font-family:Calibri,Arial,sans-serif">'
       // Title
       +'<div style="font-size:15px;font-weight:700;color:var(--c-accent);margin-bottom:12px;letter-spacing:-.2px">Exam Overview</div>'
       // KPI row
@@ -5385,60 +5576,62 @@ function renderFullReport(avg, alpha) {
   var sep = '<hr style="border:none;border-top:2px solid var(--c-accent);margin:28px 0 20px">';
 
   document.getElementById('full-report').innerHTML =
-    // Header
+    // Header — matches Word export design
     '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+getCoordinatorByline()+'</p>'+
-    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE &mdash; UNDERGRADUATE MEDICAL EDUCATION</p>'+
+    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">Full Exam Analysis Report <span style="font-weight:400">(MCQ &amp; DIF)</span></p>'+
-    '<p style="font-size:12px;font-weight:700;text-align:center;margin:0 0 24px;line-height:1.3">'+examLine+'</p>'+
+    '<p style="font-size:12px;text-align:center;margin:0 0 8px;line-height:1.3">'+examLine+'</p>'+
+    '<hr style="border:none;border-top:2px solid var(--c-accent);margin:0 0 20px">'+
 
-    // Section 1: Exam Summary
-    '<p style="font-size:15px;font-weight:700;color:var(--c-accent);margin:0 0 4px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">1. Exam Summary</p>'+
-    '<p style="margin-bottom:16px">The following report presents a complete analysis of the multiple-choice section of the above-noted examination, including item statistics, flagged questions, and differential item functioning (DIF) by language stream.</p>'+
-    overviewHtml+
+    // Intro section
+    '<p style="margin-bottom:10px">Dear Director(s), committee members,</p>'+
+    '<p style="margin-bottom:10px">The analysis of your multiple-choice examination is available below.</p>'+
+    '<p style="margin-bottom:10px">The following report presents a complete analysis of the multiple-choice section of the above-noted examination, including item statistics and flagged questions. If selected, a differential item functioning (DIF) analysis by language stream was also conducted.</p>'+
+    '<p style="font-size:13px;line-height:1.6;margin-bottom:10px">Some questions are flagged not because they were difficult, but because stronger students answered them correctly at a lower rate than weaker students. Review these items for typographical errors or unintended cues, and consider revising them before using them again.</p>'+
 
-    // Section 2: MCQ
-    '<p style="font-size:15px;font-weight:700;color:var(--c-accent);margin:20px 0 4px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">2. Multiple-Choice Questions Analysis</p>'+
-    '<p><b>Dear Director(s),</b></p><br>'+
-    '<p>The analysis of the multiple-choice section of your examination yielded the following results:</p><br>'+
-    '<ul style="margin-left:20px;margin-bottom:10px">'+
-    '<li><b>The exam average was '+avg+'%</b></li>'+
-    '<li><b>The reliability of the scores was '+a2+'</b></li>'+
-    '<li><b>'+fL+' question'+(fL!==1?'s were':' was')+' flagged as being possibly problematic and require your review.</b></li>'+
-    '<li><b>'+eL+' question'+(eL!==1?'s were':' was')+' too easy and/or had a negative discrimination index.</b></li>'+
-    '</ul>'+
-    '<p style="font-style:italic;margin-bottom:12px">Please note that there may be some questions identified because they are considered to be easy, but they also led to a situation in which stronger students performed worse than weak students. Please review these items to ensure there were no typographical errors or other indications that would have allowed weak students to easily identify the correct answer. In addition, consider revising these questions before using them again.</p>'+
-    '<p><b>Action Required</b></p>'+
+    // Decision Options
+    '<p style="margin-bottom:4px"><b>DECISION OPTIONS:</b><br>As you review questions identified, select one action per flagged question from the list below, based on your review of the item, student performance data, and any translation or content concerns identified.</p>'+
     '<ul style="margin-left:20px;margin-bottom:12px;line-height:2">'+
-    '<li><b>RETAIN</b> the question if it was clear, well-constructed, and based on the rotation\'s learning objectives.</li>'+
-    '<li><b>CREDIT</b> the question if it was too difficult, ambiguous, or had a translation issue.</li>'+
-    '<li><b>DELETE</b> the question if it was not based on the rotation\'s learning objectives or had no correct answer.</li>'+
+    '<li><b>RETAIN</b> the question if it was clear, well-constructed, and based on the learning objectives.</li>'+
+    '<li><b>CREDIT</b> the question if it was too difficult, ambiguous, or had one or more translation issue(s).</li>'+
+    '<li><b>DELETE</b> the question if it was not based on the learning objectives or had no correct answer.</li>'+
     '<li><b>CHANGE THE KEY</b> if the question was scored with the wrong answer key.</li>'+
     '</ul>'+
-    '<p style="margin-bottom:4px"><b>Table 1 &mdash; Flagged Questions</b><br><i>Questions flagged as possibly problematic, requiring director review.</i></p>'+
-    '<table style="width:95%;margin:0 auto 14px;border-collapse:collapse"><thead><tr><th>Q#</th><th>Reason for flagging</th><th>Comments</th><th>Best students chose</th><th>Recommendation</th></tr></thead>'+
+
+    // Exam Summary section
+    '<p style="font-size:15px;font-weight:700;color:#404040;margin:0 0 4px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">Exam Summary</p>'+
+    overviewHtml+
+    '<div style="border-top:2px solid var(--c-border);margin:20px 0"></div>'+
+
+    // MCQ Analysis section
+    '<p style="font-size:15px;font-weight:700;color:#404040;margin:0 0 12px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">Multiple-Choice Questions Analysis</p>'+
+    '<p style="margin-bottom:4px"><b>Table 1 - Flagged Questions</b><br><i>Questions flagged as possibly problematic, requiring director review.</i></p>'+
+    '<table style="width:100%;margin:0 0 14px;border-collapse:collapse"><thead><tr><th>Q#</th><th>Reason for flagging</th><th>Comments</th><th>Best students chose</th><th>Recommendation</th></tr></thead>'+
     '<tbody>'+(t1||'<tr><td colspan="5" style="text-align:center;color:var(--c-muted)">No flagged items</td></tr>')+'</tbody></table>'+
     t2+
-    '<p style="margin-bottom:4px"><b>Table 3 &mdash; All Questions</b> <span style="font-size:10px;color:#555">(<span style="background:#fff0f0;padding:1px 5px;border-radius:3px;color:#c0392b;font-weight:700">Flagged</span> | <span style="background:#e8f4fd;padding:1px 5px;border-radius:3px;color:#0a5a9c;font-weight:700">Easy</span> | <span style="background:#e8eaf6;padding:1px 5px;border-radius:3px;color:#3949ab;font-weight:700">DIF</span>)</span><br><i>All questions — correct answer, difficulty index, and discrimination index.</i></p>'+
-    '<table style="width:95%;margin:0 auto 20px;border-collapse:collapse"><thead><tr><th>Question</th><th>Answer</th><th>Difficulty</th><th>Discrimination (Point-Biserial)</th><th>Comments</th></tr></thead><tbody>'+t3+'</tbody></table>'+
+    '<p style="margin-bottom:4px"><b>Table 3 - All Questions</b> <span style="font-size:10px;color:#555">(<span style="background:#fff0f0;padding:1px 5px;border-radius:3px;color:#c0392b;font-weight:700">Flagged</span> | <span style="background:#e8f4fd;padding:1px 5px;border-radius:3px;color:#0a5a9c;font-weight:700">Easy</span>)</span><br><i>All questions — correct answer, difficulty index, and discrimination index.</i></p>'+
+    '<p style="font-size:11px;font-style:italic;color:#666;margin-bottom:6px"><b>Note</b>: “Credit” means students who answered correctly keep their point and the question is removed from the denominator for all students — it does not mean every student automatically receives the mark.</p>'+
+    '<table style="width:100%;margin:0 0 20px;border-collapse:collapse"><thead><tr style="text-align:center"><th>Question</th><th>Elentra ID</th><th>Answer</th><th>Difficulty</th><th>Discrimination (Point-Biserial)</th><th>Comments</th></tr></thead><tbody>'+t3+'</tbody></table>'+
 
-    // Section 3: DIF
-    '<p style="font-size:15px;font-weight:700;color:var(--c-accent);margin:20px 0 4px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">3. Differential Item Functioning (DIF) Analysis</p>'+
-    '<p style="margin-bottom:10px">Please find enclosed the results of an analysis that looks at the Differential Item Functioning (DIF) for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree that the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.</p>'+
-    '<p style="margin-bottom:10px">If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance so each item that has a statistically significant DIF should be reviewed by content experts.</p>'+
+    // DIF Analysis section
+    '<p style="font-size:15px;font-weight:700;color:#404040;margin:20px 0 4px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">Differential Item Functioning (DIF) Analysis</p>'+
+    '<p style="margin-bottom:10px">This section presents the results of a Differential Item Functioning (DIF) analysis for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree to which the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.</p>'+
+    '<p style="margin-bottom:10px">If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance, so each item that has a statistically significant DIF should be reviewed by content experts.</p>'+
     '<p style="font-weight:700;margin-bottom:8px">The following should be reviewed if a question is flagged:</p>'+
     '<ul style="margin-left:20px;margin-bottom:10px">'+
     '<li style="margin-bottom:6px">Is the wording of the French and English versions of the question equivalent?</li>'+
     '<li style="margin-bottom:6px">Is it possible that the relevant topic was taught differently in the two language streams?</li>'+
-    '<li style="margin-bottom:6px">Were there any comments from the students that would indicate an issue between French and English students?</li>'+
+    '<li style="margin-bottom:6px">Were there any student comments suggesting the question or topic was experienced differently between the two language streams?</li>'+
     '</ul>'+
-    '<p style="margin-bottom:16px">If there does not appear to be an explanation for the occurrence of DIF, then the item should remain on the exam. If there is an explanation that led to the occurrence of DIF, then it is possible that the item may need to be credited or fixed before using it again.</p>'+
+    '<p style="margin-bottom:16px">If no explanation is found, the item should remain on the exam. If an explanation is identified, the item may need to be credited or revised before reuse.</p>'+
     (difFlagged.length
-      ? '<p style="margin-bottom:8px"><b>DIF Results &mdash; '+(title||'This Exam')+'</b><br><i>The following question'+(difFlagged.length!==1?'s':'')+' had a statistically significant value of DIF (p &lt; 0.01):</i></p>'+
-        '<table style="width:95%;margin:0 auto 12px;border-collapse:collapse"><thead><tr><th>Question</th><th>EN % Correct</th><th>FR % Correct</th><th>Interpretation</th><th>Discrimination</th></tr></thead><tbody>'+difTableRows+'</tbody></table>'
+      ? '<p style="margin-bottom:8px"><b>DIF Results</b><br><i>The following question'+(difFlagged.length!==1?'s':'')+' showed statistically significant DIF (p &lt; 0.01):</i></p>'+
+        '<table style="width:100%;margin:0 0 12px;border-collapse:collapse"><thead><tr style="text-align:center"><th>Question</th><th>Elentra ID</th><th>EN % Correct</th><th>FR % Correct</th><th>Interpretation</th><th>Discrimination</th></tr></thead><tbody>'+difTableRows+'</tbody></table>'
       : '<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>')+
     uiReportFooterHtml();
 
-  // Capture chart AFTER innerHTML is in the DOM
+  // Capture chart AFTER innerHTML is in the DOM, then build KPI overview via Canvas API
+  // (html2canvas is not used — it fails on file:// URLs; canvas-to-canvas draw has no CORS restriction)
   setTimeout(function(){
     var canvas = document.getElementById('new-dist-chart');
     var img    = document.getElementById('full-chart-img');
@@ -5447,6 +5640,8 @@ function renderFullReport(avg, alpha) {
       img.src = src;
       img.style.display = 'block';
     }
+    // Build the KPI overview card image using Canvas 2D API
+    G._kpiOverviewB64 = buildKpiOverviewCanvas(avg, alpha, canvas);
   }, 250);
 }
 
@@ -5681,6 +5876,114 @@ function docxPara(text, opts) {
   return '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="'+spBefore+'" w:after="'+spAfter+'" w:line="240" w:lineRule="auto"/>'+centre+'</w:pPr><w:r><w:rPr>'+bold+italic+colorTag+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/></w:rPr><w:t xml:space="preserve">'+esc(text)+'</w:t></w:r></w:p>';
 }
 
+// ── KPI stats table for Word export (Option 1: 4-column native OOXML) ─────────
+// Renders Students / Exam Average / Reliability / Question Health in real Word text.
+// No image — fully readable at any zoom, accessible, copyable.
+function docxKpiTable(nStudents, nEN, nFR, avgPct, eAvgPct, fAvgPct, alphaN, nQ, nFlagged, nEasy, nDIF) {
+  var GR = '64748b'; // muted gray
+  var avgBadge = avgPct>=75?'Good':avgPct>=60?'Acceptable':avgPct>=50?'Low':'Concerning';
+  var avgColor = avgPct>=75?'2e7d32':avgPct>=60?'854f0b':avgPct>=50?'b52020':'A31515';
+  var alpBadge = alphaN>=0.8?'Good':alphaN>=0.7?'Acceptable':'Needs review';
+  var alpColor = alphaN>=0.8?'2e7d32':alphaN>=0.7?'854f0b':'A31515';
+  var streamSub = (nEN&&nFR) ? 'EN '+eAvgPct+'%  ·  FR '+fAvgPct+'%  ·  '+avgBadge : avgBadge;
+  var healthSub = nFlagged+' flagged  ·  '+nEasy+' easy'+(nDIF?' · '+nDIF+' DIF':'');
+
+  function kpiCell(label, value, valueColor, sub, subColor, width) {
+    return '<w:tc><w:tcPr><w:tcW w:w="'+(width||2428)+'" w:type="dxa"/>'+
+      '<w:shd w:val="clear" w:color="auto" w:fill="F8F9FA"/></w:tcPr>'+
+      // Label row (small caps, gray)
+      '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="100" w:after="40" w:line="240" w:lineRule="auto"/></w:pPr>'+
+        '<w:r><w:rPr><w:b/><w:bCs/><w:color w:val="'+GR+'"/><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr>'+
+        '<w:t>'+esc(label.toUpperCase())+'</w:t></w:r></w:p>'+
+      // Value row (large, coloured)
+      '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="40" w:line="240" w:lineRule="auto"/></w:pPr>'+
+        '<w:r><w:rPr><w:b/><w:bCs/><w:color w:val="'+(valueColor||'1e293b')+'"/><w:sz w:val="44"/><w:szCs w:val="44"/></w:rPr>'+
+        '<w:t>'+esc(value)+'</w:t></w:r></w:p>'+
+      // Subtext row (small, coloured)
+      '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="100" w:line="240" w:lineRule="auto"/></w:pPr>'+
+        '<w:r><w:rPr><w:color w:val="'+(subColor||GR)+'"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>'+
+        '<w:t xml:space="preserve">'+esc(sub)+'</w:t></w:r></w:p>'+
+    '</w:tc>';
+  }
+
+  return '<w:tbl><w:tblPr>'+
+    '<w:tblStyle w:val="TableGrid"/>'+
+    '<w:tblW w:w="9713" w:type="dxa"/>'+
+    '<w:tblBorders>'+
+      '<w:top w:val="single" w:sz="4" w:color="E2E8F0"/>'+
+      '<w:left w:val="single" w:sz="4" w:color="E2E8F0"/>'+
+      '<w:bottom w:val="single" w:sz="4" w:color="E2E8F0"/>'+
+      '<w:right w:val="single" w:sz="4" w:color="E2E8F0"/>'+
+      '<w:insideH w:val="none"/>'+
+      '<w:insideV w:val="single" w:sz="4" w:color="E2E8F0"/>'+
+    '</w:tblBorders>'+
+    '<w:tblCellMar>'+
+      '<w:top w:w="0" w:type="dxa"/>'+
+      '<w:left w:w="144" w:type="dxa"/>'+
+      '<w:bottom w:w="0" w:type="dxa"/>'+
+      '<w:right w:w="144" w:type="dxa"/>'+
+    '</w:tblCellMar>'+
+    '</w:tblPr>'+
+    '<w:tblGrid>'+
+      '<w:gridCol w:w="2428"/><w:gridCol w:w="2428"/><w:gridCol w:w="2428"/><w:gridCol w:w="2429"/>'+
+    '</w:tblGrid>'+
+    '<w:tr>'+
+      kpiCell('Students',        String(nStudents),       '1e293b',  'EN '+nEN+'  ·  FR '+nFR,  GR)+
+      kpiCell('Exam Average',    avgPct.toFixed(1)+'%',   avgColor,  streamSub,                        avgColor)+
+      kpiCell('Reliability (α)', alphaN.toFixed(2), '6a3fa0',  alpBadge,                         alpColor)+
+      kpiCell('Question Health', String(nQ),              '1e293b',  healthSub,                        GR, 2429)+
+    '</w:tr></w:tbl>';
+}
+
+// Heading2-style paragraph for Word export — bold #404040 with garnet bottom border
+function docxH2(text) {
+  return '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:t xml:space="preserve">'+esc(text)+'</w:t></w:r></w:p>';
+}
+
+// Garnet horizontal connector shape — inline anchor, full text width, 1.5pt stroke #A31515
+// align: 'center' (default) = centered relative to margin; 'left' = posOffset 0 from margin
+// Requires wps/wp namespaces in document.xml root (added in buildDocx)
+function docxGarnetLine(id, posOffsetEmu, align) {
+  id = id || 1001;
+  posOffsetEmu = posOffsetEmu || 199442;
+  var cx = 6483246; // ~7.1 inches in EMU
+  var posH = (align === 'left')
+    ? '<wp:positionH relativeFrom="margin"><wp:posOffset>0</wp:posOffset></wp:positionH>'
+    : '<wp:positionH relativeFrom="margin"><wp:align>center</wp:align></wp:positionH>';
+  return '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>'+
+    '<w:r><w:drawing>'+
+      '<wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251663360" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">'+
+        '<wp:simplePos x="0" y="0"/>'+
+        posH+
+        '<wp:positionV relativeFrom="paragraph"><wp:posOffset>'+posOffsetEmu+'</wp:posOffset></wp:positionV>'+
+        '<wp:extent cx="'+cx+'" cy="0"/>'+
+        '<wp:effectExtent l="0" t="12700" r="19685" b="12700"/>'+
+        '<wp:wrapNone/>'+
+        '<wp:docPr id="'+id+'" name="Straight Connector '+id+'"/>'+
+        '<wp:cNvGraphicFramePr/>'+
+        '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'+
+          '<a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">'+
+            '<wps:wsp>'+
+              '<wps:cNvCnPr/>'+
+              '<wps:spPr>'+
+                '<a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="0"/></a:xfrm>'+
+                '<a:prstGeom prst="line"><a:avLst/></a:prstGeom>'+
+                '<a:ln><a:solidFill><a:srgbClr val="A31515"/></a:solidFill></a:ln>'+
+              '</wps:spPr>'+
+              '<wps:style>'+
+                '<a:lnRef idx="2"><a:schemeClr val="accent1"/></a:lnRef>'+
+                '<a:fillRef idx="0"><a:schemeClr val="accent1"/></a:fillRef>'+
+                '<a:effectRef idx="1"><a:schemeClr val="accent1"/></a:effectRef>'+
+                '<a:fontRef idx="minor"><a:schemeClr val="tx1"/></a:fontRef>'+
+              '</wps:style>'+
+              '<wps:bodyPr/>'+
+            '</wps:wsp>'+
+          '</a:graphicData>'+
+        '</a:graphic>'+
+      '</wp:anchor>'+
+    '</w:drawing></w:r></w:p>';
+}
+
 function docxTable(headers, rows, colWidths, opts) {
   opts = opts||{};
   var totalW = 9713;
@@ -5688,11 +5991,12 @@ function docxTable(headers, rows, colWidths, opts) {
   var widths = colWidths || [];
   if(!widths.length){ for(var k=0;k<n;k++) widths.push(Math.round(totalW/n)); }
   var centreCols = opts.centreCols||[];
+  var boldCols   = opts.boldCols||[];
   var rowFills = opts.rowFills||[];
   var noSpacing = '<w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>';
 
   // Render a cell value — supports [BADGE:HEXFG:HEXBG:label] prefix
-  function renderCellRuns(cellVal, isCentre) {
+  function renderCellRuns(cellVal, isCentre, isBold) {
     var jc = isCentre ? '<w:jc w:val="center"/>' : '';
     var badgeRe = /^\[BADGE:([A-Fa-f0-9]{6}):([A-Fa-f0-9]{6}):([^\]]+)\](.*)/;
     var m = String(cellVal).match(badgeRe);
@@ -5710,10 +6014,17 @@ function docxTable(headers, rows, colWidths, opts) {
         : '';
       return '<w:p>'+noSpacing.replace('</w:pPr>',jc+'</w:pPr>')+badgeRun+spaceRun+numRun+'</w:p>';
     }
-    return '<w:p>'+noSpacing.replace('</w:pPr>',jc+'</w:pPr>')+'<w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">'+esc(String(cellVal==null?'':cellVal))+'</w:t></w:r></w:p>';
+    var boldTag = isBold ? '<w:b/><w:bCs/>' : '';
+    return '<w:p>'+noSpacing.replace('</w:pPr>',jc+'</w:pPr>')+'<w:r><w:rPr>'+boldTag+'<w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">'+esc(String(cellVal==null?'':cellVal))+'</w:t></w:r></w:p>';
   }
 
-  var xml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="'+totalW+'" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="999999"/><w:left w:val="single" w:sz="4" w:color="999999"/><w:bottom w:val="single" w:sz="4" w:color="999999"/><w:right w:val="single" w:sz="4" w:color="999999"/><w:insideH w:val="single" w:sz="4" w:color="999999"/><w:insideV w:val="single" w:sz="4" w:color="999999"/></w:tblBorders></w:tblPr>';
+  var centreTag  = opts.centre ? '<w:jc w:val="center"/>' : '';
+  var cellMarDXA = opts.cellMar != null ? opts.cellMar : null;
+  var cellMarTag = cellMarDXA != null
+    ? '<w:tblCellMar><w:left w:w="'+cellMarDXA+'" w:type="dxa"/><w:right w:w="'+cellMarDXA+'" w:type="dxa"/></w:tblCellMar>'
+    : '';
+  var vAlignBottom = opts.vAlignBottom || false;
+  var xml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="'+totalW+'" w:type="dxa"/>'+centreTag+'<w:tblBorders><w:top w:val="single" w:sz="4" w:color="999999"/><w:left w:val="single" w:sz="4" w:color="999999"/><w:bottom w:val="single" w:sz="4" w:color="999999"/><w:right w:val="single" w:sz="4" w:color="999999"/><w:insideH w:val="single" w:sz="4" w:color="999999"/><w:insideV w:val="single" w:sz="4" w:color="999999"/></w:tblBorders>'+cellMarTag+'</w:tblPr>';
   // M1 fix: emit <w:tblGrid> so the column grid is conformant OOXML
   xml += '<w:tblGrid>';
   for(var g=0;g<n;g++){ xml += '<w:gridCol w:w="'+widths[g]+'"/>'; }
@@ -5722,7 +6033,8 @@ function docxTable(headers, rows, colWidths, opts) {
   xml += '<w:tr><w:trPr><w:trHeight w:hRule="auto"/></w:trPr>';
   for(var i=0;i<headers.length;i++){
     var hCentre = centreCols.indexOf(i)>=0?'<w:jc w:val="center"/>':'';
-    xml += '<w:tc><w:tcPr><w:tcW w:w="'+widths[i]+'" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F0F0F0"/></w:tcPr><w:p>'+noSpacing.replace('</w:pPr>',hCentre+'</w:pPr>')+'<w:r><w:rPr><w:b/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>'+esc(headers[i])+'</w:t></w:r></w:p></w:tc>';
+    var vAlignTag = vAlignBottom ? '<w:vAlign w:val="bottom"/>' : '';
+    xml += '<w:tc><w:tcPr><w:tcW w:w="'+widths[i]+'" w:type="dxa"/>'+vAlignTag+'<w:shd w:val="clear" w:color="auto" w:fill="F0F0F0"/></w:tcPr><w:p>'+noSpacing.replace('</w:pPr>',hCentre+'</w:pPr>')+'<w:r><w:rPr><w:b/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>'+esc(headers[i])+'</w:t></w:r></w:p></w:tc>';
   }
   xml += '</w:tr>';
   // Data rows
@@ -5731,8 +6043,9 @@ function docxTable(headers, rows, colWidths, opts) {
     xml += '<w:tr><w:trPr><w:trHeight w:hRule="auto"/></w:trPr>';
     for(var c=0;c<rows[r].length;c++){
       var isCentre = centreCols.indexOf(c)>=0;
+      var isBold   = boldCols.indexOf(c)>=0;
       var shd = fill?'<w:shd w:val="clear" w:color="auto" w:fill="'+fill+'"/>':'';
-      xml += '<w:tc><w:tcPr><w:tcW w:w="'+(widths[c]||Math.round(totalW/n))+'" w:type="dxa"/>'+shd+'</w:tcPr>'+renderCellRuns(rows[r][c], isCentre)+'</w:tc>';
+      xml += '<w:tc><w:tcPr><w:tcW w:w="'+(widths[c]||Math.round(totalW/n))+'" w:type="dxa"/>'+shd+'</w:tcPr>'+renderCellRuns(rows[r][c], isCentre, isBold)+'</w:tc>';
     }
     xml += '</w:tr>';
   }
@@ -5793,11 +6106,16 @@ function buildDocx(bodyXml, imageB64, title, extraImages) {
     ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'+
     ' xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"'+
     ' xmlns:v="urn:schemas-microsoft-com:vml"'+
+    ' xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"'+
     ' xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"'+
+    ' xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"'+
+    ' xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"'+
+    ' xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"'+
+    ' xmlns:w10="urn:schemas-microsoft-com:office:word"'+
     ' xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'+
     ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"'+
     ' xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"'+
-    ' mc:Ignorable="w14 w15">'+
+    ' mc:Ignorable="w14 w15 wp14">'+
     '<w:body>'+
     '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1008" w:right="1008" w:bottom="806" w:left="1008" w:header="360" w:footer="360" w:gutter="0"/></w:sectPr>'+
     '</w:body></w:document>';
@@ -5816,11 +6134,10 @@ function buildDocx(bodyXml, imageB64, title, extraImages) {
   var stylesXml =
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
     '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'+
-    ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"'+
-    ' w:docDefaults="">'+
+    ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml">'+
     '<w:docDefaults>'+
       '<w:rPrDefault><w:rPr>'+
-        '<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/>'+
+        '<w:rFonts w:ascii="Aptos Display" w:hAnsi="Aptos Display" w:cs="Calibri" w:eastAsia="Aptos Display"/>'+
         '<w:sz w:val="24"/><w:szCs w:val="24"/>'+
       '</w:rPr></w:rPrDefault>'+
       '<w:pPrDefault><w:pPr>'+
@@ -5857,10 +6174,104 @@ function buildDocx(bodyXml, imageB64, title, extraImages) {
         '</w:tblBorders>'+
       '</w:tblPr>'+
     '</w:style>'+
+    // Heading1 — garnet #A31515, 16pt, bold, centered
+    '<w:style w:type="paragraph" w:styleId="Heading1">'+
+      '<w:name w:val="heading 1"/>'+
+      '<w:basedOn w:val="Normal"/>'+
+      '<w:pPr><w:jc w:val="center"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:rPr><w:b/><w:bCs/><w:color w:val="A31515"/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr>'+
+    '</w:style>'+
+    // Heading2 — dark gray #404040, ~13pt, bold, left-aligned
+    // Note: no <w:pBdr> here — the garnet connector shapes provide the visual line
+    '<w:style w:type="paragraph" w:styleId="Heading2">'+
+      '<w:name w:val="heading 2"/>'+
+      '<w:basedOn w:val="Normal"/>'+
+      '<w:pPr><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:rPr><w:b/><w:bCs/><w:color w:val="404040"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr>'+
+    '</w:style>'+
     '</w:styles>';
   zip.file('word/styles.xml', stylesXml);
 
-  return zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  // settings.xml — removes Compatibility Mode, signals Word 2013+ (compat mode 15)
+  zip.file('word/settings.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'+
+    ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"'+
+    ' xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml">'+
+      '<w:zoom w:percent="100"/>'+
+      '<w:defaultTabStop w:val="720"/>'+
+      '<w:compat>'+
+        '<w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/>'+
+        '<w:compatSetting w:name="overrideTableStyleFontSizeAndJustification" w:uri="http://schemas.microsoft.com/office/word" w:val="1"/>'+
+        '<w:compatSetting w:name="enableOpenTypeFeatures" w:uri="http://schemas.microsoft.com/office/word" w:val="1"/>'+
+        '<w:compatSetting w:name="doNotFlipMirrorIndents" w:uri="http://schemas.microsoft.com/office/word" w:val="1"/>'+
+      '</w:compat>'+
+    '</w:settings>');
+
+  // fontTable.xml — minimal font table for package completeness
+  zip.file('word/fontTable.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:fonts xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
+      '<w:font w:name="Aptos Display"><w:panose1 w:val="020B0502020204030204"/><w:charset w:val="00"/><w:family w:val="swiss"/><w:pitch w:val="variable"/></w:font>'+
+      '<w:font w:name="Times New Roman"><w:panose1 w:val="02020603050405020304"/><w:charset w:val="00"/><w:family w:val="roman"/><w:pitch w:val="variable"/></w:font>'+
+      '<w:font w:name="Calibri"><w:panose1 w:val="020F0502020204030204"/><w:charset w:val="00"/><w:family w:val="swiss"/><w:pitch w:val="variable"/></w:font>'+
+    '</w:fonts>');
+
+  // theme/theme1.xml — Aptos Display as major font; enables shape colour gallery
+  zip.file('word/theme/theme1.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office Theme">'+
+      '<a:themeElements>'+
+        '<a:clrScheme name="Office">'+
+          '<a:dk1><a:sysClr lastClr="000000" val="windowText"/></a:dk1>'+
+          '<a:lt1><a:sysClr lastClr="FFFFFF" val="window"/></a:lt1>'+
+          '<a:dk2><a:srgbClr val="44546A"/></a:dk2><a:lt2><a:srgbClr val="E7E6E6"/></a:lt2>'+
+          '<a:accent1><a:srgbClr val="4472C4"/></a:accent1><a:accent2><a:srgbClr val="ED7D31"/></a:accent2>'+
+          '<a:accent3><a:srgbClr val="A9D18E"/></a:accent3><a:accent4><a:srgbClr val="FF0000"/></a:accent4>'+
+          '<a:accent5><a:srgbClr val="FFC000"/></a:accent5><a:accent6><a:srgbClr val="70AD47"/></a:accent6>'+
+          '<a:hlink><a:srgbClr val="0563C1"/></a:hlink><a:folHlink><a:srgbClr val="954F72"/></a:folHlink>'+
+        '</a:clrScheme>'+
+        '<a:fontScheme name="Office">'+
+          '<a:majorFont><a:latin typeface="Aptos Display"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont>'+
+          '<a:minorFont><a:latin typeface="Aptos"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont>'+
+        '</a:fontScheme>'+
+        '<a:fmtScheme name="Office">'+
+          '<a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill>'+
+          '<a:gradFill rotWithShape="1"><a:gsLst>'+
+            '<a:gs pos="0"><a:schemeClr val="phClr"><a:lumMod val="110000"/><a:satMod val="105000"/><a:tint val="67000"/></a:schemeClr></a:gs>'+
+            '<a:gs pos="50000"><a:schemeClr val="phClr"><a:lumMod val="105000"/><a:satMod val="103000"/><a:tint val="73000"/></a:schemeClr></a:gs>'+
+            '<a:gs pos="100000"><a:schemeClr val="phClr"><a:lumMod val="105000"/><a:satMod val="109000"/><a:tint val="81000"/></a:schemeClr></a:gs>'+
+          '</a:gsLst><a:lin ang="5400000" scaled="0"/></a:gradFill>'+
+          '<a:gradFill rotWithShape="1"><a:gsLst>'+
+            '<a:gs pos="0"><a:schemeClr val="phClr"><a:satMod val="103000"/><a:lumMod val="102000"/><a:tint val="94000"/></a:schemeClr></a:gs>'+
+            '<a:gs pos="100000"><a:schemeClr val="phClr"><a:lumMod val="99000"/><a:satMod val="120000"/><a:shade val="78000"/></a:schemeClr></a:gs>'+
+          '</a:gsLst><a:lin ang="5400000" scaled="0"/></a:gradFill>'+
+          '</a:fillStyleLst>'+
+          '<a:lnStyleLst>'+
+            '<a:ln w="6350" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:prstDash val="solid"/><a:miter lim="800000"/></a:ln>'+
+            '<a:ln w="12700" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:prstDash val="solid"/><a:miter lim="800000"/></a:ln>'+
+            '<a:ln w="19050" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:prstDash val="solid"/><a:miter lim="800000"/></a:ln>'+
+          '</a:lnStyleLst>'+
+          '<a:effectStyleLst>'+
+            '<a:effectStyle><a:effectLst/></a:effectStyle>'+
+            '<a:effectStyle><a:effectLst/></a:effectStyle>'+
+            '<a:effectStyle><a:effectLst><a:outerShdw blurRad="57150" dist="19050" dir="5400000" algn="ctr" rotWithShape="0">'+
+              '<a:srgbClr val="000000"><a:alpha val="63000"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle>'+
+          '</a:effectStyleLst>'+
+          '<a:bgFillStyleLst>'+
+            '<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>'+
+            '<a:solidFill><a:schemeClr val="phClr"><a:tint val="95000"/><a:satMod val="170000"/></a:schemeClr></a:solidFill>'+
+            '<a:gradFill rotWithShape="1"><a:gsLst>'+
+              '<a:gs pos="0"><a:schemeClr val="phClr"><a:tint val="93000"/><a:satMod val="150000"/><a:shade val="98000"/><a:lumMod val="102000"/></a:schemeClr></a:gs>'+
+              '<a:gs pos="50000"><a:schemeClr val="phClr"><a:tint val="98000"/><a:satMod val="130000"/><a:shade val="90000"/><a:lumMod val="103000"/></a:schemeClr></a:gs>'+
+              '<a:gs pos="100000"><a:schemeClr val="phClr"><a:shade val="63000"/><a:satMod val="120000"/></a:schemeClr></a:gs>'+
+            '</a:gsLst><a:lin ang="5400000" scaled="0"/></a:gradFill>'+
+          '</a:bgFillStyleLst>'+
+        '</a:fmtScheme>'+
+      '</a:themeElements>'+
+    '</a:theme>');
+
+    return zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 
 function doExportReport(type) {
@@ -5877,9 +6288,8 @@ function doExportReport(type) {
   var filename = safe+'_'+(type==='mcq'?'MCQ':type==='dif'?'DIF':'Full')+'_Report_'+dateSuffix+'.docx';
 
   // Capture Exam Overview card as image, then build the Word doc
-  captureExamOverview(function(overviewB64) {
-    _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, filename, overviewB64);
-  });
+  // KPI section is now native OOXML — no image capture needed for any report type
+  _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, filename, null);
 }
 
 function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, filename, overviewB64) {
@@ -5904,97 +6314,166 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     // Timestamp
     var genTs3=new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
     body+=docxPara('', {sz:20,spAfter:0,spBefore:0});
-    // Title
-    body+=docxPara('FACULTY OF MEDICINE — UNDERGRADUATE MEDICAL EDUCATION',{bold:true,centre:true,sz:32,spAfter:0});
+    // Title block — hyphen (not em dash) per reference design
+    body+='<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t xml:space="preserve">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</w:t></w:r></w:p>';
     body+=docxPara('Full Exam Analysis Report (MCQ & DIF)',{bold:true,centre:true,sz:28,spAfter:0});
-    var fullExamLine=examLineW+(examLineW&&dateStr?' — '+dateStr:(!examLineW&&dateStr)?dateStr:''); if(fullExamLine) body+=docxPara(fullExamLine,{bold:true,centre:true,sz:24,spAfter:320});
+    var fullExamLine=examLineW+(examLineW&&dateStr?' - '+dateStr:(!examLineW&&dateStr)?dateStr:'');
+    if(fullExamLine) body+=docxPara(fullExamLine,{centre:true,sz:24,spAfter:320}); // not bold per reference
+    // Garnet horizontal connector line after header block (posOffset 199442 EMU)
+    body+=docxGarnetLine(1001, 199442);
+    // Blank paragraph after connector
+    body+=docxPara('',{sz:24,spAfter:0});
 
-    // Section 1
-    body+=docxPara('1. Exam Summary',{bold:true,sz:28,spAfter:80,color:'A31515'});
-    body+=docxPara('The following report presents a complete analysis of the multiple-choice section of the above-noted examination, including item statistics, flagged questions, and differential item functioning (DIF) by language stream.',{sz:24,spAfter:160});
-    // Exam Overview — screenshot of UI card
-    if(overviewB64) {
-      body+=docxImage(overviewB64, 5760000, 2880000, 'rOvw3');
-      body+=docxPara('',{spAfter:120});
+    // ── Intro section ────────────────────────────────────────────────────────
+    body+=docxPara('Dear Director(s), committee members,',{sz:24,spAfter:160});
+    body+=docxPara('',{sz:24,spAfter:0});
+    body+=docxPara('The analysis of your multiple-choice examination is available below.',{sz:24,spAfter:160});
+    body+=docxPara('',{sz:24,spAfter:0});
+    body+=docxPara('The following report presents a complete analysis of the multiple-choice section of the above-noted examination, including item statistics and flagged questions. If selected, a differential item functioning (DIF) analysis by language stream was also conducted.',{sz:24,spAfter:160});
+    body+=docxPara('',{sz:24,spAfter:0});
+    // Stronger students paragraph — Times New Roman per reference
+    body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr>'+
+      '<w:t xml:space="preserve">Some questions are flagged not because they were difficult, but because stronger students answered them correctly at a lower rate than weaker students. Review these items for typographical errors or unintended cues, and consider revising them before using them again.</w:t></w:r></w:p>';
+    body+=docxPara('',{sz:24,spAfter:0});
+
+    // ── Decision Options — single paragraph with hard line break ─────────────
+    body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>DECISION OPTIONS:</w:t></w:r>'+
+      '<w:r><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:br/></w:r>'+
+      '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">As you review questions identified, select one action per flagged question from the list below, based on your review of the item, student performance data, and any translation or content concerns identified.</w:t></w:r>'+
+      '</w:p>';
+    // Action list items — bold action word + regular text
+    var docxActions3=[
+      {key:'RETAIN',         rest:' the question if it was clear, well-constructed, and based on the learning objectives.'},
+      {key:'CREDIT',         rest:' the question if it was too difficult, ambiguous, or had one or more translation issue(s).'},
+      {key:'DELETE',         rest:' the question if it was not based on the learning objectives or had no correct answer.'},
+      {key:'CHANGE THE KEY', rest:' if the question was scored with the wrong answer key.'}
+    ];
+    for(i2=0;i2<docxActions3.length;i2++){
+      var da=docxActions3[i2];
+      body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr>'+
+        '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">\u2022 '+esc(da.key)+'</w:t></w:r>'+
+        '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+esc(da.rest)+'</w:t></w:r>'+
+        '</w:p>';
     }
 
-    // Section 2: MCQ
-    body+=docxPara('2. Multiple-Choice Questions Analysis',{bold:true,sz:28,spAfter:80,color:'A31515'});
-    body+=docxPara('Dear Director(s),',{sz:24,spAfter:160,bold:true});
-    body+=docxPara('The analysis of the multiple-choice section of your examination yielded the following results:',{sz:24,spAfter:120});
-    var bullets3=[
-      'The exam average was '+avg3+'%',
-      'The reliability of the scores was '+a3,
-      flagged2.length+' question'+(flagged2.length!==1?'s were':' was')+' flagged as being possibly problematic and require your review.',
-      easy2.length+' question'+(easy2.length!==1?'s were':' was')+' too easy and/or had a negative discrimination index.'
-    ];
-    for(i2=0;i2<bullets3.length;i2++) body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• '+esc(bullets3[i2])+'</w:t></w:r></w:p>';
-    body+=docxPara('Please note that there may be some questions identified because they are considered to be easy, but they also led to a situation in which stronger students performed worse than weak students. Please review these items to ensure there were no typographical errors or other indications that would have allowed weak students to easily identify the correct answer. In addition, consider revising these questions before using them again.',{sz:22,italic:true,spAfter:160});
-    body+=docxPara('Action Required',{bold:true,sz:24,spAfter:80});
-    var actions3=['RETAIN the question if it was clear, well-constructed, and based on the rotation\'s learning objectives.','CREDIT the question if it was too difficult, ambiguous, or had a translation issue.','DELETE the question if it was not based on the rotation\'s learning objectives or had no correct answer.','CHANGE THE KEY if the question was scored with the wrong answer key.'];
-    for(i2=0;i2<actions3.length;i2++) body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• '+esc(actions3[i2])+'</w:t></w:r></w:p>';
-    body+=docxPara('',{spAfter:160});
-    // Table 1
-    body+=docxPara('Table 1 — Flagged Questions',{bold:true,sz:24,spAfter:60});
+    // ── Exam Summary — H2-style heading + KPI image + page break ─────────────
+    body+=docxPara('',{spAfter:0}); // empty paragraph before section
+    // Exam Summary H2 — same pattern as MCQ/DIF headings: plain H2 + separate connector line
+    body+=docxH2('Exam Summary');
+    body+=docxGarnetLine(1002, 12065, 'left');
+    // ── KPI stats table — native OOXML (readable at any zoom, no image scaling issues) ──
+    var n3       = G.students ? G.students.length : 0;
+    var eArr3    = G._distE || [], fArr3 = G._distF || [];
+    var nE3      = eArr3.length, nF3 = fArr3.length;
+    var eAvg3    = nE3 ? Math.round(eArr3.reduce(function(a,b){return a+b;},0)/nE3) : 0;
+    var fAvg3    = nF3 ? Math.round(fArr3.reduce(function(a,b){return a+b;},0)/nF3) : 0;
+    body += docxKpiTable(n3, nE3, nF3, parseFloat(avg)||0, eAvg3, fAvg3,
+                         parseFloat(a2)||0, G.nQ||G.mcq.length,
+                         flagged2.length, easy2.length, difFlagged2.length);
+    // Score distribution chart — follows KPI table directly, no spacer
+    // No explicit page break — natural overflow to page 2
+    if(chartB64_3) {
+      body += docxImage(chartB64_3, 5760000, 1828800, 'rImg1');
+    }
+
+    // ── MCQ Analysis section ──────────────────────────────────────────────────
+    body+=docxH2('Multiple-Choice Questions Analysis');
+    // Garnet connector line below MCQ Analysis heading (left-aligned, posOffset 12065 EMU)
+    body+=docxGarnetLine(1003, 12065, 'left');
+
+    // Table 1 — Flagged Questions
+    body+=docxPara('Table 1 - Flagged Questions',{bold:true,sz:24,spAfter:160});
     body+=docxPara('Questions flagged as possibly problematic, requiring director review.',{italic:true,sz:22,spAfter:100});
     if(flagged2.length){
       var t1rows3=[];
-      for(i2=0;i2<flagged2.length;i2++){var r3=flagged2[i2]; var comment3=r3.flag.indexOf('Difficult')>=0?r3.pct+'% answered correctly':r3.flag.indexOf('Poor')>=0?'Negative discrimination':''; t1rows3.push([r3.num,r3.elentraId||'',r3.flag,comment3,r3.topWrong&&r3.p<0.25?r3.topWrong:'',r3.rec]);}
-      body+=docxTable(['Q#','Elentra ID','Reason for flagging','Comments','Best students chose','Recommendation'],t1rows3,[700,900,1700,2000,1200,2213],{centreCols:[0,1,4]});
-    } else { body+=docxPara('No flagged items.',{italic:true,sz:22,spAfter:160}); }
+      for(i2=0;i2<flagged2.length;i2++){
+        var r3=flagged2[i2];
+        var comment3=r3.flag.indexOf('Difficult')>=0?r3.pct+'% answered correctly':r3.flag.indexOf('Poor')>=0||r3.flag.indexOf('Low')>=0?'Low discrimination':'';
+        t1rows3.push([r3.num, r3.flag, comment3, r3.topWrong&&r3.p<0.25?r3.topWrong:'', r3.rec]);
+      }
+      body+=docxTable(['Q#','Reason for flagging','Comments','Best students chose','Recommendation'],t1rows3,[715,2100,2600,900,3398],{centreCols:[0,3],centre:true,cellMar:58,vAlignBottom:true});
+    } else {
+      body+=docxPara('No flagged items.',{italic:true,sz:22,spAfter:160});
+    }
     body+=docxPara('',{spAfter:80});
+
+    // Table 2 — Too Easy Questions
     if(easy2.length){
-      body+=docxPara('Table 2 — Too Easy Questions',{bold:true,sz:24,spAfter:60});
+      body+=docxPara('Table 2 - Too Easy Questions',{bold:true,sz:24,spAfter:60});
       body+=docxPara('Questions answered correctly by 96% or more of students. Please revise before using again.',{italic:true,sz:22,spAfter:100});
-      body+=docxTable(['Question number'],[easy2.map(function(e){return e.num;}).join(', ')].map(function(v){return [v];}),[9713]);
+      body+=docxTable(['Question number'],[easy2.map(function(e){return e.num;}).join(', ')].map(function(v){return [v];}),[9713],{centre:true,cellMar:58,vAlignBottom:true});
       body+=docxPara('',{spAfter:80});
     }
-    // Table 3
+
+    // Table 3 — All Questions
     var t3fills3=[],t3rows3=[];
     for(i2=0;i2<G.mcq.length;i2++){
       var r3=G.mcq[i2];
       if (r3.excluded === 'delete') {
-        t3rows3.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r3.num, r3.elentraId||'', r3.key, 'Excluded from analysis', '—', r3.reason?'Reason: '+r3.reason:'']);
+        t3rows3.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r3.num, r3.elentraId||'', r3.key, 'Excluded from analysis', '\u2014', r3.reason?'Reason: '+r3.reason:'']);
         t3fills3.push('F2F2F2');
       } else if (r3.excluded === 'credit') {
         t3rows3.push(['[BADGE:7A5500:FFF8DC:Credited]'+r3.num, r3.elentraId||'', r3.key, fmt(r3.p,2), fmt(r3.rpbis,2), r3.reason?'Reason: '+r3.reason:'']);
         t3fills3.push('FFF8DC');
       } else {
-        var altN3 = (r3.altKeys&&r3.altKeys.length) ? 'Alt. answer(s) accepted: '+r3.altKeys.join(', ')+(r3.altReason?' — '+r3.altReason:'') : '';
-        t3rows3.push([r3.num, r3.elentraId||'', r3.key+(r3.altKeys&&r3.altKeys.length?' (+'+r3.altKeys.join('+')+')'  :''), fmt(r3.p,2), fmt(r3.rpbis,2), altN3]);
+        var altN3 = (r3.altKeys&&r3.altKeys.length) ? 'Alt. answer(s) accepted: '+r3.altKeys.join(', ')+(r3.altReason?' \u2014 '+r3.altReason:'') : '';
+        t3rows3.push([r3.num, r3.elentraId||'', r3.key+(r3.altKeys&&r3.altKeys.length?' (+'+r3.altKeys.join('+')+')':''), fmt(r3.p,2), fmt(r3.rpbis,2), altN3]);
         t3fills3.push(r3.flag==='Too easy'?'E8F4FD':r3.flag?'FFF0F0':null);
       }
     }
-    body+=docxPara('Table 3 — All Questions',{bold:true,sz:24,spAfter:60});
+    body+=docxPara('Table 3 - All Questions',{bold:true,sz:24,spAfter:60});
     body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="100" w:line="240" w:lineRule="auto"/></w:pPr>'+
-      '<w:r><w:rPr><w:i/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve">All questions — correct answer, difficulty index, and discrimination index. </w:t></w:r>'+
+      '<w:r><w:rPr><w:i/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve">All questions \u2014 correct answer, difficulty index, and discrimination index. </w:t></w:r>'+
       '<w:r><w:rPr><w:b/><w:color w:val="C0392B"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Flagged</w:t></w:r>'+
       '<w:r><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve"> | </w:t></w:r>'+
       '<w:r><w:rPr><w:b/><w:color w:val="185FA5"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Too easy</w:t></w:r></w:p>';
-    body+=docxPara('Note: \u201cCredit\u201d means students who answered correctly keep their point and the question is removed from the denominator for all students \u2014 it does not mean every student automatically receives the mark.',{sz:20,italic:true,spAfter:80,color:'666666'});
-    body+=docxTable(['Question','Elentra ID','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'],t3rows3,[900,1200,900,1500,2200,2513],{centreCols:[0,1,2,3,4],rowFills:t3fills3});
+    // Credit definition note — "Note" bold+italic, rest italic, all grey 10pt
+    body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:b/><w:bCs/><w:i/><w:color w:val="666666"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>Note</w:t></w:r>'+
+      '<w:r><w:rPr><w:i/><w:color w:val="666666"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>'+
+      '<w:t xml:space="preserve">: \u201cCredit\u201d means students who answered correctly keep their point and the question is removed from the denominator for all students \u2014 it does not mean every student automatically receives the mark.</w:t></w:r></w:p>';
+    body+=docxTable(['Question','Elentra ID','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'],t3rows3,[900,1200,900,1500,2200,2513],{centreCols:[0,1,2,3,4,5],boldCols:[0],rowFills:t3fills3,centre:true,cellMar:43,vAlignBottom:true});
     body+=docxPara('',{spAfter:200});
 
-    // Section 3: DIF
-    body+=docxPara('3. Differential Item Functioning (DIF) Analysis',{bold:true,sz:28,spAfter:80,color:'A31515'});
-    body+=docxPara('Please find enclosed the results of an analysis that looks at the Differential Item Functioning (DIF) for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree that the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.',{sz:24,spAfter:160});
-    body+=docxPara('If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance so each item that has a statistically significant DIF should be reviewed by content experts.',{sz:24,spAfter:160});
-    body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>The following should be reviewed if a question is flagged:</w:t></w:r></w:p>';
-    var checks3=['Is the wording of the French and English versions of the question equivalent?','Is it possible that the relevant topic was taught differently in the two language streams?','Were there any comments from the students that would indicate an issue between French and English students?'];
-    for(i2=0;i2<checks3.length;i2++) body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr><w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• '+esc(checks3[i2])+'</w:t></w:r></w:p>';
-    body+=docxPara('If there does not appear to be an explanation for the occurrence of DIF, then the item should remain on the exam. If there is an explanation that led to the occurrence of DIF, then it is possible that the item may need to be credited or fixed before using it again.',{sz:24,spAfter:200});
+    // ── DIF Analysis section ──────────────────────────────────────────────────
+    body+=docxH2('Differential Item Functioning (DIF) Analysis');
+    // Garnet connector line below DIF heading (left-aligned, posOffset 12065 EMU)
+    body+=docxGarnetLine(1004, 12065, 'left');
+    // DIF intro — updated text per reference
+    body+=docxPara('This section presents the results of a Differential Item Functioning (DIF) analysis for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree to which the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.',{sz:24,spAfter:160});
+    body+=docxPara('',{sz:24,spAfter:0});
+    body+=docxPara('If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance, so each item that has a statistically significant DIF should be reviewed by content experts.',{sz:24,spAfter:160});
+    body+=docxPara('',{sz:24,spAfter:0});
+    body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>The following should be reviewed if a question is flagged:</w:t></w:r></w:p>';
+    var checks3=[
+      'Is the wording of the French and English versions of the question equivalent?',
+      'Is it possible that the relevant topic was taught differently in the two language streams?',
+      'Were there any student comments suggesting the question or topic was experienced differently between the two language streams?'
+    ];
+    for(i2=0;i2<checks3.length;i2++){
+      body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr>'+
+        '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">\u2022 '+esc(checks3[i2])+'</w:t></w:r></w:p>';
+    }
+    body+=docxPara('',{sz:24,spAfter:0});
+    body+=docxPara('If no explanation is found, the item should remain on the exam. If an explanation is identified, the item may need to be credited or revised before reuse.',{sz:24,spAfter:200});
     if(difFlagged2.length){
-      body+=docxPara('DIF Results — '+(title||'This Exam'),{bold:true,sz:24,spAfter:80});
-      body+=docxPara('The following question'+(difFlagged2.length!==1?'s':'')+' had a statistically significant value of DIF (p < 0.01):',{sz:24,spAfter:120});
-      var difRows3=difFlagged2.map(function(r3){ var mcqMatch=G.mcq.find(function(m){return m.num===r3.num;}); return [r3.num,mcqMatch?mcqMatch.elentraId||'':'',r3.ePct+'%',r3.fPct+'%',r3.fPct>r3.ePct?'FR students performed better':'EN students performed better',r3.disc]; });
-      body+=docxTable(['Question','Elentra ID','EN % Correct','FR % Correct','Interpretation','Discrimination'],difRows3,[900,1000,1200,1200,3413,900],{centreCols:[0,1,2,3,5]});
+      body+='<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
+        '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>DIF Results</w:t></w:r></w:p>';
+      body+=docxPara('The following question'+(difFlagged2.length!==1?'s':'')+' showed statistically significant DIF (p < 0.01):',{sz:24,spAfter:120});
+      var difRows3=difFlagged2.map(function(r3){
+        var mcqMatch=G.mcq.find(function(m){return m.num===r3.num;});
+        return [r3.num, mcqMatch?mcqMatch.elentraId||'':'', r3.ePct+'%', r3.fPct+'%', r3.fPct>r3.ePct?'FR students performed better':'EN students performed better', r3.disc];
+      });
+      body+=docxTable(['Question','Elentra ID','EN % Correct','FR % Correct','Interpretation','Discrimination'],difRows3,[900,1000,1200,1200,3413,900],{centreCols:[0,1,2,3,5],centre:true,cellMar:43,vAlignBottom:true});
       body+=docxPara('',{spAfter:120});
     } else {
       body+=docxPara('No items with statistically significant DIF were detected (p < 0.01).',{italic:true,sz:24,spAfter:160});
     }
-
     body += docxReportByline(esc(genTs3));
-        buildDocx(body, chartB64_3, title, overviewB64?[{id:'rOvw3',filename:'overview.png',b64:overviewB64}]:null).then(function(blob){
+        buildDocx(body, chartB64_3, title, null).then(function(blob){
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download=filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -7588,6 +8067,14 @@ var RELEASE_NOTES = [
     version: '3.0',
     builds: [
       {
+        build: '20260717-08',
+        date:  'July 17, 2026',
+        notes: [
+          'Mobile fix — setup screen overflow: the exam-fields grid had fixed minimum column widths (200px + 160px + 150px = 510px minimum) that exceeded mobile viewport widths, causing the Continue button to clip off the right edge of the screen. Fixed with a @media(max-width:600px) rule that collapses the grid to a single full-width column on narrow screens. Continue footer row also received flex-wrap:wrap as a safety net.',
+          'Setup screen hint wording: the default hint beside the Continue button changed from "Exam title is required" (which read as an immediate error on page load) to "Enter a title to continue" (neutral and instructional). The stronger "Exam title is required" wording is now reserved for the actual error state — it fires explicitly when the user clicks Continue without a title, and resets to the soft wording as soon as the user starts typing.',
+        ]
+      },
+      {
         build: '20260717-07',
         date:  'July 17, 2026',
         notes: [
@@ -8369,24 +8856,14 @@ function injectAppVersion() {
 
 // ── Capture Exam Overview card as PNG for Word exports ────────────────────
 function captureExamOverview(callback) {
-  var el = document.getElementById('new-summary-card');
-  if (!el || typeof html2canvas === 'undefined') { callback(null); return; }
-  // Ensure collapsible is open
-  var collapsible = document.getElementById('new-summary-collapsible');
-  var wasHidden = collapsible && collapsible.style.display === 'none';
-  if (wasHidden) collapsible.style.display = 'block';
-  html2canvas(el, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false
-  }).then(function(canvas) {
-    if (wasHidden && collapsible) collapsible.style.display = 'none';
-    callback(canvas.toDataURL('image/png', 1.0));
-  }).catch(function() {
-    if (wasHidden && collapsible) collapsible.style.display = 'none';
-    callback(null);
-  });
+  // html2canvas is not used (fails on file:// URLs).
+  // KPI overview is built via buildKpiOverviewCanvas() and cached in G._kpiOverviewB64
+  // by renderFullReport. This fallback tries a live build if the cache is empty.
+  if (G._kpiOverviewB64) { callback(G._kpiOverviewB64); return; }
+  var chartCanvas = document.getElementById('new-dist-chart');
+  var result = buildKpiOverviewCanvas(G._lastAvg, G._lastAlpha, chartCanvas);
+  G._kpiOverviewB64 = result;
+  callback(result);
 }
 
 // ── Safe number formatting (handles null for excluded questions) ──────────
@@ -9320,7 +9797,7 @@ function updateSetupContinueBtn() {
   if (hint) hint.style.display = hasTitle ? 'none' : '';
   // Clear error state as user types
   if (title) title.classList.remove('field-error');
-  if (hint)  { hint.style.color = ''; hint.style.fontWeight = ''; }
+  if (hint)  { hint.textContent = 'Enter a title to continue'; hint.style.color = ''; hint.style.fontWeight = ''; }
 }
 
 function advanceToStep2() {
@@ -9331,8 +9808,8 @@ function advanceToStep2() {
     var btn  = document.getElementById('btn-setup-continue');
     // Red border on input
     if (title) title.classList.add('field-error');
-    // Red error hint
-    if (hint) { hint.style.color = 'var(--c-accent)'; hint.style.fontWeight = '700'; hint.style.display = ''; }
+    // Red error hint with explicit error wording
+    if (hint) { hint.textContent = 'Exam title is required'; hint.style.color = 'var(--c-accent)'; hint.style.fontWeight = '700'; hint.style.display = ''; }
     // Brief button outline flash
     if (btn)  { btn.style.outline = '2px solid var(--c-accent)'; setTimeout(function(){ if(btn) btn.style.outline=''; }, 800); }
     // Focus field so user can type immediately
