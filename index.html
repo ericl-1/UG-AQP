@@ -119,8 +119,8 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 .upload-row-item .upload-hint{font-size:11.5px;color:var(--c-muted);margin-top:2px}
 .upload-row-item .add-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;border:1px dashed var(--c-border-2);color:var(--c-muted);font-size:11.5px;font-weight:600;white-space:nowrap;flex-shrink:0;transition:all .15s}
 .upload-row-item:hover .add-pill{border-color:var(--c-accent);color:var(--c-accent)}
-.upload-row-item.ur-loaded{border-style:solid;border-color:#2e7d32;background:#f0faf2}
-.upload-row-item.ur-loaded:hover{border-color:#2e7d32;background:#f0faf2}
+.upload-row-item.ur-loaded{border-style:solid;border-color:#2e7d32}
+.upload-row-item.ur-loaded:hover{border-color:#2e7d32}
 .upload-row-item.ur-loaded .add-pill{border-style:solid;border-color:#2e7d32;color:#1b5e20;background:#e8f5eb}
 
 /* ── Step badges — pill style, white fill, garnet border, black font ── */
@@ -403,9 +403,10 @@ th{position:relative;white-space:normal}
 .fb-freq-table td{padding:9px 10px;border-bottom:1px solid rgba(0,0,0,.05);background:var(--c-bg)}
 .fb-freq-table tr:hover td{background:rgba(0,0,0,.018)}
 .fb-section{background:var(--c-bg);border:1px solid var(--c-border);border-radius:10px;margin-bottom:10px}
-#fb-toolbar-host{background:var(--c-bg);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--c-border)}
+#whats-next-bar{display:none !important}
+#fb-toolbar-host{position:sticky;top:0;z-index:20;background:var(--c-bg);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--c-border);box-shadow:0 4px 8px var(--c-bg)}
 #fb-toolbar{background:var(--c-bg)}
-.fb-section-hdr{padding:10px 14px;background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--c-border);flex-wrap:wrap;gap:4px;position:sticky;top:0;z-index:5}
+.fb-section-hdr{padding:10px 14px;background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--c-border);flex-wrap:wrap;gap:4px}
 .fb-section-q{font-size:13.5px;font-weight:700;color:var(--c-primary)}
 .fb-comment-row{padding:8px 14px;font-size:12.5px;color:var(--c-secondary);border-bottom:1px solid rgba(0,0,0,.04);line-height:1.6}
 .fb-comment-row:last-child{border-bottom:none}
@@ -723,7 +724,7 @@ th{position:relative;white-space:normal}
         <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/>
       </svg>
       <div style="font-size:13px;font-weight:600;color:var(--c-secondary);margin-bottom:6px">No session history yet</div>
-      <div style="font-size:12px;color:var(--c-muted);line-height:1.6;max-width:340px;margin:0 auto">Session history will be available in a future version.</div>
+      <div style="font-size:12px;color:var(--c-muted);line-height:1.6;max-width:340px;margin:0 auto">Session history and longitudinal item tracking are planned for the backend-enabled version of AQP.</div>
     </div>
   </div>
 
@@ -929,7 +930,7 @@ th{position:relative;white-space:normal}
   </div>
 
   <!-- ── Upload files ── -->
-  <div id="upload-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:14px">
+  <div id="upload-grid" style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px">
 
     <!-- Results file -->
     <div class="section-card" style="margin-bottom:0">
@@ -1007,7 +1008,7 @@ th{position:relative;white-space:normal}
   </div>
 
   <!-- ── Combined: MCQ validated banner (hidden until MCQ validated in combined mode) ── -->
-  <div id="combined-mcq-validated-banner" style="display:none;margin-bottom:14px;padding:12px 18px;background:#eaf3de;border:1px solid #a5d6a7;border-radius:10px;display:none;align-items:center;gap:12px">
+  <div id="combined-mcq-validated-banner" style="display:none;margin-bottom:14px;padding:12px 18px;background:#fff;border:2px solid #2e7d32;border-radius:10px;display:none;align-items:center;gap:12px">
     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div style="flex:1">
       <div style="font-size:13px;font-weight:700;color:#1b5e20" id="combined-mcq-validated-title">MCQ data validated</div>
@@ -1058,25 +1059,41 @@ th{position:relative;white-space:normal}
           </div>
         </div>
         <div id="combined-fb-preflight" style="margin-top:10px"></div>
+        <div id="combined-fb-inline-resolver" style="display:none;margin-top:8px"></div>
       </div>
     </div>
   </div>
 
   <!-- Sticky MCQ Run footer — inside MCQ tab so it hides when FB tab is active -->
   <div id="setup-run-footer" style="position:sticky;bottom:0;margin:0 -16px;padding:0 16px;background:#fff;border-top:1px solid rgba(0,0,0,.08);box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:100">
-    <div class="run-bar-inner" style="padding:14px 4px;display:flex;align-items:center;justify-content:flex-end;gap:16px">
-      <div id="run-hint" style="font-size:13px;font-weight:500;color:#374151;line-height:1.5;display:flex;align-items:center;gap:6px">Upload both files to enable analysis</div>
-      <button id="btn-run" class="btn btn-primary" onclick="runAnalysis()" disabled
-        style="padding:11px 30px;font-size:14px;font-weight:700;opacity:.35;cursor:not-allowed;border-radius:10px;white-space:nowrap;transition:all .2s;flex-shrink:0">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>Run Analysis
-      </button>
-      <div id="view-results-bar" style="display:none">
-        <button id="view-results-btn" onclick="goToResults()"
-          style="display:inline-flex;align-items:center;gap:6px;padding:11px 22px;border-radius:10px;border:1.5px solid var(--c-accent);background:transparent;color:var(--c-accent);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s">
-          View previous results &#8594;
+    <div class="run-bar-inner" style="padding:12px 4px;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px">
+      <div id="run-summary" style="display:flex;flex-direction:column;gap:3px;min-width:0">
+        <div id="run-summary-mcq" style="font-size:12px;color:var(--c-muted);display:flex;align-items:center;gap:5px">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--c-muted);width:56px;flex-shrink:0">Results</span>
+          <span id="run-summary-mcq-text" style="color:var(--c-secondary)">Not yet uploaded</span>
+        </div>
+        <div id="run-summary-fb" style="font-size:12px;color:var(--c-muted);display:flex;align-items:center;gap:5px">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--c-muted);width:56px;flex-shrink:0">Feedback</span>
+          <span id="run-summary-fb-text" style="color:var(--c-secondary)">Not loaded</span>
+        </div>
+      </div>
+      <div id="run-status" style="font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;background:var(--c-surface);border:1px solid var(--c-border);color:var(--c-secondary);white-space:nowrap;text-align:center;min-width:140px">
+        Upload results &amp; key
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+        <div id="view-results-bar" style="display:none">
+          <button id="view-results-btn" onclick="goToResults()"
+            style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;border:1.5px solid var(--c-accent);background:transparent;color:var(--c-accent);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s">
+            View previous results &#8594;
+          </button>
+        </div>
+        <button id="btn-run" class="btn btn-primary" onclick="runAnalysis()" disabled
+          style="padding:10px 26px;font-size:14px;font-weight:700;opacity:.35;cursor:not-allowed;border-radius:10px;white-space:nowrap;transition:all .2s;flex-shrink:0">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>Run Analysis
         </button>
       </div>
     </div>
+    <div id="run-hint" style="display:none"></div>
   </div>
 
   </div><!-- /setup-tab-mcq -->
@@ -1256,7 +1273,7 @@ th{position:relative;white-space:normal}
   </div><!-- /sticky-header -->
     <!-- Shared KPI zone — swaps content based on active main tab -->
     <!-- What's next cue — context-aware, above KPI zone and tabs -->
-    <div id="whats-next-bar" style="display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:8px;margin-bottom:8px;font-size:12.5px;color:var(--c-secondary)">
+    <div id="whats-next-bar" style="display:none !important;align-items:center;gap:10px;padding:8px 14px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:8px;margin-bottom:8px;font-size:12.5px;color:var(--c-secondary)">
       <span id="whats-next-icon" style="font-size:16px;flex-shrink:0"></span>
       <span id="whats-next-text"></span>
       <button id="whats-next-btn" onclick="" style="display:none;margin-left:auto;flex-shrink:0;font-size:11.5px;font-weight:600;padding:4px 12px;border-radius:6px;border:1.5px solid var(--c-accent);color:var(--c-accent);background:none;cursor:pointer"></button>
@@ -1344,12 +1361,16 @@ th{position:relative;white-space:normal}
       <!-- ── Report cards ── -->
       <div id="report-cards">
 
-        <div id="rp-card-mcq" style="display:none;align-items:center;padding:13px 2px;border-bottom:0.5px solid var(--c-border);gap:14px">
+        <!-- Analysis Reports section -->
+        <div id="rp-section-analysis">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin:4px 0 10px">Analysis Reports</div>
+
+        <div id="rp-card-mcq" style="display:none;align-items:center;padding:13px 16px;border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;gap:14px;background:var(--c-bg)">
           <div style="flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;color:var(--c-accent)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">MCQ item analysis report</div>
+            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">MCQ item analysis report <span style="font-size:10px;font-weight:500;color:#185fa5;background:#e8f4fd;border:1px solid #b8d9f5;border-radius:4px;padding:1px 6px;vertical-align:middle">Word</span></div>
             <div style="font-size:11.5px;color:var(--c-muted)">Key findings narrative, flagged questions table, and all-questions summary — Word (.docx)</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
@@ -1357,6 +1378,7 @@ th{position:relative;white-space:normal}
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
+            <button data-tip="Save this report as PDF — opens your browser's print dialog" onclick="exportReportPDF('mcq')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#c0392b;cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:rgba(192,57,43,.3);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#c0392b'"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="9" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9 1v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</button>
             <button data-tip="Download the MCQ Analysis Report as a Word document (.docx)" onclick="doExportReport('mcq')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
@@ -1364,12 +1386,12 @@ th{position:relative;white-space:normal}
           </div>
         </div>
 
-        <div id="rp-card-dif" style="display:none;align-items:center;padding:13px 2px;border-bottom:0.5px solid var(--c-border);gap:14px">
+        <div id="rp-card-dif" style="display:none;align-items:center;padding:13px 16px;border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;gap:14px;background:var(--c-bg)">
           <div style="flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;color:var(--s-dif)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">DIF report</div>
+            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">DIF report <span style="font-size:10px;font-weight:500;color:#185fa5;background:#e8f4fd;border:1px solid #b8d9f5;border-radius:4px;padding:1px 6px;vertical-align:middle">Word</span></div>
             <div style="font-size:11.5px;color:var(--c-muted)">EN/FR performance comparison per question using 3-block logistic regression — Word (.docx)</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
@@ -1377,6 +1399,7 @@ th{position:relative;white-space:normal}
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
+            <button data-tip="Save this report as PDF — opens your browser's print dialog" onclick="exportReportPDF('dif')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#c0392b;cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:rgba(192,57,43,.3);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#c0392b'"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="9" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9 1v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</button>
             <button data-tip="Download the DIF Report as a Word document (.docx)" onclick="doExportReport('dif')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
@@ -1384,12 +1407,12 @@ th{position:relative;white-space:normal}
           </div>
         </div>
 
-        <div id="rp-card-combined" style="display:none;align-items:center;padding:13px 2px;border-bottom:0.5px solid var(--c-border);gap:14px">
+        <div id="rp-card-combined" style="display:none;align-items:center;padding:13px 16px;border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;gap:14px;background:var(--c-bg)">
           <div style="flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;color:var(--s-lowdisc)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">Full report</div>
+            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">MCQ+DIF report <span style="font-size:10px;font-weight:500;color:#185fa5;background:#e8f4fd;border:1px solid #b8d9f5;border-radius:4px;padding:1px 6px;vertical-align:middle">Word</span></div>
             <div style="font-size:11.5px;color:var(--c-muted)">MCQ item analysis and DIF report combined in a single document — Word (.docx)</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
@@ -1397,6 +1420,7 @@ th{position:relative;white-space:normal}
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
+            <button data-tip="Save this report as PDF — opens your browser's print dialog" onclick="exportReportPDF('combined')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#c0392b;cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:rgba(192,57,43,.3);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#c0392b'"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="9" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9 1v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</button>
             <button data-tip="Download the Full Combined Report as a Word document (.docx)" onclick="doExportReport('full')" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
@@ -1404,12 +1428,12 @@ th{position:relative;white-space:normal}
           </div>
         </div>
 
-        <div id="rp-card-feedback" style="display:none;align-items:center;padding:13px 2px;border-bottom:0.5px solid var(--c-border);gap:14px">
+        <div id="rp-card-feedback" style="display:none;align-items:center;padding:13px 16px;border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;gap:14px;background:var(--c-bg)">
           <div style="flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;color:var(--c-fb)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">Feedback report</div>
+            <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">Feedback report <span style="font-size:10px;font-weight:500;color:#185fa5;background:#e8f4fd;border:1px solid #b8d9f5;border-radius:4px;padding:1px 6px;vertical-align:middle">Word</span></div>
             <div style="font-size:11.5px;color:var(--c-muted)">Parsed student comments by question, frequency summary, and general feedback — Word (.docx)</div>
             <div id="fb-report-options" style="margin-top:5px">
               <label style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--c-muted);cursor:pointer;user-select:none">
@@ -1423,12 +1447,53 @@ th{position:relative;white-space:normal}
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
               Preview
             </button>
+            <button data-tip="Save this report as PDF — opens your browser's print dialog" onclick="exportReportPDF('feedback')" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#c0392b;cursor:pointer;background:none;border:none;font-family:var(--font);text-decoration:underline;text-decoration-color:rgba(192,57,43,.3);text-underline-offset:2px;padding:0" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#c0392b'"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="9" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9 1v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</button>
             <button data-tip="Download the Feedback Report as a Word document (.docx)" onclick="exportFeedbackReport()" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Export
             </button>
           </div>
         </div>
+
+        </div><!-- end rp-section-analysis -->
+
+        <!-- Session Reports section -->
+        <div id="rp-section-session" style="display:none">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin:16px 0 10px">Session Reports</div>
+
+          <div id="rp-card-csv" style="display:none;align-items:center;padding:13px 16px;border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;gap:14px;background:var(--c-bg)">
+            <div style="flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;color:var(--c-muted)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">Session record <span style="font-size:10px;font-weight:500;color:var(--c-muted);background:var(--c-surface);border:1px solid var(--c-border);border-radius:4px;padding:1px 6px;vertical-align:middle">CSV</span></div>
+              <div style="font-size:11.5px;color:var(--c-muted)">Exam summary, question-level stats, and analysis thresholds — for local record-keeping and Excel review</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
+              <button data-tip="Download the Session Record as a CSV file" onclick="exportSessionRecord()" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div id="rp-card-json" style="display:none;align-items:center;padding:13px 16px;border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;gap:14px;background:var(--c-bg)">
+            <div style="flex-shrink:0;width:28px;display:flex;align-items:center;justify-content:center;color:#5c4fc7">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;color:var(--c-primary);margin-bottom:2px">Session data export <span style="font-size:10px;font-weight:500;color:#5c4fc7;background:#f0eeff;border:1px solid #c5bef5;border-radius:4px;padding:1px 6px;vertical-align:middle">JSON</span></div>
+              <div style="font-size:11.5px;color:var(--c-muted)">Complete structured session record for integration, backend storage, and longitudinal item tracking across exam cycles</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
+              <button data-tip="Download the full session as a structured JSON file" onclick="exportSessionJSON()" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--c-primary);cursor:pointer;background:var(--c-bg);border:0.5px solid var(--c-border-2);border-radius:8px;padding:6px 13px;font-family:var(--font);transition:all .15s" onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='var(--c-bg)'">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+        </div><!-- end rp-section-session -->
 
       </div>
 
@@ -1862,10 +1927,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260724-01';
-var APP_FAQ_VERSION = '3.0';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 17, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 24, 2026'; // Update each version close
+var APP_BUILD       = '20260727-03';
+var APP_FAQ_VERSION = '3.2';           // Update when FAQ content changes
+var APP_FAQ_DATE    = 'July 27, 2026'; // Update when FAQ content changes
+var APP_RN_DATE     = 'July 27, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -2307,6 +2372,7 @@ var TEMPLATE_B64 = 'UEsDBBQAAAAIAPSYy1xGx01IlQAAAM0AAAAQAAAAZG9jUHJvcHMvYXBwLnht
 var G_SOURCE = 'qm';
 var G_DIF_ENABLED = true;
 var G_DIRTY = false; // true when settings changed since last analysis
+var G_MCQ_CONFIRMED = false; // true once user clicks Looks good on parse preview
 
 function markDirty() {
   if (!G._lastN) return; // no analysis run yet
@@ -3549,7 +3615,7 @@ function renderQMPreview(el) {
         (fnMain ? '<div style="font-size:11px;color:var(--c-muted);margin-top:2px"><span style="font-weight:500">Results file:</span> '+escHtml(fnMain)+'</div>' : '') +
         (fnKey  ? '<div style="font-size:11px;color:var(--c-muted);margin-top:1px"><span style="font-weight:500">Key file:</span> '+escHtml(fnKey)+'</div>' : '') +
       '</div>' +
-      '<button onclick="var qp=document.getElementById(\'qm-preview\');if(qp)qp.style.display=\'none\'" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--c-muted);line-height:1;padding:0 4px;flex-shrink:0">✕</button>' +
+      '' +
     '</div>' +
     // Raw data notice
     '<div style="padding:7px 16px;background:#f0f4ff;border-bottom:0.5px solid var(--c-border);font-size:11px;color:var(--c-secondary)">ℹ This preview reflects the raw files only — Question Exceptions and alternate keys have not been applied yet.</div>' +
@@ -3593,7 +3659,7 @@ function renderQMPreview(el) {
         '<button onclick="updateQMPreview()" style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:0.5px solid var(--c-border);background:#fff;color:var(--c-secondary);cursor:pointer">Re-validate</button>' +
         '<button onclick="document.getElementById(&quot;fi-main&quot;).click()" style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:0.5px solid var(--c-border);background:#fff;color:var(--c-secondary);cursor:pointer">Re-upload results</button>' +
         '<button onclick="document.getElementById(&quot;fi-key&quot;).click()" style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:0.5px solid var(--c-border);background:#fff;color:var(--c-secondary);cursor:pointer">Re-upload key</button>' +
-        '<button onclick="var qp=document.getElementById(\'qm-preview\');if(qp)qp.style.display=\'none\';if(G_ANALYSIS_TYPE===\'both\')activateCombinedFeedbackZone();" style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:none;background:#2e7d32;color:#fff;cursor:pointer">✓ Looks good</button>' +
+        '<button onclick="confirmParsePreview(\'qm\')" style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:none;background:#2e7d32;color:#fff;cursor:pointer">✓ Looks good</button>' +
       '</div>' +
     '</div>' +
     '</div>';
@@ -3628,6 +3694,69 @@ function qmToggle(section) {
 }
 
 
+
+// ── PDF export (D1) ───────────────────────────────────────────────────────────
+function exportReportPDF(type) {
+  if (!G._lastN) { alert('Run an analysis first, then export.'); return; }
+
+  var avg   = G._lastAvg   || 0;
+  var alpha = G._lastAlpha || 0;
+  var targetId;
+
+  if      (type === 'mcq')      { renderMCQReport(avg, alpha);     targetId = 'mcq-report'; }
+  else if (type === 'dif')      { renderDIFReport();                targetId = 'dif-report'; }
+  else if (type === 'combined') { renderFullReport(avg, alpha);     targetId = 'full-report'; }
+  else if (type === 'feedback') { renderFeedbackReport(avg, alpha); targetId = 'feedback-report'; }
+  else return;
+
+  // Allow the chart setTimeout(250ms) to complete before capturing
+  setTimeout(function() {
+    var src = document.getElementById(targetId);
+    if (!src || !src.innerHTML.trim()) {
+      alert('Report preview could not be generated. Please try Preview first, then PDF.');
+      return;
+    }
+
+    var examTitle = (document.getElementById('exam-title')||{value:''}).value || 'Exam';
+    var safeTitle = examTitle.replace(/[^a-zA-Z0-9\-_ ]/g,'').replace(/\s+/g,'-').substring(0,30);
+
+    // Collect all page styles for the print window
+    var styles = '';
+    var styleEls = document.querySelectorAll('style, link[rel="stylesheet"]');
+    styleEls.forEach(function(el) {
+      if (el.tagName === 'STYLE') styles += el.outerHTML;
+      else if (el.href) styles += '<link rel="stylesheet" href="' + el.href + '">';
+    });
+
+    // Open a dedicated print window — isolated from main page, no nesting issues
+    var pw = window.open('', '_blank', 'width=900,height=700');
+    if (!pw) {
+      alert('Popup blocked. Please allow popups for this page and try again.');
+      return;
+    }
+    pw.document.write(
+      '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+      '<title>AQP \u2014 ' + safeTitle + ' \u2014 ' + type.toUpperCase() + ' report</title>' +
+      styles +
+      '<style>' +
+        'body{margin:1.5cm;font-family:Calibri,Arial,sans-serif;font-size:13px;line-height:1.7;color:#000;background:#fff}' +
+        'table{width:100%;border-collapse:collapse;font-size:12px}' +
+        'th,td{padding:6px 8px;border:1px solid #ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+        'th{background:#f4f5f6!important;font-weight:700}' +
+        '.no-print,.btn,.btn-primary,.report-action-bar{display:none!important}' +
+        '@media print{body{margin:0}@page{margin:1.5cm;size:A4 portrait}}' +
+      '</style>' +
+      '</head><body>' + src.innerHTML + '</body></html>'
+    );
+    pw.document.close();
+
+    // Print after DOM is ready
+    pw.onload = function() { pw.focus(); pw.print(); };
+    // Fallback: some browsers fire load before onload is registered
+    setTimeout(function() { if (pw && !pw.closed) { pw.focus(); pw.print(); } }, 800);
+  }, 700);
+}
+
 function exportSessionRecord() {
   closeHamburger();
   if (!G._lastN) { alert('Nothing to export yet.\n\nWhat happened: No analysis has been run in this session.\nWhat to do: Upload your files and run the analysis, then export.'); return; }
@@ -3642,7 +3771,18 @@ function exportSessionRecord() {
   var difFlaggedCount = G.dif ? G.dif.filter(function(d){return d.important;}).length : 0;
   var s1H = ['Export Version','Tool Version','Exported At','Source','Exam Title','Exam Date','Total Students','EN Students','FR Students','Total Questions','Effective Questions','Exam Avg %','EN Avg %','FR Avg %','Cronbach Alpha','Flagged Count','DIF Flagged Count','Credited Count','Deleted Count'];
   var s1R = ['1.0',APP_VERSION,ts,source,examTitle,examDate,G._lastN,G._lastNE||'',G._lastNF||'',G.nQ,G.nQ-deletedCount,G._lastAvg,G._lastEAvg||'',G._lastFAvg||'',G._lastAlpha?(Math.round(G._lastAlpha*100)/100).toFixed(2):'',flaggedCount,difFlaggedCount,creditedCount,deletedCount];
-  var s2H = ['Q #','Elentra ID','Key','Alt Keys','Difficulty (p)','Discrimination (rpbis)','Flag','Disposition','Reason','EN % Correct','FR % Correct','EN-FR Gap %','DIF Flagged','DIF p-value','Comments'];
+  // Build feedback comment count map
+  var fbCommentMap = {};
+  if (FB && FB.parsed && FB.parsed.length > 0) {
+    FB.parsed.forEach(function(p) {
+      if (p.status === 'discard') return;
+      var nums = (p.mappedQs && p.mappedQs.length) ? p.mappedQs
+               : (p.mappedQ != null ? [p.mappedQ] : (p.qNums || []));
+      nums.forEach(function(n){ fbCommentMap[n] = (fbCommentMap[n] || 0) + 1; });
+    });
+  }
+  var hasFbData = Object.keys(fbCommentMap).length > 0;
+  var s2H = ['Q #','Elentra ID','Key','Alt Keys','Difficulty (p)','Discrimination (rpbis)','Flag','Disposition','Reason','EN % Correct','FR % Correct','EN-FR Gap %','DIF Flagged','DIF p-value','Comments'].concat(hasFbData ? ['Feedback Comments'] : []);
   var s2R = (G.mcq||[]).map(function(r) {
     var dif = (G.dif||[]).find(function(d){return d.qi===r.num-1;});
     var isDel = r.excluded==='delete';
@@ -3657,7 +3797,7 @@ function exportSessionRecord() {
       (isDel||!dif)?'':(dif.pval!=null?dif.pval.toFixed(3):''),
       r.reason&&r.excluded?'Reason: '+r.reason+(r.altReason?' | '+r.altReason:''):
         (r.altKeys&&r.altKeys.length?'Alt. answer(s) accepted: '+r.altKeys.join(', ')+(r.altReason?' — '+r.altReason:''):'')
-    ];
+    ].concat(hasFbData ? [fbCommentMap[r.num] || 0] : []);
   });
   var s3H = ['Difficult p','Easy p','Disc rpbis','Check Key p','Check Key rpbis','DIF p-value','Gap Amber %','Gap Red %'];
   var s3R = [getThresh('difficult'),getThresh('easy'),getThresh('disc'),getThresh('checkp'),getThresh('checkr'),getThresh('dif'),getThresh('gapamber'),getThresh('gapred')];
@@ -3675,6 +3815,23 @@ function exportSessionRecord() {
     cr(s2H)];
   s2R.forEach(function(r){lines.push(cr(r));});
   lines.push('','ANALYSIS THRESHOLDS',cr(s3H),cr(s3R));
+  if (FB && FB.ready && FB.parsed && FB.parsed.length > 0) {
+    var fbTotal     = FB.parsed.length;
+    var fbAttr      = FB.parsed.filter(function(p){
+      return p.status!=='discard'&&p.status!=='general'&&p.status!=='pending'&&
+             ((p.qNums&&p.qNums.length)||(p.mappedQs&&p.mappedQs.length)||p.mappedQ!=null);
+    }).length;
+    var fbGen    = FB.parsed.filter(function(p){return p.status==='general';}).length;
+    var fbDisc   = FB.parsed.filter(function(p){return p.status==='discard';}).length;
+    var fbQs     = fbAllQs ? fbAllQs().length : '';
+    var fbCont   = FB.parsed.filter(function(p){return p._classif==='Content';}).length;
+    var fbTrans  = FB.parsed.filter(function(p){return p._classif==='Translation';}).length;
+    var fbOth    = FB.parsed.filter(function(p){return p._classif==='Other';}).length;
+    var fbUncat  = FB.parsed.filter(function(p){return !p._classif&&p.status!=='discard';}).length;
+    var s4H = ['Total Comments','Attributed to Questions','General Comments','Discarded','Questions Touched','Content Category','Translation Category','Other Category','Uncategorized'];
+    var s4R = [fbTotal,fbAttr,fbGen,fbDisc,fbQs,fbCont,fbTrans,fbOth,fbUncat];
+    lines.push('','FEEDBACK SUMMARY',cr(s4H),cr(s4R));
+  }
   var csv  = lines.join('\n');
   var safeTitle = examTitle.replace(/[^a-zA-Z0-9\-_ ]/g,'').replace(/\s+/g,'-').substring(0,40);
   var filename = safeTitle + (examDate ? '_'+examDate : '') + '_session-record.csv';
@@ -3846,8 +4003,7 @@ function renderScantronPreview(students, keyLetters, nQ, badRows) {
         '<div style="font-size:13px;font-weight:600;color:var(--c-primary)">Parse Preview</div>' +
         (filename ? '<div style="font-size:11px;color:var(--c-muted);margin-top:2px"><span style="font-weight:500">Uploaded file:</span> '+escHtml(filename)+'</div>' : '') +
       '</div>' +
-      '<button onclick="var sp=document.getElementById(\'scantron-preview\');if(sp)sp.style.display=\'none\'" ' +
-        'style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--c-muted);line-height:1;padding:0 4px">✕</button>' +
+      '' +
     '</div>' +
     // Raw data notice
     '<div style="padding:7px 16px;background:#f0f4ff;border-bottom:0.5px solid var(--c-border);font-size:11px;color:var(--c-secondary)">' +
@@ -3892,7 +4048,7 @@ function renderScantronPreview(students, keyLetters, nQ, badRows) {
           'style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:0.5px solid var(--c-border);background:#fff;color:var(--c-secondary);cursor:pointer">Re-validate</button>' +
         '<button onclick="document.getElementById(&quot;fi-main&quot;).click()" ' +
           'style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:0.5px solid var(--c-border);background:#fff;color:var(--c-secondary);cursor:pointer">Re-upload</button>' +
-        '<button onclick="var sp=document.getElementById(\'scantron-preview\');if(sp)sp.style.display=\'none\';if(G_ANALYSIS_TYPE===\'both\')activateCombinedFeedbackZone();" ' +
+        '<button onclick="confirmParsePreview(\'scantron\')" ' +
           'style="font-size:12px;font-weight:500;padding:5px 14px;border-radius:6px;border:none;background:#2e7d32;color:#fff;cursor:pointer">✓ Looks good</button>' +
       '</div>' +
     '</div>' +
@@ -3901,6 +4057,58 @@ function renderScantronPreview(students, keyLetters, nQ, badRows) {
   el.innerHTML = html;
   el.dataset.nq = nQ;
   el.style.display = 'block';
+}
+
+
+// ── Parse preview confirmation helpers ───────────────────────────────────────
+function confirmParsePreview(source) {
+  G_MCQ_CONFIRMED = true;
+  var containerId = source === 'scantron' ? 'scantron-preview' : 'qm-preview';
+  var el = document.getElementById(containerId);
+  if (el) {
+    var nQ = G.nQ || 0;
+    var nS = (G.students ? G.students.length : 0) || G._lastN || 0;
+    var srcLabel = G_SOURCE === 'scantron' ? 'Scantron' : 'QM';
+    var difPart = G_DIF_ENABLED ? ' \u00B7 DIF on' : '';
+    var enCode = (document.getElementById('eng-code')||{}).value || '';
+    var frCode = (document.getElementById('fre-code')||{}).value || '';
+    var langPart = (G_DIF_ENABLED && enCode && frCode) ? ' (' + enCode + '/' + frCode + ')' : '';
+    var allDefault = Object.keys(THRESH_DEFAULTS).every(function(k){
+      return Math.abs(getThresh(k) - THRESH_DEFAULTS[k]) < 0.0001;
+    });
+    var threshPart = allDefault ? ' \u00B7 UGME Standard' : ' \u00B7 Custom thresholds';
+    var summaryText = srcLabel + ' \u00B7 ' + nQ + ' questions \u00B7 ' + nS + ' students' + difPart + langPart + threshPart;
+    var instructionLine = (G_ANALYSIS_TYPE === 'both')
+      ? '<div style="font-size:11px;color:var(--c-muted);margin-top:3px">\u2193 Upload your feedback file below to continue.</div>'
+      : '';
+    el.innerHTML =
+      '<div style="padding:10px 14px;background:#fff;border:2px solid #2e7d32;border-radius:8px;margin-top:6px;display:flex;align-items:flex-start;gap:10px">' +
+      '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px">' +
+      '<circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/>' +
+      '<path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg>' +
+      '<div style="flex:1">' +
+      '<div style="font-size:13px;color:#1a5c1a;font-weight:600">' + summaryText + '</div>' +
+      instructionLine +
+      '</div>' +
+      '<button data-src="' + source + '" onclick="reopenParsePreview(this.getAttribute(\'data-src\'))" ' +
+      'style="font-size:11px;color:#2e7d32;background:none;border:1px solid #c3e6c3;' +
+      'border-radius:5px;cursor:pointer;padding:3px 10px;white-space:nowrap;flex-shrink:0">' +
+      'Re-validate \u2193</button>' +
+      '</div>';
+  }
+  if (G_ANALYSIS_TYPE === 'both') activateCombinedFeedbackZone();
+  checkRunReady();
+}
+
+function reopenParsePreview(source) {
+  G_MCQ_CONFIRMED = false;
+  if (source === 'scantron') {
+    revalidateScantron();
+  } else {
+    updateQMPreview();
+  }
+  checkRunReady();
 }
 
 function revalidateScantron() {
@@ -4238,9 +4446,10 @@ function _runAnalysis() {
   var _nDIF2 = 0;
   if (G_DIF_ENABLED && G.dif) G.dif.forEach(function(d){ if(d.imp) _nDIF2++; });
   var _nFlagged2 = G.mcq.filter(function(q){return q.flag&&q.flag!=='Too easy';}).length;
-  showAnalysisSummary(n, nQEffective, _nFlagged2, eS.length, _nDIF2, G_DIF_ENABLED && G._hasStream);
-  esRecordMcq(n, nQEffective, _nFlagged2, eS.length, _nDIF2);
-  renderWhatsNext(_nFlagged2, eS.length, _nDIF2, G_DIF_ENABLED && G._hasStream);
+  var _nEasy2 = G.mcq.filter(function(q){ return q.flag === 'Too easy'; }).length;
+  showAnalysisSummary(n, nQEffective, _nFlagged2, _nEasy2, _nDIF2, G_DIF_ENABLED && G._hasStream);
+  esRecordMcq(n, nQEffective, _nFlagged2, _nEasy2, _nDIF2);
+  renderWhatsNext(_nFlagged2, _nEasy2, _nDIF2, G_DIF_ENABLED && G._hasStream);
   _reviewState = {}; _reviewSort = 'flag'; _reviewFloatDone = false; // Reset review state for new analysis
   updateReviewTabLabel();
   var tabReview = document.getElementById('tab-review');
@@ -4591,7 +4800,7 @@ function renderNewSummary(n, avg, alpha, nE, nF) {
 }
 
 // ── What's Next cue ───────────────────────────────────────────────────────
-function renderWhatsNext(nFlagged, nEasy, nDIF, difEnabled) {
+function renderWhatsNext(nFlagged, nEasy, nDIF, difEnabled) { return; // removed — Next step bar retired in 20260727-02
   // Store for re-render when switching back to analysis tab
   renderWhatsNext._last = { nFlagged: nFlagged, nEasy: nEasy, nDIF: nDIF, difEnabled: difEnabled };
   var bar  = document.getElementById('whats-next-bar');
@@ -4616,7 +4825,7 @@ function renderWhatsNext(nFlagged, nEasy, nDIF, difEnabled) {
   } else {
     // There are items to review
     var parts = [];
-    if (nFlagged > 0) parts.push(nFlagged + ' question' + (nFlagged===1?' needs':' need') + ' review');
+    if (nFlagged > 0) parts.push(nFlagged + ' question' + (nFlagged===1?'':'s') + (nFlagged===1?' needs':' need') + ' review');
     if (nEasy > 0)    parts.push(nEasy + ' too-easy question' + (nEasy===1?'':'s'));
     if (hasDIF)       parts.push(nDIF + ' DIF flag' + (nDIF===1?'':'s'));
 
@@ -4633,7 +4842,7 @@ function renderWhatsNext(nFlagged, nEasy, nDIF, difEnabled) {
   bar.style.display = 'flex';
 }
 
-function renderWhatsNextFeedback() {
+function renderWhatsNextFeedback() { return; // removed — Next step bar retired in 20260727-02
   var bar  = document.getElementById('whats-next-bar');
   var icon = document.getElementById('whats-next-icon');
   var text = document.getElementById('whats-next-text');
@@ -4644,8 +4853,12 @@ function renderWhatsNextFeedback() {
     return;
   }
   var total = FB.parsed.length;
-  var byQ   = FB.parsed.filter(function(p){ return p.qNum && p.qNum > 0; }).length;
-  var gen   = total - byQ;
+  // byQ = comments attributed to at least one question (auto or manually mapped)
+  var byQ = FB.parsed.filter(function(p){
+    if (p.status === 'discard' || p.status === 'general' || p.status === 'pending') return false;
+    return (p.qNums && p.qNums.length > 0) || (p.mappedQs && p.mappedQs.length > 0) || p.mappedQ != null;
+  }).length;
+  var gen = FB.parsed.filter(function(p){ return p.status === 'general'; }).length;
   var highVol = (FB._grouped || []).filter(function(g){ return g.comments.length >= 8; }).length;
   if (highVol > 0) {
     bar.style.background = '#fffbf0';
@@ -4661,7 +4874,7 @@ function renderWhatsNextFeedback() {
     bar.style.borderColor = '#c8e6c9';
     icon.textContent = '✓';
     icon.style.color = '#2e6e1a';
-    text.innerHTML = '<strong style="color:#2e6e1a">Feedback looks ready.</strong> ' + byQ + ' comment' + (byQ===1?'':' s') + ' linked to questions' + (gen > 0 ? ', ' + gen + ' general comment' + (gen===1?'':'s') : '') + '. You can export the feedback report.';
+    text.innerHTML = '<strong style="color:#2e6e1a">Feedback looks ready.</strong> ' + byQ + ' comment' + (byQ===1?'':'s') + ' linked to questions' + (gen > 0 ? ', ' + gen + ' general comment' + (gen===1?'':'s') : '') + '. You can export the feedback report.';
     btn.style.display = 'inline-block';
     btn.textContent = 'Go to Reports →';
     btn.onclick = function() { var t=document.getElementById('tab-reports'); if(t) switchMainTabByClick('reports',t); };
@@ -5110,32 +5323,39 @@ function uiReportFooterHtml() {
 }
 
 function renderMCQReport(avg, alpha) {
-  var title=document.getElementById('exam-title').value||'';
-  var dateVal=document.getElementById('exam-date').value;
-  var dateStr=dateVal?new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}):'';
-  var flagged=[], easy=[], i;
+  var title   = document.getElementById('exam-title').value||'';
+  var dateVal = document.getElementById('exam-date').value;
+  var dateStr = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}) : '';
+  var examLine = title + (dateStr ? ' &mdash; ' + dateStr : '');
+  var genTs    = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  var i, flagged=[], easy=[];
   for(i=0;i<G.mcq.length;i++){
     var f=G.mcq[i].flag;
-    if(f==='Too easy'){easy.push(G.mcq[i]);}
-    else if(f){flagged.push(G.mcq[i]);}
+    if(f==='Too easy') easy.push(G.mcq[i]);
+    else if(f)         flagged.push(G.mcq[i]);
   }
+
+  // Table 1 — no Elentra ID, matches Full Report
   var t1='';
   for(i=0;i<flagged.length;i++){
     var r=flagged[i], comment='';
-    if(r.flag.indexOf('Difficult')>=0){comment=r.pct+'% of students answered correctly';}
-    else if(r.flag.indexOf('Poor')>=0&&r.rpbis<0&&r.p<0.35){comment=r.pct+'% of students answered correctly / Negative discrimination';}
-    else if(r.flag.indexOf('Poor')>=0){comment='Negative discrimination';}
-    else if(r.flag.indexOf('Low')>=0){comment='Low discrimination';}
+    if(r.flag.indexOf('Difficult')>=0) comment=r.pct+'% of students answered correctly';
+    else if(r.flag.indexOf('Poor')>=0&&r.rpbis<0&&r.p<0.35) comment=r.pct+'% of students answered correctly / Negative discrimination';
+    else if(r.flag.indexOf('Poor')>=0) comment='Negative discrimination';
     var bw=(r.topWrong&&r.p<getThresh('checkp'))?'<b>'+r.topWrong+'</b>':'';
     var color=r.flag.indexOf('Poor')>=0?'#993556':r.flag.indexOf('Difficult')>=0||r.flag.indexOf('Check')>=0?'#c0392b':'#b25400';
-    t1+='<tr class="row-flagged"><td style="text-align:center"><b>'+r.num+'</b></td><td style="color:'+color+';font-style:italic">'+r.flag+'</td><td>'+comment+'</td><td style="text-align:center">'+bw+'</td><td><b>'+r.rec+'</b></td></tr>';
+    t1+='<tr><td style="text-align:center"><b>'+r.num+'</b></td><td style="color:'+color+';font-style:italic">'+r.flag+'</td><td>'+comment+'</td><td style="text-align:center">'+bw+'</td><td><b>'+r.rec+'</b></td></tr>';
   }
+
+  // Table 2
   var t2='';
   if(easy.length){
-    var nums=[]; for(i=0;i<easy.length;i++){nums.push(easy[i].num);}
-    t2='<p style="margin-bottom:4px"><b>Table 2</b><br><i>Questions answered at least 96% correctly. Please revise them before using again.</i></p>'+
-       '<table style=\"width:95%;margin:0 auto 14px;\"><tbody><tr><td>'+nums.join('&nbsp;&nbsp;&nbsp;')+'</td></tr></tbody></table>';
+    var nums=[]; for(i=0;i<easy.length;i++) nums.push(easy[i].num);
+    t2='<p style="margin-bottom:4px"><b>Table 2 - Too Easy Questions</b><br><i>Questions answered correctly by 96% or more of students. Please revise before using again.</i></p>'+
+       '<table style="width:95%;margin:0 auto 14px;border-collapse:collapse"><thead><tr><th>Question number</th></tr></thead><tbody><tr><td style="text-align:center;box-shadow:inset 8px 0 0 #185fa5">'+nums.join(', ')+'</td></tr></tbody></table>';
   }
+
+  // Table 3 — includes Elentra ID, no DIF row highlights
   var t3='';
   for(i=0;i<G.mcq.length;i++){
     var r=G.mcq[i];
@@ -5144,54 +5364,164 @@ function renderMCQReport(avg, alpha) {
     } else if (r.excluded === 'credit') {
       t3+='<tr style="background:#fffbea"><td style="text-align:left;white-space:nowrap">'+r.num+'&nbsp;&nbsp;<span style="background:#fff8dc;color:#7a5500;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle">Credited</span></td><td style="text-align:center;font-size:11px;color:#5a6472">'+(r.elentraId||'')+'</td><td style="text-align:center">'+r.key+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-style:italic;color:var(--c-muted);font-size:11px">'+(r.reason?'Reason: '+r.reason:'')+'</td></tr>';
     } else {
-      var isDIF=G_DIF_ENABLED&&G.dif&&G.dif.some(function(d){return d.num===r.num&&d.imp;});
-      var rowFill=r.flag==='Too easy'?' class="row-easy"':r.flag?' class="row-flagged"':isDIF?' class="row-dif"':'';
-      var altCom = (r.altKeys && r.altKeys.length) ? 'Alt. answer(s) accepted: ' + r.altKeys.join(', ') + (r.altReason ? ' — ' + r.altReason : '') : '';
-      t3+='<tr'+rowFill+'><td style="text-align:left">'+r.num+'</td><td style="text-align:center">'+fmtKey(r.key,r.altKeys)+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-size:11px;color:#5a6472;font-style:italic">'+altCom+'</td></tr>';
+      var rowFill=r.flag==='Too easy'?' class="row-easy"':r.flag?' class="row-flagged"':'';
+      var altComF = (r.altKeys && r.altKeys.length) ? 'Alt. answer(s) accepted: ' + r.altKeys.join(', ') + (r.altReason ? ' \u2014 ' + r.altReason : '') : '';
+      t3+='<tr'+rowFill+'><td style="text-align:center"><b>'+r.num+'</b></td><td style="text-align:center;font-size:11px;color:#5a6472">'+(r.elentraId||'')+'</td><td style="text-align:center">'+fmtKey(r.key,r.altKeys)+'</td><td style="text-align:center">'+fmt(r.p,2)+'</td><td style="text-align:center">'+fmt(r.rpbis,2)+'</td><td style="font-size:11px;color:#5a6472;font-style:italic">'+altComF+'</td></tr>';
     }
   }
-  var a2=(Math.round(alpha*100)/100).toFixed(2);
-  var fL=flagged.length, eL=easy.length;
-  // Pre-render new chart as image for report tab
-  setTimeout(function(){
-    var canvas=document.getElementById('new-dist-chart');
-    var img=document.getElementById('dist-chart-img');
-    if(canvas&&img){
-      img.src=captureNewChartHiRes()||canvas.toDataURL('image/png');
-      img.style.display='block';
-    }
-  },100);
-  var examLine = (title||'')+(title&&dateStr?' &mdash; '+dateStr:dateStr&&!title?dateStr:'');
-  var genTs = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  document.getElementById('mcq-report').innerHTML=
+
+  // ── KPI overview card — mirrors Full Report, DIF hardcoded absent ─────────
+  var nQ=G.nQ||0, n=G.students.length;
+  var eScores=G._distE||[], fScores=G._distF||[];
+  var nE=eScores.length, nF=fScores.length;
+  var eAvg=nE?Math.round(eScores.reduce(function(a,b){return a+b;},0)/nE):0;
+  var fAvg=nF?Math.round(fScores.reduce(function(a,b){return a+b;},0)/nF):0;
+  var alphaN=parseFloat(alpha)||0;
+  var alphaBarPct=Math.min(100,Math.round(alphaN*100));
+  var avgN=parseFloat(avg)||0;
+  var avgBadge,avgBadgeBg,avgBadgeColor;
+  if(avgN>=75){avgBadge='Good';avgBadgeColor='#2e6e1a';avgBadgeBg='#eaf3de';}
+  else if(avgN>=60){avgBadge='Acceptable';avgBadgeColor='#854f0b';avgBadgeBg='#faeeda';}
+  else if(avgN>=50){avgBadge='Low';avgBadgeColor='#b52020';avgBadgeBg='#fce8e8';}
+  else{avgBadge='Concerning';avgBadgeColor='var(--c-accent-dark)';avgBadgeBg='#fcd4d4';}
+  var alphaBadge,alphaBadgeBg,alphaBadgeColor;
+  if(alphaN>=0.80){alphaBadge='Good';alphaBadgeColor='#2e6e1a';alphaBadgeBg='#eaf3de';}
+  else if(alphaN>=0.70){alphaBadge='Acceptable';alphaBadgeColor='#854f0b';alphaBadgeBg='#faeeda';}
+  else{alphaBadge='Needs review';alphaBadgeColor='var(--c-accent-dark)';alphaBadgeBg='#fce8e8';}
+  var nFlagged=0,nEasy=0,nDiff=0,nPoor=0,nOk=0,nCredited=0,nDeleted=0;
+  for(var qi=0;qi<G.mcq.length;qi++){
+    var qr=G.mcq[qi];
+    if(qr.excluded==='delete'){nDeleted++;continue;}
+    if(qr.excluded==='credit'){nCredited++;continue;}
+    var fl=qr.flag;
+    if(!fl){nOk++;continue;}
+    if(fl==='Too easy'){nEasy++;continue;}
+    nFlagged++;
+    if(fl.indexOf('Difficult')>=0) nDiff++;
+    else if(fl.indexOf('Poor')>=0) nPoor++;
+  }
+  var nAnalysed2 = nQ - nCredited - nDeleted;
+  function _bw(v){return nAnalysed2?Math.max(3,Math.round(v/nAnalysed2*100)):0;}
+  function kpiAccent(col,w){return '<div style="height:3px;background:'+col+';border-radius:2px;width:'+w+'px;margin-bottom:8px"></div>';}
+  function badge(text,bg,col){return '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:'+bg+';color:'+col+'">'+text+'</span>';}
+  function miniBar(pct,col){return '<div style="flex:1;height:5px;background:var(--c-border);border-radius:3px"><div style="height:5px;border-radius:3px;background:'+col+';width:'+pct+'%"></div></div>';}
+
+  var overviewHtml =
+    '<div id="mcq-report-overview" style="border:1px solid var(--c-border);border-radius:10px;padding:16px;background:#fff;margin:0 auto 20px;max-width:100%;font-family:Calibri,Arial,sans-serif">'
+      +'<div style="font-size:15px;font-weight:700;color:var(--c-accent);margin-bottom:12px;letter-spacing:-.2px">Exam Overview</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:3px solid rgba(0,0,0,.18);padding-bottom:12px;margin-bottom:12px">'
+        +'<div style="padding-right:16px;border-right:1px solid rgba(0,0,0,.08)">'
+          +kpiAccent('#0d7a7a',65)
+          +'<div style="font-size:9px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Students</div>'
+          +'<div style="font-size:22px;font-weight:700;color:var(--c-primary);line-height:1;margin-bottom:6px">'+n+'</div>'
+          +'<div style="display:flex;gap:10px;font-size:10px">'
+            +'<span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:2px;background:#0d7a7a;display:inline-block"></span><span style="color:var(--c-secondary)">EN '+nE+'</span></span>'
+            +'<span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:2px;background:#5c4fc7;display:inline-block"></span><span style="color:var(--c-secondary)">FR '+nF+'</span></span>'
+          +'</div>'
+        +'</div>'
+        +'<div style="padding:0 16px;border-right:1px solid rgba(0,0,0,.08)">'
+          +kpiAccent('#2e7d32',65)
+          +'<div style="font-size:9px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Exam Avg.</div>'
+          +'<div style="display:flex;align-items:baseline;gap:7px;margin-bottom:5px">'
+            +'<span style="font-size:22px;font-weight:700;color:'+(avgN>=75?'#2e7d32':avgN>=60?'#854f0b':avgN>=50?'#b52020':'var(--c-accent-dark)')+'">'+avgN.toFixed(1)+'%</span>'
+            +badge(avgBadge,avgBadgeBg,avgBadgeColor)
+          +'</div>'
+          +(nE&&nF?'<div style="font-size:10px;color:var(--c-muted)">EN '+eAvg+'% \u00B7 FR '+fAvg+'%</div>':'')
+        +'</div>'
+        +'<div style="padding:0 16px;border-right:1px solid rgba(0,0,0,.08)">'
+          +kpiAccent('#6a3fa0',65)
+          +'<div style="font-size:9px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Reliability (\u03B1)</div>'
+          +'<div style="display:flex;align-items:baseline;gap:7px;margin-bottom:7px">'
+            +'<span style="font-size:22px;font-weight:700;color:#6a3fa0">'+alphaN.toFixed(2)+'</span>'
+            +badge(alphaBadge,alphaBadgeBg,alphaBadgeColor)
+          +'</div>'
+          +'<div style="position:relative;height:5px;background:var(--c-border);border-radius:3px;margin-bottom:3px">'
+            +'<div style="position:absolute;left:0;top:0;height:5px;width:100%;border-radius:3px;background:linear-gradient(to right,#e24b4a 0%,#ef9f27 65%,#639922 100%)"></div>'
+            +'<div style="position:absolute;top:-3px;left:calc('+alphaBarPct+'% - 3px);width:6px;height:11px;background:#fff;border:2px solid var(--c-primary);border-radius:2px"></div>'
+          +'</div>'
+          +'<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--c-muted)"><span>0</span><span>0.70</span><span>1.0</span></div>'
+        +'</div>'
+        +'<div style="padding-left:16px">'
+          +kpiAccent('#c0392b',65)
+          +'<div style="font-size:9px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Question Health</div>'
+          +'<div style="font-size:18px;font-weight:700;color:var(--c-primary);margin-bottom:8px">'+nQ+' <span style="font-size:11px;font-weight:400;color:var(--c-muted)">questions</span></div>'
+          +'<div style="display:flex;gap:5px;flex-wrap:wrap">'
+            +(nFlagged>0?badge(nFlagged+' flagged','#fff4e6','#b25400'):'')
+            +(nEasy>0?badge(nEasy+' easy','#e8f4fd','#0a5a9c'):'')
+            +(nCredited>0?badge(nCredited+' credited','#fff8dc','#7a5500'):'')
+            +(nDeleted>0?badge(nDeleted+' deleted','#fce8e8','var(--c-accent)'):'')
+            +(nFlagged===0&&nEasy===0&&nCredited===0&&nDeleted===0?badge('All OK','#eaf3de','#2e6e1a'):'')
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 180px;gap:0">'
+        +'<div style="padding-right:16px">'
+          +'<div style="font-size:9px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Score distribution</div>'
+          +'<div style="display:flex;gap:12px;font-size:10px;color:var(--c-muted);margin-bottom:8px">'
+            +(nE?'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#0d7a7a;display:inline-block"></span>English (n='+nE+(nE?' \u00B7 avg '+eAvg+'%':'')+')</span>':'')
+            +(nF?'<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#5c4fc7;display:inline-block"></span>French (n='+nF+(nF?' \u00B7 avg '+fAvg+'%':'')+')</span>':'')
+          +'</div>'
+          +'<div style="text-align:center"><img id="mcq-chart-img" src="" style="display:none;max-width:100%;height:auto"></div>'
+        +'</div>'
+        +'<div style="border-left:1px solid var(--c-muted);padding-left:16px">'
+          +'<div style="font-size:9px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Question breakdown</div>'
+          +'<div style="display:flex;flex-direction:column;gap:7px">'
+            +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Acceptable</div>'+miniBar(_bw(nOk),'#639922')+'<div style="font-size:10px;font-weight:700;color:#2e6e1a;min-width:18px;text-align:right">'+nOk+'</div></div>'
+            +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Too easy</div>'+miniBar(_bw(nEasy),'#378add')+'<div style="font-size:10px;font-weight:700;color:#185fa5;min-width:18px;text-align:right">'+nEasy+'</div></div>'
+            +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Difficult</div>'+miniBar(_bw(nDiff),'#e24b4a')+'<div style="font-size:10px;font-weight:700;color:#a32d2d;min-width:18px;text-align:right">'+nDiff+'</div></div>'
+            +'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Poor disc.</div>'+miniBar(_bw(nPoor),'#ef9f27')+'<div style="font-size:10px;font-weight:700;color:#854f0b;min-width:18px;text-align:right">'+nPoor+'</div></div>'
+            +(nCredited>0||nDeleted>0?'<div style="border-top:1px solid var(--c-border);margin-top:2px;padding-top:5px"></div>':'')
+            +(nCredited>0?'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Credited</div>'+miniBar(_bw(nCredited),'#e8a800')+'<div style="font-size:10px;font-weight:700;color:#7a5500;min-width:18px;text-align:right">'+nCredited+'</div></div>':'')
+            +(nDeleted>0?'<div style="display:flex;align-items:center;gap:6px"><div style="font-size:10px;color:var(--c-secondary);width:64px">Deleted</div>'+miniBar(_bw(nDeleted),'var(--c-accent)')+'<div style="font-size:10px;font-weight:700;color:var(--c-accent);min-width:18px;text-align:right">'+nDeleted+'</div></div>':'')
+          +'</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+
+  document.getElementById('mcq-report').innerHTML =
     '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+getCoordinatorByline()+'</p>'+
-    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE &mdash; UNDERGRADUATE MEDICAL EDUCATION</p>'+
+    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">Multiple-choice Questions Analysis</p>'+
-    '<p style="font-size:12px;font-weight:700;text-align:center;margin:0 0 20px;line-height:1.3">'+examLine+'</p>'+
-    '<p>Dear Director(s),</p><br>'+
-    '<p>The analysis of the multiple-choice section of your examination yielded the following results:</p><br>'+
-    '<ul style="margin-left:20px;margin-bottom:10px">'+
-    '<li><b>The exam average was '+avg+'%</b></li>'+
-    '<li><b>The reliability of the scores was '+a2+'</b></li>'+
-    '<li><b>'+fL+' question'+(fL!==1?'s were':' was')+' flagged as being possibly problematic and require your review.</b></li>'+
-    '<li><b>'+eL+' question'+(eL!==1?'s were':' was')+' too easy and/or had a negative discrimination index.</b></li>'+
-    '</ul>'+
-    '<p style="font-style:italic;margin-bottom:12px">Please note that there may be some questions identified because they are considered to be easy, but they also led to a situation in which stronger students performed worse than weak students. Please review these items to ensure there were no typographical errors or other indications that would have allowed weak students to easily identify the correct answer. In addition, consider revising these questions before using them again.</p>'+
-    '<p><b>ACTION</b></p>'+
+    '<p style="font-size:12px;text-align:center;margin:0 0 8px;line-height:1.3">'+examLine+'</p>'+
+    '<hr style="border:none;border-top:2px solid var(--c-accent);margin:0 0 20px">'+
+
+    '<p style="margin-bottom:10px">Dear Director(s), committee members,</p>'+
+    '<p style="margin-bottom:10px">The analysis of your multiple-choice examination is available below.</p>'+
+    '<p style="margin-bottom:10px">The following report presents a complete analysis of the multiple-choice section of the above-noted examination, including item statistics and flagged questions.</p>'+
+    '<p style="font-size:13px;line-height:1.6;margin-bottom:10px">Some questions are flagged not because they were difficult, but because stronger students answered them correctly at a lower rate than weaker students. Review these items for typographical errors or unintended cues, and consider revising them before using them again.</p>'+
+
+    '<p style="margin-bottom:4px"><b>DECISION OPTIONS:</b><br>As you review questions identified, select one action per flagged question from the list below, based on your review of the item, student performance data, and any translation or content concerns identified.</p>'+
     '<ul style="margin-left:20px;margin-bottom:12px;line-height:2">'+
-    '<li><b>RETAIN</b> the question if it was clear, well-constructed, and based on the rotation\'s learning objectives.</li>'+
-    '<li><b>CREDIT</b> the question if it was too difficult, ambiguous, or had a translation issue.</li>'+
-    '<li><b>DELETE</b> the question if it was not based on the rotation\'s learning objectives or had no correct answer.</li>'+
+    '<li><b>RETAIN</b> the question if it was clear, well-constructed, and based on the learning objectives.</li>'+
+    '<li><b>CREDIT</b> the question if it was too difficult, ambiguous, or had one or more translation issue(s).</li>'+
+    '<li><b>DELETE</b> the question if it was not based on the learning objectives or had no correct answer.</li>'+
     '<li><b>CHANGE THE KEY</b> if the question was scored with the wrong answer key.</li>'+
     '</ul>'+
-    '<div style="margin:16px 0;text-align:center;width:100%"><img id="dist-chart-img" src="" style="display:none;width:666px;height:175px;max-width:100%;object-fit:fill;margin:0 auto;display:block"></div>'+
-    '<p style="margin-bottom:4px"><b>Table 1</b><br><i>Flagged questions</i></p>'+
-    '<table style=\"width:95%;margin:0 auto 14px;\"><thead><tr><th>Question</th><th>Reason for flagging</th><th>Comments</th><th>Best students also chose</th><th>Recommendation</th></tr></thead>'+
+
+    '<p style="font-size:15px;font-weight:700;color:#404040;margin:0 0 4px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">Exam Summary</p>'+
+    overviewHtml+
+    '<div style="border-top:2px solid var(--c-border);margin:20px 0"></div>'+
+
+    '<p style="font-size:15px;font-weight:700;color:#404040;margin:0 0 12px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">Multiple-Choice Questions Analysis</p>'+
+    '<p style="margin-bottom:4px"><b>Table 1 - Flagged Questions</b><br><i>Questions flagged as possibly problematic, requiring director review.</i></p>'+
+    '<table style="width:100%;margin:0 0 14px;border-collapse:collapse"><thead><tr><th>Q#</th><th>Reason for flagging</th><th>Comments</th><th>Best students chose</th><th>Recommendation</th></tr></thead>'+
     '<tbody>'+(t1||'<tr><td colspan="5" style="text-align:center;color:var(--c-muted)">No flagged items</td></tr>')+'</tbody></table>'+
     t2+
-    '<p style="margin-bottom:4px"><b>Table 3</b> <span style="font-size:10px;color:#555">(<span style="background:#fff0f0;padding:1px 5px;border-radius:3px;color:#c0392b;font-weight:700">Flagged</span> | <span style="background:#e8f4fd;padding:1px 5px;border-radius:3px;color:#0a5a9c;font-weight:700">Easy</span>' + (G_DIF_ENABLED ? ' | <span style="background:#e8eaf6;padding:1px 5px;border-radius:3px;color:#3949ab;font-weight:700">DIF</span>' : '') + ')</span><br><i>All questions — correct answer, difficulty index, and discrimination index.</i></p>'+
-    '<table><thead><tr><th>Question</th><th>Answer</th><th>Difficulty</th><th>Discrimination (Point-Biserial)</th><th>Comments</th></tr></thead><tbody>'+t3+'</tbody></table>'+
+    '<p style="margin-bottom:4px"><b>Table 3 - All Questions</b> <span style="font-size:10px;color:#555">(<span style="background:#fff0f0;padding:1px 5px;border-radius:3px;color:#c0392b;font-weight:700">Flagged</span> | <span style="background:#e8f4fd;padding:1px 5px;border-radius:3px;color:#0a5a9c;font-weight:700">Easy</span>)</span><br><i>All questions \u2014 correct answer, difficulty index, and discrimination index.</i></p>'+
+    '<p style="font-size:11px;font-style:italic;color:#666;margin-bottom:6px"><b>Note</b>: \u201cCredit\u201d means students who answered correctly keep their point and the question is removed from the denominator for all students \u2014 it does not mean every student automatically receives the mark.</p>'+
+    '<table style="width:100%;margin:0 0 20px;border-collapse:collapse"><thead><tr style="text-align:center"><th>Question</th><th>Elentra ID</th><th>Answer</th><th>Difficulty</th><th>Discrimination (Point-Biserial)</th><th>Comments</th></tr></thead><tbody>'+t3+'</tbody></table>'+
+
     uiReportFooterHtml();
+
+  setTimeout(function(){
+    var canvas = document.getElementById('new-dist-chart');
+    var img    = document.getElementById('mcq-chart-img');
+    if (canvas && img) {
+      var src = captureNewChartHiRes() || canvas.toDataURL('image/png');
+      img.src = src;
+      img.style.display = 'block';
+    }
+  }, 250);
 }
 
 
@@ -5577,8 +5907,7 @@ function renderFullReport(avg, alpha) {
 
   document.getElementById('full-report').innerHTML =
     // Header — matches Word export design
-    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:14px;text-align:left">Report generated: '+genTs+getCoordinatorByline()+'</p>'+
-    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</p>'+
+        '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">Full Exam Analysis Report <span style="font-weight:400">(MCQ &amp; DIF)</span></p>'+
     '<p style="font-size:12px;text-align:center;margin:0 0 8px;line-height:1.3">'+examLine+'</p>'+
     '<hr style="border:none;border-top:2px solid var(--c-accent);margin:0 0 20px">'+
@@ -5739,33 +6068,49 @@ function renderDIFTable() {
 
 // ── Render: DIF report ────────────────────────────────────────────────────
 function renderDIFReport() {
-  var title=document.getElementById('exam-title').value||'';
-  var dateVal=document.getElementById('exam-date').value;
-  var dateStr=dateVal?new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}):'';
-  var flagged=[], i;
+  var title   = document.getElementById('exam-title').value||'';
+  var dateVal = document.getElementById('exam-date').value;
+  var dateStr = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}) : '';
+  var examLine = title + (dateStr ? ' &mdash; ' + dateStr : '');
+  var i, flagged=[];
   for(i=0;i<G.dif.length;i++){if(G.dif[i].imp){flagged.push(G.dif[i]);}}
-  var items='';
+
+  // DIF results table rows
+  var difTableRows='';
   for(i=0;i<flagged.length;i++){
     var r=flagged[i];
-    items+='<li>Question '+r.num+' had a statistically significant value of DIF. '+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'</li>';
+    var difMcqMatch=G.mcq&&G.mcq.find(function(dm){return dm.num===r.num;});
+    difTableRows+='<tr><td style="text-align:center;box-shadow:inset 8px 0 0 #3949ab"><b>'+r.num+'</b></td>'+
+      '<td style="text-align:center;font-size:11px;color:#5a6472">'+(difMcqMatch?difMcqMatch.elentraId||'':'')+'</td>'+
+      '<td style="text-align:center">'+r.ePct+'%</td>'+
+      '<td style="text-align:center">'+r.fPct+'%</td>'+
+      '<td>'+(r.fPct>r.ePct?'FR students performed better':'EN students performed better')+'</td>'+
+      '<td style="text-align:center">'+r.disc+'</td></tr>';
   }
-  document.getElementById('dif-report').innerHTML=
-    '<p style="font-size:10px;color:#555;font-style:italic;margin-bottom:0;text-align:left">Report generated: '+new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})+getCoordinatorByline()+'</p>'+
-    '<p style="margin-bottom:14px"></p>'+
-    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION</p>'+
+
+  document.getElementById('dif-report').innerHTML =
+    '<p style="font-size:16px;font-weight:700;text-align:center;margin:0;line-height:1.3">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</p>'+
     '<p style="font-size:14px;font-weight:700;text-align:center;margin:0;line-height:1.3">DIF Analysis Report</p>'+
-    '<p style="font-size:12px;font-weight:700;text-align:center;margin:0 0 20px;line-height:1.3">'+(title+(dateStr?' \u2014 '+dateStr:''))+'</p>'+
-    '<p style="margin-bottom:10px">Please find enclosed the results of an analysis that looks at the Differential Item Functioning (DIF) for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree that the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.</p>'+
-    '<p style="margin-bottom:10px">If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance so each item that has a statistically significant DIF should be reviewed by content experts.</p>'+
+    '<p style="font-size:12px;text-align:center;margin:0 0 8px;line-height:1.3">'+examLine+'</p>'+
+    '<hr style="border:none;border-top:2px solid var(--c-accent);margin:0 0 20px">'+
+
+    '<p style="margin-bottom:10px">Dear Director(s), committee members,</p>'+
+    '<p style="margin-bottom:16px">The following report presents the results of a Differential Item Functioning (DIF) analysis for the above-noted examination.</p>'+
+
+    '<p style="font-size:15px;font-weight:700;color:#404040;margin:0 0 12px;padding-bottom:4px;border-bottom:2px solid var(--c-accent)">Differential Item Functioning (DIF) Analysis</p>'+
+    '<p style="margin-bottom:10px">This section presents the results of a Differential Item Functioning (DIF) analysis for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree to which the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.</p>'+
+    '<p style="margin-bottom:10px">If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance, so each item that has a statistically significant DIF should be reviewed by content experts.</p>'+
     '<p style="font-weight:700;margin-bottom:8px">The following should be reviewed if a question is flagged:</p>'+
-    '<ul style="margin-left:20px;margin-bottom:10px"><li style="margin-bottom:6px">Is the wording of the French and English versions of the question equivalent?</li><li style="margin-bottom:6px">Is it possible that the relevant topic was taught differently in the two language streams?</li><li style="margin-bottom:6px">Were there any comments from the students that would indicate an issue between French and English students?</li></ul>'+
-    '<p style="margin-bottom:10px">If there does not appear to be an explanation for the occurrence of DIF, then the item should remain on the exam. If there is an explanation that led to the occurrence of DIF, then it is possible that the item may need to be credited or fixed before using again.</p>'+
+    '<ul style="margin-left:20px;margin-bottom:10px">'+
+    '<li style="margin-bottom:6px">Is the wording of the French and English versions of the question equivalent?</li>'+
+    '<li style="margin-bottom:6px">Is it possible that the relevant topic was taught differently in the two language streams?</li>'+
+    '<li style="margin-bottom:6px">Were there any student comments suggesting the question or topic was experienced differently between the two language streams?</li>'+
+    '</ul>'+
+    '<p style="margin-bottom:16px">If no explanation is found, the item should remain on the exam. If an explanation is identified, the item may need to be credited or revised before reuse.</p>'+
     (flagged.length
-      ?'<p style="margin-bottom:8px">'+(title?'On the <b>'+title+'</b>':'On this exam')+':</p>'+
-       '<ul style="margin-left:20px;margin-bottom:10px">'+
-       flagged.map(function(r){return '<li style="margin-bottom:8px">Question <b>'+r.num+'</b> had a statistically significant value of DIF.<br>'+r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.</li>';}).join('')+
-       '</ul>'
-      :'<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>')+
+      ? '<p style="margin-bottom:8px"><b>DIF Results</b><br><i>The following question'+(flagged.length!==1?'s':'')+' showed statistically significant DIF (p &lt; 0.01):</i></p>'+
+        '<table style="width:100%;margin:0 0 12px;border-collapse:collapse"><thead><tr style="text-align:center"><th>Question</th><th>Elentra ID</th><th>EN % Correct</th><th>FR % Correct</th><th>Interpretation</th><th>Discrimination</th></tr></thead><tbody>'+difTableRows+'</tbody></table>'
+      : '<p><i>No items with statistically significant DIF were detected (p &lt; 0.01).</i></p>')+
     uiReportFooterHtml();
 }
 
@@ -6482,7 +6827,7 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
     return;
   }
   if(type==='mcq') {
-    // Build MCQ body XML
+    // MCQ-only Word export — aligned with Full Combined Report (no DIF)
     var flagged=[], easy=[], i;
     for(i=0;i<G.mcq.length;i++){
       var f=G.mcq[i].flag;
@@ -6492,161 +6837,197 @@ function _doExportReportBuild(type, title, safe, dateStr, a2, avg, dateSuffix, f
 
     var body = '';
     var genTs2 = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    // Title block
-    body += docxPara('FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION', {bold:true, centre:true, sz:32, spAfter:0});
-    body += docxPara('Multiple-choice Questions Analysis', {bold:true, centre:true, sz:28, spAfter:0});
-    var examLineW = title+(dateStr?' \u2014 '+dateStr:'');
-    if(examLineW) body += docxPara(examLineW, {bold:true, centre:true, sz:24, spAfter:320});
-    body += docxPara('Dear Director(s),', {sz:24, spAfter:160});
-    body += docxPara('The analysis of the multiple-choice section of your examination yielded the following results:', {sz:24, spAfter:120});
 
-    // Bullet points as paragraphs with hanging indent
-    var bullets = [
-      'The exam average was '+avg+'%',
-      'The reliability of the scores was '+a2,
-      flagged.length+' question'+(flagged.length!==1?'s were':' was')+' flagged as being possibly problematic and require your review.',
-      easy.length+' question'+(easy.length!==1?'s were':' was')+' too easy and/or had a negative discrimination index.'
+    // ── Title block — Heading1 style, hyphen not em dash ─────────────────────
+    body += '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t xml:space="preserve">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</w:t></w:r></w:p>';
+    body += docxPara('Multiple-choice Questions Analysis',{bold:true,centre:true,sz:28,spAfter:0});
+    var examLineW2 = title+(dateStr?' - '+dateStr:'');
+    if(examLineW2) body += docxPara(examLineW2,{centre:true,sz:24,spAfter:320});
+    body += docxGarnetLine(1001, 199442);
+    body += docxPara('',{sz:24,spAfter:0});
+
+    // ── Intro ─────────────────────────────────────────────────────────────────
+    body += docxPara('Dear Director(s), committee members,',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += docxPara('The analysis of your multiple-choice examination is available below.',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += docxPara('The following report presents a complete analysis of the multiple-choice section of the above-noted examination, including item statistics and flagged questions.',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr>'+
+      '<w:t xml:space="preserve">Some questions are flagged not because they were difficult, but because stronger students answered them correctly at a lower rate than weaker students. Review these items for typographical errors or unintended cues, and consider revising them before using them again.</w:t></w:r></w:p>';
+    body += docxPara('',{sz:24,spAfter:0});
+
+    // ── Decision Options ──────────────────────────────────────────────────────
+    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>DECISION OPTIONS:</w:t></w:r>'+
+      '<w:r><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:br/></w:r>'+
+      '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">As you review questions identified, select one action per flagged question from the list below, based on your review of the item, student performance data, and any translation or content concerns identified.</w:t></w:r>'+
+      '</w:p>';
+    var docxActionsM=[
+      {key:'RETAIN',         rest:' the question if it was clear, well-constructed, and based on the learning objectives.'},
+      {key:'CREDIT',         rest:' the question if it was too difficult, ambiguous, or had one or more translation issue(s).'},
+      {key:'DELETE',         rest:' the question if it was not based on the learning objectives or had no correct answer.'},
+      {key:'CHANGE THE KEY', rest:' if the question was scored with the wrong answer key.'}
     ];
-    for(i=0;i<bullets.length;i++){
-      body += '<w:p><w:pPr><w:pStyle w:val="ListBullet"/><w:spacing w:after="80"/><w:ind w:left="720" w:hanging="360"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• '+esc(bullets[i])+'</w:t></w:r></w:p>';
+    for(i=0;i<docxActionsM.length;i++){
+      var da=docxActionsM[i];
+      body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr>'+
+        '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">\u2022 '+esc(da.key)+'</w:t></w:r>'+
+        '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+esc(da.rest)+'</w:t></w:r>'+
+        '</w:p>';
     }
 
-    body += '<w:p><w:pPr><w:spacing w:after="160"/><w:ind w:left="0"/></w:pPr><w:r><w:rPr><w:i/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve">'+esc('Please note that there may be some questions identified because they are considered to be easy, but they also led to a situation in which stronger students performed worse than weak students. Please review these items to ensure there were no typographical errors or other indications that would have allowed weak students to easily identify the correct answer. In addition, consider revising these questions before using them again.')+'</w:t></w:r></w:p>';
-
-    body += docxPara('ACTION', {bold:true, sz:24, spAfter:80});
-    var actions = [
-      'RETAIN the question if it was clear, well-constructed, and based on the rotation\'s learning objectives.',
-      'CREDIT the question if it was too difficult, ambiguous, or had a translation issue.',
-      'DELETE the question if it was not based on the rotation\'s learning objectives or had no correct answer.',
-      'CHANGE THE KEY if the question was scored with the wrong answer key.'
-    ];
-    for(i=0;i<actions.length;i++){
-      body += '<w:p><w:pPr><w:spacing w:after="80"/><w:ind w:left="720" w:hanging="360"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• '+esc(actions[i])+'</w:t></w:r></w:p>';
-    }
-
-    // Score distribution chart
+    // ── Exam Summary ──────────────────────────────────────────────────────────
+    body += docxPara('',{spAfter:0});
+    body += docxH2('Exam Summary');
+    body += docxGarnetLine(1002, 12065, 'left');
+    var nM       = G.students ? G.students.length : 0;
+    var eArrM    = G._distE || [], fArrM = G._distF || [];
+    var nEM      = eArrM.length, nFM = fArrM.length;
+    var eAvgM    = nEM ? Math.round(eArrM.reduce(function(a,b){return a+b;},0)/nEM) : 0;
+    var fAvgM    = nFM ? Math.round(fArrM.reduce(function(a,b){return a+b;},0)/nFM) : 0;
+    body += docxKpiTable(nM, nEM, nFM, parseFloat(avg)||0, eAvgM, fAvgM,
+                         parseFloat(a2)||0, G.nQ||G.mcq.length,
+                         flagged.length, easy.length, 0);
     var canvasM = document.getElementById('new-dist-chart');
     var chartB64M = canvasM ? captureNewChartHiRes()||canvasM.toDataURL('image/png') : null;
     if(chartB64M) {
-      body += docxPara('Score Distribution', {bold:true, sz:24, spAfter:80, color:'A31515'});
-      body += docxImage(chartB64M, 5760000, 1566000, 'rChrtM');
-      body += docxPara('', {spAfter:200});
+      body += docxImage(chartB64M, 5760000, 1828800, 'rImg1');
     }
 
-    // Table 1: Flagged
-    body += docxPara('Table 1', {bold:true, sz:24, spAfter:60});
-    body += docxPara('Flagged questions', {italic:true, sz:22, spAfter:100});
-    if(flagged.length) {
-      var t1rows = [];
+    // ── MCQ Analysis ──────────────────────────────────────────────────────────
+    body += docxH2('Multiple-Choice Questions Analysis');
+    body += docxGarnetLine(1003, 12065, 'left');
+
+    // Table 1 — Flagged Questions (no Elentra ID)
+    body += docxPara('Table 1 - Flagged Questions',{bold:true,sz:24,spAfter:160});
+    body += docxPara('Questions flagged as possibly problematic, requiring director review.',{italic:true,sz:22,spAfter:100});
+    if(flagged.length){
+      var t1rowsM=[];
       for(i=0;i<flagged.length;i++){
         var r=flagged[i];
         var comment='';
-        if(r.flag.indexOf('Difficult')>=0){comment=r.pct+'% of students answered correctly';}
-        else if(r.flag.indexOf('Poor')>=0&&r.rpbis<0){comment='Negative discrimination';}
-        else if(r.flag.indexOf('Poor')>=0){comment='Negative discrimination';}
-        else if(r.flag.indexOf('Low')>=0){comment='Low discrimination';}
-        var bw=(r.topWrong&&r.p<getThresh('checkp'))?r.topWrong:'';
-        t1rows.push([r.num, r.elentraId||'', r.flag, comment, bw, r.rec]);
+        if(r.flag.indexOf('Difficult')>=0){comment=r.pct+'% answered correctly';}
+        else if(r.flag.indexOf('Poor')>=0||r.flag.indexOf('Low')>=0){comment='Low discrimination';}
+        t1rowsM.push([r.num, r.flag, comment, r.topWrong&&r.p<getThresh('checkp')?r.topWrong:'', r.rec]);
       }
-      body += docxTable(['Question','Elentra ID','Reason for flagging','Comments','Best students also chose','Recommendation'], t1rows, [700,900,1700,1800,1100,2213], {centreCols:[0,1,4]});
+      body += docxTable(['Q#','Reason for flagging','Comments','Best students chose','Recommendation'],t1rowsM,[715,2100,2600,900,3398],{centreCols:[0,3],centre:true,cellMar:58,vAlignBottom:true});
     } else {
-      body += docxPara('No flagged items.', {italic:true, sz:22, spAfter:160});
+      body += docxPara('No flagged items.',{italic:true,sz:22,spAfter:160});
+    }
+    body += docxPara('',{spAfter:80});
+
+    // Table 2 — Too Easy Questions
+    if(easy.length){
+      body += docxPara('Table 2 - Too Easy Questions',{bold:true,sz:24,spAfter:60});
+      body += docxPara('Questions answered correctly by 96% or more of students. Please revise before using again.',{italic:true,sz:22,spAfter:100});
+      body += docxTable(['Question number'],[easy.map(function(e){return e.num;}).join(', ')].map(function(v){return [v];}),[9713],{centre:true,cellMar:58,vAlignBottom:true});
+      body += docxPara('',{spAfter:80});
     }
 
-    // Table 2: Too easy
-    if(easy.length) {
-      body += docxPara('Table 2', {bold:true, sz:24, spAfter:60});
-      body += docxPara('Questions answered at least 96% correctly. Please revise them before using again.', {italic:true, sz:22, spAfter:100});
-      body += docxTable(['Question numbers'], [[easy.map(function(e){return e.num;}).join(', ')]], [9713]);
-    }
-
-    // Table 3: All questions
-    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="160" w:after="40" w:line="240" w:lineRule="auto"/></w:pPr>'+
-      '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">Table 3 </w:t></w:r>'+
-      '<w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">(</w:t></w:r>'+
-      '<w:r><w:rPr><w:b/><w:color w:val="C0392B"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">Flagged</w:t></w:r>'+
-      '<w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve"> | </w:t></w:r>'+
-      '<w:r><w:rPr><w:b/><w:color w:val="185FA5"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">Too easy</w:t></w:r>'+
-      '<w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">)</w:t></w:r>'+
-      '</w:p>';
-    body += docxPara('All questions — correct answer, difficulty index, and discrimination index.', {italic:true, sz:22, spAfter:100});
-    var t3rows = [], t3fills = [];
+    // Table 3 — All Questions
+    var t3rowsM=[], t3fillsM=[];
     for(i=0;i<G.mcq.length;i++){
       var r=G.mcq[i];
-      if (r.excluded === 'delete') {
-        t3rows.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r.num, r.elentraId||'', r.key, 'Excluded from analysis', '—', r.reason?'Reason: '+r.reason:'']);
-        t3fills.push('F2F2F2');
-      } else if (r.excluded === 'credit') {
-        t3rows.push(['[BADGE:7A5500:FFF8DC:Credited]'+r.num, r.elentraId||'', r.key, fmt(r.p,2), fmt(r.rpbis,2), r.reason?'Reason: '+r.reason:'']);
-        t3fills.push('FFF8DC');
+      if(r.excluded==='delete'){
+        t3rowsM.push(['[BADGE:FFFFFF:C0392B:Deleted]'+r.num, r.elentraId||'', r.key, 'Excluded from analysis', '\u2014', r.reason?'Reason: '+r.reason:'']);
+        t3fillsM.push('F2F2F2');
+      } else if(r.excluded==='credit'){
+        t3rowsM.push(['[BADGE:7A5500:FFF8DC:Credited]'+r.num, r.elentraId||'', r.key, fmt(r.p,2), fmt(r.rpbis,2), r.reason?'Reason: '+r.reason:'']);
+        t3fillsM.push('FFF8DC');
       } else {
-        var altNF = (r.altKeys&&r.altKeys.length) ? 'Alt. answer(s) accepted: '+r.altKeys.join(', ')+(r.altReason?' — '+r.altReason:'') : '';
-        t3rows.push([r.num, r.elentraId||'', r.key+(r.altKeys&&r.altKeys.length?' (+'+r.altKeys.join('+')+')'  :''), fmt(r.p,2), fmt(r.rpbis,2), altNF]);
-        t3fills.push(r.flag==='Too easy'?'E8F4FD':r.flag?'FFF0F0':null);
+        var altNM = (r.altKeys&&r.altKeys.length) ? 'Alt. answer(s) accepted: '+r.altKeys.join(', ')+(r.altReason?' \u2014 '+r.altReason:'') : '';
+        t3rowsM.push([r.num, r.elentraId||'', r.key+(r.altKeys&&r.altKeys.length?' (+'+r.altKeys.join('+')+')':''), fmt(r.p,2), fmt(r.rpbis,2), altNM]);
+        t3fillsM.push(r.flag==='Too easy'?'E8F4FD':r.flag?'FFF0F0':null);
       }
     }
-    body+=docxPara('Note: \u201cCredit\u201d means students who answered correctly keep their point and the question is removed from the denominator for all students \u2014 it does not mean every student automatically receives the mark.',{sz:20,italic:true,spAfter:80,color:'666666'});
-    body += docxTable(['Question','Elentra ID','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'], t3rows, [900,1200,900,1500,2200,2513], {centreCols:[0,1,2,3,4], rowFills:t3fills});
+    body += docxPara('Table 3 - All Questions',{bold:true,sz:24,spAfter:60});
+    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="100" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:i/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve">All questions \u2014 correct answer, difficulty index, and discrimination index. </w:t></w:r>'+
+      '<w:r><w:rPr><w:b/><w:color w:val="C0392B"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Flagged</w:t></w:r>'+
+      '<w:r><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t xml:space="preserve"> | </w:t></w:r>'+
+      '<w:r><w:rPr><w:b/><w:color w:val="185FA5"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>Too easy</w:t></w:r></w:p>';
+    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:b/><w:bCs/><w:i/><w:color w:val="666666"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>Note</w:t></w:r>'+
+      '<w:r><w:rPr><w:i/><w:color w:val="666666"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>'+
+      '<w:t xml:space="preserve">: \u201cCredit\u201d means students who answered correctly keep their point and the question is removed from the denominator for all students \u2014 it does not mean every student automatically receives the mark.</w:t></w:r></w:p>';
+    body += docxTable(['Question','Elentra ID','Answer','Difficulty','Discrimination (Point-Biserial)','Comments'],t3rowsM,[900,1200,900,1500,2200,2513],{centreCols:[0,1,2,3,4,5],boldCols:[0],rowFills:t3fillsM,centre:true,cellMar:43,vAlignBottom:true});
 
     body += docxReportByline(genTs2);
-        buildDocx(body, null, title, chartB64M?[{id:'rChrtM',filename:'chart.png',b64:chartB64M}]:null).then(function(blob){
+    buildDocx(body, chartB64M, title, null).then(function(blob){
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download=filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){URL.revokeObjectURL(url);},2000);
     });
 
+
   } else {
-    // DIF report
+    // DIF-only Word export — aligned with Full Combined Report DIF section
     var flaggedDIF=[], i;
     for(i=0;i<G.dif.length;i++){if(G.dif[i].imp){flaggedDIF.push(G.dif[i]);}}
 
     var body = '';
     var genTsD = new Date().toLocaleString('en-CA',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    body += docxPara('FACULTY OF MEDICINE \u2014 UNDERGRADUATE MEDICAL EDUCATION', {bold:true, centre:true, sz:32, spAfter:0});
-    body += docxPara('DIF Analysis Report', {bold:true, centre:true, sz:28, spAfter:0});
-    var difExamLine=(title&&dateStr?title+' — '+dateStr:title||dateStr||''); if(difExamLine) body += docxPara(difExamLine, {bold:true, centre:true, sz:24, spAfter:320});
-    body += docxPara('Please find enclosed the results of an analysis that looks at the Differential Item Functioning (DIF) for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree that the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.', {sz:24, spAfter:160});
-    body += docxPara('If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance so each item that has a statistically significant DIF should be reviewed by content experts.', {sz:24, spAfter:160});
-    // Bold "The following..." heading
-    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>The following should be reviewed if a question is flagged:</w:t></w:r></w:p>';
-    var checks = [
+
+    // ── Title block — Heading1 style, hyphen not em dash ─────────────────────
+    body += '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t xml:space="preserve">FACULTY OF MEDICINE - UNDERGRADUATE MEDICAL EDUCATION</w:t></w:r></w:p>';
+    body += docxPara('DIF Analysis Report',{bold:true,centre:true,sz:28,spAfter:0});
+    var difExamLine = title+(dateStr?' - '+dateStr:'');
+    if(difExamLine) body += docxPara(difExamLine,{centre:true,sz:24,spAfter:320});
+    body += docxGarnetLine(1001, 199442);
+    body += docxPara('',{sz:24,spAfter:0});
+
+    // ── Intro ─────────────────────────────────────────────────────────────────
+    body += docxPara('Dear Director(s), committee members,',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += docxPara('The following report presents the results of a Differential Item Functioning (DIF) analysis for the above-noted examination.',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+
+    // ── DIF Analysis section ──────────────────────────────────────────────────
+    body += docxH2('Differential Item Functioning (DIF) Analysis');
+    body += docxGarnetLine(1002, 12065, 'left');
+    body += docxPara('This section presents the results of a Differential Item Functioning (DIF) analysis for the MCQ exam. DIF is a statistical analysis of each item on an exam to determine the degree to which the item might be performing differently depending on a particular subgroup of examinees. For UGME exams, we are interested in determining if there is any evidence of DIF when comparing the performance of English and French students on each question.',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += docxPara('If DIF is present, it does not automatically mean an item is biased toward a subgroup. DIF may occur by chance, so each item that has a statistically significant DIF should be reviewed by content experts.',{sz:24,spAfter:160});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
+      '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>The following should be reviewed if a question is flagged:</w:t></w:r></w:p>';
+    var checksD=[
       'Is the wording of the French and English versions of the question equivalent?',
       'Is it possible that the relevant topic was taught differently in the two language streams?',
-      'Were there any comments from the students that would indicate an issue between French and English students?'
+      'Were there any student comments suggesting the question or topic was experienced differently between the two language streams?'
     ];
-    for(i=0;i<checks.length;i++){
-      body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr><w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• '+esc(checks[i])+'</w:t></w:r></w:p>';
+    for(i=0;i<checksD.length;i++){
+      body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr>'+
+        '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">\u2022 '+esc(checksD[i])+'</w:t></w:r></w:p>';
     }
-    body += docxPara('If there does not appear to be an explanation for the occurrence of DIF, then the item should remain on the exam. If there is an explanation that led to the occurrence of DIF, then it is possible that the item may need to be credited or fixed before using again.', {sz:24, spAfter:200});
+    body += docxPara('',{sz:24,spAfter:0});
+    body += docxPara('If no explanation is found, the item should remain on the exam. If an explanation is identified, the item may need to be credited or revised before reuse.',{sz:24,spAfter:200});
 
-    if(flaggedDIF.length) {
-      // Bold "On the [exam]:" with bold exam name
+    if(flaggedDIF.length){
       body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'+
-        '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+(title?'On the '+esc(title):'On this exam')+':</w:t></w:r></w:p>';
-      for(i=0;i<flaggedDIF.length;i++){
-        var r=flaggedDIF[i];
-        // Bullet with line break: question line, then pct line
-        body += '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="0" w:after="120" w:line="240" w:lineRule="auto"/><w:ind w:left="720" w:hanging="360"/></w:pPr>'+
-          '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">• Question </w:t></w:r>'+
-          '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+r.num+'</w:t></w:r>'+
-          (function(){ var mcqMatch=G.mcq&&G.mcq.find(function(m){return m.num===r.num;}); return mcqMatch&&mcqMatch.elentraId ? '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> (ID '+esc(mcqMatch.elentraId)+')</w:t></w:r>' : ''; })()+
-          '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve"> had a statistically significant value of DIF.</w:t></w:r>'+
-          '<w:br/>'+
-          '<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">'+esc(r.ePct+'% of English students answered correctly and '+r.fPct+'% of French students answered correctly. The discrimination index was '+r.disc+'.')+'</w:t></w:r>'+
-          '</w:p>';
-      }
+        '<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>DIF Results</w:t></w:r></w:p>';
+      body += docxPara('The following question'+(flaggedDIF.length!==1?'s':'')+' showed statistically significant DIF (p < 0.01):',{sz:24,spAfter:120});
+      var difRowsD=flaggedDIF.map(function(r){
+        var mcqMatch=G.mcq&&G.mcq.find(function(m){return m.num===r.num;});
+        return [r.num, mcqMatch?mcqMatch.elentraId||'':'', r.ePct+'%', r.fPct+'%', r.fPct>r.ePct?'FR students performed better':'EN students performed better', r.disc];
+      });
+      body += docxTable(['Question','Elentra ID','EN % Correct','FR % Correct','Interpretation','Discrimination'],difRowsD,[900,1000,1200,1200,3413,900],{centreCols:[0,1,2,3,5],centre:true,cellMar:43,vAlignBottom:true});
+      body += docxPara('',{spAfter:120});
     } else {
-      body += docxPara('No items with statistically significant DIF were detected (p < 0.01).', {italic:true, sz:24, spAfter:160});
+      body += docxPara('No items with statistically significant DIF were detected (p < 0.01).',{italic:true,sz:24,spAfter:160});
     }
 
     body += docxReportByline(genTsD);
-        buildDocx(body, null, title).then(function(blob){
+    buildDocx(body, null, title).then(function(blob){
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a'); a.href=url; a.download=filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){URL.revokeObjectURL(url);},2000);
     });
+  
   }
 }
 
@@ -6793,6 +7174,7 @@ function srAnnounce(msg, isAlert) {
 function renderPreflightPanel() {
   var panel = document.getElementById('preflight-panel');
   if (!panel) return;
+  if (G_MCQ_CONFIRMED) { panel.style.display = 'none'; return; }
 
   var hasResults = !!(G.students && G.students.length > 0);
   var hasKey     = !!(G.key && G.key.length > 0);
@@ -7013,10 +7395,14 @@ function renderFbPreflightPanel() {
   if (typeof G_ANALYSIS_TYPE !== 'undefined' && G_ANALYSIS_TYPE === 'both' && FB.ready !== true) {
     var validateBtn = document.createElement('div');
     validateBtn.style.cssText = 'margin-top:10px;display:flex;justify-content:flex-end';
-    validateBtn.innerHTML = '<button onclick="combinedValidateFeedback()" ' +
-      'style="display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:10px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">' +
-      '<svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-      (pendCount > 0 ? 'Review ' + pendCount + ' comment' + (pendCount===1?'':'s') + ' →' : 'Validate feedback →') +
+    var hasPend = pendCount > 0;
+    var vBtnStyle = hasPend
+      ? 'display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:10px;background:#e8a000;color:#fff;border:2px solid #b87800;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 2px 8px rgba(184,120,0,.25)'
+      : 'display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:10px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)';
+    validateBtn.innerHTML = '<button onclick="combinedValidateFeedback()" style="' + vBtnStyle + '">' +
+      (hasPend
+        ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="currentColor" font-weight="700">!</text></svg> Review ' + pendCount + ' comment' + (pendCount===1?'':'s') + ' →'
+        : '<svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Validate feedback →') +
       '</button>';
     panel.appendChild(validateBtn);
   }
@@ -7301,58 +7687,53 @@ function renderSessionStatus() {
   var bar = document.getElementById('session-status-bar');
   if (!bar) return;
 
-  // Use ExamSession as authoritative source
   var hasMcq = ExamSession.hasMcq;
-  var hasFb  = ExamSession.hasFeedback;
+  var hasFb  = !!(ExamSession.hasFeedback || (FB && FB.ready && FB.parsed && FB.parsed.length > 0));
   var hasDif = !!(hasMcq && G_DIF_ENABLED && G.dif && G.dif.length);
+  var stale  = !!(typeof G_DIRTY !== 'undefined' && G_DIRTY);
 
-  if (!hasMcq && !hasFb) { bar.style.display = 'none'; return; }
-
-  function pill(label, state, colour) {
-    var colours = {
-      ok:      'background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7',
-      warn:    'background:#fff8e6;color:#7a4700;border:1px solid #f5c07a',
-      off:     'background:var(--c-surface);color:var(--c-muted);border:1px solid var(--c-border)',
-      blue:    'background:#e3f2fd;color:#0a5a9c;border:1px solid #90caf9',
-      teal:    'background:#e0f7fa;color:#00695c;border:1px solid #80cbc4'
-    };
-    var s = colours[colour] || colours.off;
-    return '<span style="' + s + ';font-size:10px;font-weight:700;border-radius:4px;padding:2px 8px;white-space:nowrap">' + label + ' · ' + state + '</span>';
-  }
-
-  var pills = [];
-
-  // MCQ Analysis
-  if (hasMcq) {
-    var stale = document.getElementById('stale-bar') && document.getElementById('stale-bar').style.display !== 'none';
-    pills.push(pill('MCQ Analysis', stale ? 'Stale' : 'Ready', stale ? 'warn' : 'ok'));
-  } else {
-    pills.push(pill('MCQ Analysis', 'Not loaded', 'off'));
-  }
-
-  // DIF
-  if (hasMcq) {
-    pills.push(pill('DIF', G_DIF_ENABLED ? (hasDif ? 'Ready' : 'On') : 'Off', G_DIF_ENABLED && hasDif ? 'ok' : 'off'));
-  }
-
-  // Feedback
-  if (hasFb) {
-    pills.push(pill('Feedback', 'Ready', 'teal'));
-  } else {
-    pills.push(pill('Feedback', 'Not loaded', 'off'));
-  }
-
-  // Reports available
+  // Available reports
   var rpts = [];
-  if (hasMcq) rpts.push('MCQ');
-  if (hasDif) rpts.push('DIF');
-  if (hasMcq && hasDif) rpts.push('Full');
-  if (hasFb) rpts.push('Feedback');
-  if (rpts.length) pills.push(pill('Reports', rpts.join(' · '), 'blue'));
+  if (hasMcq)           rpts.push('MCQ');
+  if (hasDif)           rpts.push('DIF');
+  if (hasMcq && hasDif) rpts.push('MCQ+DIF');
+  if (hasFb)            rpts.push('Feedback');
 
-  bar.innerHTML = pills.join('');
-  bar.style.display = 'flex';
+  function pill(label, loaded, isStale) {
+    if (loaded) {
+      var bg    = isStale ? '#fff8e6' : '#f0faf0';
+      var bdr   = isStale ? '#e8a000' : '#2e7d32';
+      var col   = isStale ? '#7a4700' : '#1a5c1a';
+      var icon  = isStale
+        ? '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="#e8a000" stroke-width="1.5"/><path d="M8 4.5v4" stroke="#e8a000" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="#e8a000"/></svg>'
+        : '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:' + bg + ';border:1px solid ' + bdr + ';font-size:11px;font-weight:600;color:' + col + ';white-space:nowrap">' + icon + label + '</span>';
+    } else {
+      return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:var(--c-surface);border:1px solid var(--c-border);font-size:11px;font-weight:500;color:var(--c-muted);white-space:nowrap">' + label + '</span>';
+    }
+  }
+
+  var fbModeActive = (typeof G_ANALYSIS_TYPE !== 'undefined' && (G_ANALYSIS_TYPE === 'both' || G_ANALYSIS_TYPE === 'fb'));
+
+  var html =
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+      '<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--c-muted);white-space:nowrap">Session</span>' +
+      '<span style="width:1px;height:14px;background:var(--c-border);display:inline-block;flex-shrink:0"></span>' +
+      pill('MCQ Analysis', hasMcq, hasMcq && stale) +
+      (G_DIF_ENABLED || hasDif ? pill('DIF', hasDif, false) : '') +
+      (fbModeActive ? pill('Feedback', hasFb, false) : '') +
+      (rpts.length > 0
+        ? '<span style="width:1px;height:14px;background:var(--c-border);display:inline-block;flex-shrink:0;margin:0 2px"></span>' +
+          '<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--c-muted);white-space:nowrap">Available reports</span>' +
+          rpts.map(function(r){
+            return '<span style="font-size:11px;font-weight:600;color:#185fa5;background:#e8f4fd;border:1px solid #b8d9f5;border-radius:20px;padding:3px 9px;white-space:nowrap">' + r + '</span>';
+          }).join('')
+        : '') +
+    '</div>';
+
+  bar.innerHTML = html;
 }
+
 
 function startBannerEdit() {
   var titleIn=document.getElementById('banner-title-input');
@@ -7391,60 +7772,94 @@ function cancelBannerEdit() {
 // ── Check if both files are ready to run ─────────────────────────────────
 function checkRunReady() {
   var btn  = document.getElementById('btn-run');
-  var hint = document.getElementById('run-hint');
   var isScantron = G_SOURCE === 'scantron';
-  var mcqReady = isScantron ? (G.nQ > 0) : (G.nQ > 0 && G.key.length > 0);
-  // In combined mode, also require feedback to be parsed and validated
-  var fbValidated = (typeof G_ANALYSIS_TYPE === 'undefined' || G_ANALYSIS_TYPE !== 'both')
+  var isCombined = (typeof G_ANALYSIS_TYPE !== 'undefined' && G_ANALYSIS_TYPE === 'both');
+  var hasAnalysisRun = !!(G.mcq && G.mcq.length > 0);
+
+  var mcqDataPresent = isScantron ? (G.nQ > 0) : (G.nQ > 0 && G.key.length > 0);
+  var mcqReady = mcqDataPresent && (G_MCQ_CONFIRMED || hasAnalysisRun);
+
+  var fbValidated = !isCombined
     || (FB && FB.parsed && FB.parsed.length > 0 && FB.ready === true);
   var ready = mcqReady && fbValidated;
-  var exclWrap = document.getElementById('excl-link-wrap');
-  var isCombined = (typeof G_ANALYSIS_TYPE !== 'undefined' && G_ANALYSIS_TYPE === 'both');
-  var infoSvg = '<svg width="14" height="14" viewBox="0 0 16 16" fill="#374151" style="flex-shrink:0"><circle cx="8" cy="8" r="7"/><rect x="7.1" y="4.5" width="1.8" height="4.5" rx=".9" fill="white"/><circle cx="8" cy="11.2" r="1" fill="white"/></svg>';
 
+  var exclWrap = document.getElementById('excl-link-wrap');
+
+  // ── Status pill ───────────────────────────────────────────────────────────
+  var statusEl = document.getElementById('run-status');
+  var statusText, statusReady;
+  if (!mcqDataPresent) {
+    statusText  = isScantron ? 'Upload Scantron file' : 'Upload results & key';
+    statusReady = false;
+  } else if (!G_MCQ_CONFIRMED && !hasAnalysisRun) {
+    statusText  = 'Confirm MCQ data \u2193';
+    statusReady = false;
+  } else if (isCombined && !fbValidated) {
+    var fbParsed = !!(FB && FB.parsed && FB.parsed.length > 0);
+    statusText  = fbParsed ? 'Review unmatched comments' : 'Upload feedback file';
+    statusReady = false;
+  } else {
+    statusText  = '\u2713 Ready to run';
+    statusReady = true;
+  }
+  if (statusEl) {
+    statusEl.textContent = statusText;
+    statusEl.style.background   = statusReady ? '#f0faf0' : 'var(--c-surface)';
+    statusEl.style.borderColor  = statusReady ? '#c3e6c3' : 'var(--c-border)';
+    statusEl.style.color        = statusReady ? '#1a5c1a' : 'var(--c-secondary)';
+    statusEl.style.fontWeight   = statusReady ? '700'     : '600';
+  }
+
+  // ── MCQ summary row ───────────────────────────────────────────────────────
+  var mcqTextEl = document.getElementById('run-summary-mcq-text');
+  if (mcqTextEl) {
+    if (!mcqDataPresent) {
+      mcqTextEl.textContent = 'Not yet uploaded';
+      mcqTextEl.style.color = 'var(--c-muted)';
+    } else {
+      var nExc = hasAnalysisRun ? (G.mcq.filter(function(r){return r.excluded;}).length) : 0;
+      var excPart = hasAnalysisRun
+        ? (' \u00B7 ' + (nExc > 0 ? nExc + ' exception' + (nExc !== 1 ? 's' : '') : 'no exceptions'))
+        : '';
+      var nStu = (G.students ? G.students.length : 0) || G._lastN || 0;
+      mcqTextEl.textContent = G.nQ + ' questions \u00B7 ' + nStu + ' students' + excPart;
+      mcqTextEl.style.color = '#185fa5';
+    }
+  }
+
+  // ── Feedback summary row ──────────────────────────────────────────────────
+  var fbRowEl  = document.getElementById('run-summary-fb');
+  var fbTextEl = document.getElementById('run-summary-fb-text');
+  if (fbRowEl) fbRowEl.style.display = (isCombined || G_ANALYSIS_TYPE === 'fb') ? 'flex' : 'none';
+  if (fbTextEl) {
+    var fbParsedArr = (FB && FB.parsed) ? FB.parsed : [];
+    if (!fbParsedArr.length) {
+      fbTextEl.textContent = 'Not yet uploaded';
+      fbTextEl.style.color = 'var(--c-muted)';
+    } else {
+      var nComments  = fbParsedArr.length;
+      var nUnmatched = (FB.unmatched ? FB.unmatched.length : 0);
+      var pendingCnt = fbParsedArr.filter(function(p){return p.status==='pending';}).length;
+      var unmPart = pendingCnt > 0 ? ' \u00B7 ' + pendingCnt + ' need review' : ' \u00B7 all mapped';
+      fbTextEl.textContent = nComments + ' comments' + unmPart;
+      fbTextEl.style.color = pendingCnt > 0 ? '#b25400' : '#185fa5';
+    }
+  }
+
+  // ── Run button ────────────────────────────────────────────────────────────
   if (ready) {
     btn.disabled = false;
     btn.style.opacity = '1';
     btn.style.cursor  = 'pointer';
     var btnLabel = isCombined ? 'Run combined analysis' : (G_DIRTY ? 'Update Analysis' : 'Analyze Exam');
     btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>' + btnLabel;
-    btn.style.background = 'var(--c-accent)';
+    btn.style.background  = 'var(--c-accent)';
     btn.style.borderColor = 'var(--c-accent)';
-    var readyMsg = isCombined
-      ? G.nQ + ' questions · ' + (FB.parsed ? FB.parsed.length : 0) + ' feedback comments — ready to run combined analysis.'
-      : G.nQ + ' questions and answer key loaded — ready to analyse.';
-    if(hint) { hint.innerHTML = readyMsg; hint.style.color='#2e7d32'; hint.style.fontWeight='500'; hint.style.fontSize='13.5px'; }
     if(exclWrap) exclWrap.style.display = isCombined ? 'none' : 'block';
   } else {
     btn.disabled = true;
     btn.style.opacity = '0.35';
     btn.style.cursor  = 'not-allowed';
-    var notReadyText;
-    if (isCombined) {
-      // Combined — three staged hint states
-      if (!mcqReady) {
-        // Stage 1: MCQ files not yet uploaded
-        var mcqMissing = [];
-        if (!G.nQ) mcqMissing.push(isScantron ? 'Scantron file' : 'results file');
-        if (!G.key.length && !isScantron) mcqMissing.push('answer key');
-        notReadyText = 'Step 1 — upload MCQ files' + (mcqMissing.length ? ': ' + mcqMissing.join(' and ') : '') + ', then click Looks good.';
-      } else if (!fbValidated) {
-        // Stage 2: MCQ ready, feedback not yet validated
-        var fbParsed = !!(FB && FB.parsed && FB.parsed.length > 0);
-        notReadyText = fbParsed
-          ? 'Step 3 — click Validate feedback to continue.'
-          : 'Step 2 — upload and validate feedback file to continue.';
-      } else {
-        notReadyText = 'Ready to run.';
-      }
-    } else {
-      // Standalone MCQ / feedback — existing behaviour
-      var missing = [];
-      if(!G.nQ) missing.push(isScantron ? 'Scantron file' : 'results file');
-      if(!G.key.length && !isScantron) missing.push('answer key');
-      notReadyText = missing.length ? 'Still needed: ' + missing.join(' and ') : (isScantron ? 'Upload your Scantron file to begin' : 'Upload your files to begin');
-    }
-    if(hint) { hint.innerHTML = infoSvg + ' ' + notReadyText; hint.style.color='#374151'; hint.style.fontWeight='500'; hint.style.fontSize='13.5px'; }
     if(exclWrap) exclWrap.style.display = 'none';
   }
   renderPreflightPanel();
@@ -7577,6 +7992,133 @@ var _reportMeta = {
 };
 
 // ── Report cards visibility ───────────────────────────────────────────────
+
+// ── Session JSON export ───────────────────────────────────────────────────────
+function exportSessionJSON() {
+  if (!G._lastN) {
+    alert('Nothing to export yet.\n\nRun an analysis first, then export the session data.');
+    return;
+  }
+  var examTitle = (document.getElementById('exam-title')||{value:''}).value || 'Untitled Exam';
+  var examDate  = (document.getElementById('exam-date')||{value:''}).value || '';
+  var coord     = (document.getElementById('coordinator-name')||{value:''}).value || '';
+  var now       = new Date();
+  var ts        = now.toISOString();
+  var safeTitle = examTitle.replace(/[^a-zA-Z0-9\-_ ]/g,'').replace(/\s+/g,'-').substring(0,40);
+  var filename  = safeTitle + (examDate ? '_'+examDate : '') + '_aqp-session.json';
+
+  // Summarise questions
+  var questions = (G.mcq || []).map(function(r) {
+    var dif = (G.dif || []).find(function(d){ return d.qi === r.num - 1; }) || null;
+    return {
+      number:          r.num,
+      elentraId:       r.elentraId || null,
+      key:             r.key || null,
+      altKeys:         (r.altKeys && r.altKeys.length) ? r.altKeys : [],
+      difficulty:      r.p != null ? parseFloat(r.p.toFixed(4)) : null,
+      discrimination:  r.rpbis != null ? parseFloat(r.rpbis.toFixed(4)) : null,
+      flag:            r.flag || null,
+      disposition:     r.excluded === 'credit' ? 'credit' : r.excluded === 'delete' ? 'delete' : 'include',
+      reason:          r.reason || null,
+      altReason:       r.altReason || null,
+      feedbackCount:   (FB && FB.byQ) ? (FB.byQ[r.num] || 0) : null,
+      dif: dif ? {
+        enPctCorrect:  dif.ePct != null ? dif.ePct : null,
+        frPctCorrect:  dif.fPct != null ? dif.fPct : null,
+        gapPct:        dif.gap  != null ? Math.abs(dif.gap) : null,
+        nagelkerkeR2:  dif.r2   != null ? parseFloat(dif.r2.toFixed(4))   : null,
+        pValue:        dif.pval != null ? parseFloat(dif.pval.toFixed(4)) : null,
+        flagged:       !!(dif.important || dif.imp)
+      } : null
+    };
+  });
+
+  // Feedback summary
+  var fbSummary = null;
+  if (FB && FB.ready && FB.parsed && FB.parsed.length > 0) {
+    var fbTotal = FB.parsed.length;
+    var fbAttributed = FB.parsed.filter(function(p){
+      return p.status !== 'discard' && p.status !== 'general' && p.status !== 'pending' &&
+             ((p.qNums && p.qNums.length) || (p.mappedQs && p.mappedQs.length) || p.mappedQ != null);
+    }).length;
+    var fbGeneral  = FB.parsed.filter(function(p){ return p.status === 'general'; }).length;
+    var fbDiscard  = FB.parsed.filter(function(p){ return p.status === 'discard'; }).length;
+    var fbQsTouched = fbAllQs ? fbAllQs().length : null;
+    fbSummary = {
+      totalComments:      fbTotal,
+      attributedComments: fbAttributed,
+      generalComments:    fbGeneral,
+      discardedComments:  fbDiscard,
+      questionsTouched:   fbQsTouched
+    };
+  }
+
+  var payload = {
+    meta: {
+      tool:        'AQP \u2014 Assessment Quality Platform',
+      institution: 'University of Ottawa \u00B7 Faculty of Medicine \u00B7 Undergraduate Medical Education',
+      version:     APP_VERSION,
+      build:       APP_BUILD,
+      exportedAt:  ts,
+      examTitle:   examTitle,
+      examDate:    examDate,
+      coordinator: coord,
+      source:      G_SOURCE === 'scantron' ? 'Scantron' : 'QuestionMark'
+    },
+    summary: {
+      totalStudents:      G._lastN,
+      enStudents:         G._lastNE || null,
+      frStudents:         G._lastNF || null,
+      totalQuestions:     G.nQ,
+      effectiveQuestions: G.nQ - (G.mcq || []).filter(function(r){return r.excluded==='delete';}).length,
+      examAvgPct:         G._lastAvg  != null ? parseFloat(G._lastAvg.toFixed(2))  : null,
+      enAvgPct:           G._lastEAvg != null ? parseFloat(G._lastEAvg.toFixed(2)) : null,
+      frAvgPct:           G._lastFAvg != null ? parseFloat(G._lastFAvg.toFixed(2)) : null,
+      cronbachAlpha:      G._lastAlpha != null ? parseFloat(G._lastAlpha.toFixed(4)) : null,
+      flaggedCount:       (G.mcq||[]).filter(function(r){return r.flag&&!r.excluded;}).length,
+      easyCount:          (G.mcq||[]).filter(function(r){return r.flag==='Too easy';}).length,
+      difFlaggedCount:    (G.dif||[]).filter(function(d){return d.important||d.imp;}).length,
+      creditedCount:      (G.mcq||[]).filter(function(r){return r.excluded==='credit';}).length,
+      deletedCount:       (G.mcq||[]).filter(function(r){return r.excluded==='delete';}).length
+    },
+    thresholds: {
+      difficult:  getThresh('difficult'),
+      easy:       getThresh('easy'),
+      disc:       getThresh('disc'),
+      checkKeyP:  getThresh('checkp'),
+      checkKeyR:  getThresh('checkr'),
+      difPValue:  getThresh('dif'),
+      gapAmber:   getThresh('gapamber'),
+      gapRed:     getThresh('gapred')
+    },
+    dif: {
+      enabled:      !!(G_DIF_ENABLED && G._hasStream),
+      enCode:       (document.getElementById('eng-code')||{value:''}).value || null,
+      frCode:       (document.getElementById('fre-code')||{value:''}).value || null,
+      flaggedCount: (G.dif||[]).filter(function(d){return d.important||d.imp;}).length
+    },
+    questions: questions,
+    feedback:  fbSummary,
+    session:   {
+      createdAt:       ExamSession.createdAt  ? ExamSession.createdAt.toISOString()  : null,
+      lastMcqRunAt:    ExamSession.lastMcqAt  ? ExamSession.lastMcqAt.toISOString()  : null,
+      lastFeedbackAt:  ExamSession.lastFeedbackAt ? ExamSession.lastFeedbackAt.toISOString() : null
+    }
+  };
+
+  try {
+    var json = JSON.stringify(payload, null, 2);
+    var blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  } catch(e) {
+    alert('Export failed: ' + e.message);
+  }
+}
+
 function updateReportCards() {
   var hasMcq      = !!(G && G._lastN && G.nQ > 0);
   var hasDif      = hasMcq && G_DIF_ENABLED && G._hasStream;
@@ -7592,7 +8134,11 @@ function updateReportCards() {
   showCard('rp-card-dif',      hasDif);
   showCard('rp-card-combined', hasDif);   // Full report = MCQ + DIF
   showCard('rp-card-feedback', hasFeedback);
-  // rp-card-csv removed — CSV download lives in Item Analysis tab toolbar
+  // Session Reports section
+  showCard('rp-card-csv',  hasMcq);
+  showCard('rp-card-json', hasMcq);
+  var sessionSection = document.getElementById('rp-section-session');
+  if (sessionSection) sessionSection.style.display = hasMcq ? 'block' : 'none';
 }
 
 // ── Report preview modal ──────────────────────────────────────────────────
@@ -7858,6 +8404,7 @@ function resetSetupSteps() {
   var btn  = document.getElementById('btn-setup-continue');  if (btn)  { btn.style.opacity = '0.55'; btn.style.outline = ''; }
   // Reset combined zones
   G_ANALYSIS_TYPE = null;
+  G_MCQ_CONFIRMED  = false;
   var cbz = document.getElementById('combined-fb-zone'); if (cbz) cbz.style.display = 'none';
   var cvb = document.getElementById('combined-mcq-validated-banner'); if (cvb) cvb.style.display = 'none';
   var fbBody = document.getElementById('combined-fb-body');
@@ -8066,6 +8613,71 @@ var RELEASE_NOTES = [
   {
     version: '3.0',
     builds: [
+      {
+        build: '20260727-03',
+        date:  'July 27, 2026',
+        notes: [
+          'Reports tab restructured into two named sections: "Analysis Reports" (MCQ, DIF, MCQ+DIF, Feedback) and "Session Reports" (Session Record CSV, Session Data JSON). Each report card is now individually bordered with border-radius and margin spacing between cards. Format badges added to all cards (blue Word badge on Analysis Reports, grey CSV and purple JSON badges on Session Reports).',
+          'PDF export added (D1) — each Analysis Report card now has a PDF button alongside Preview and Export. Clicking it renders the report HTML preview into a print-optimised frame and triggers the browser print dialog (Save as PDF). Preserves all on-screen report formatting including tables, colour coding, and the KPI overview card. Safari fallback cleanup included.',
+          'Session Data JSON export added — new card in Session Reports section. Exports a complete structured JSON file containing exam metadata, all per-question statistics with DIF sub-objects, feedback summary, threshold configuration, and session timestamps. Consistent schema across exams; designed for longitudinal item tracking and backend ingestion.',
+          'CSV session record enhanced (D3) — when feedback is loaded, a Feedback Comments column is added to QUESTION RECORDS showing attributed comment count per question. A new FEEDBACK SUMMARY section is appended with total/attributed/general/discarded counts, questions touched, and category breakdown (Content/Translation/Other/Uncategorized).',
+        ]
+      },
+      {
+        build: '20260727-02',
+        date:  'July 27, 2026',
+        notes: [
+          'Splash screen duration reverted to 7.5 seconds — animations were designed for this timing.',
+          '"Next step" bar removed — the persistent amber guidance bar below the session strip has been removed. The post-analysis toast (auto-dismisses after 8 seconds) continues to surface this summary information.',
+          'Session status strip redesigned — now shows a "Session" label, green checkmark pills for loaded components (MCQ Analysis, DIF, Feedback), grey pills for unloaded/not-configured components, and a distinct "Available reports" section listing exportable report types (MCQ, DIF, MCQ+DIF, Feedback). DIF pill only shows when DIF is enabled or was run. Feedback pill only shows in combined/feedback sessions. Stale (G_DIRTY) state now shows an amber warning icon on the MCQ pill.',
+        ]
+      },
+      {
+        build: '20260727-01',
+        date:  'July 27, 2026',
+        notes: [
+          'EN/FR stream code ID mismatch fixed — confirmParsePreview was reading from non-existent dif-en-code / dif-fr-code elements; now correctly reads eng-code / fre-code. The confirmed Parse Preview row now shows the language codes (e.g. DIF on (E/F)) as intended.',
+          'Splash screen duration reduced from 7.5 seconds to 2.5 seconds.',
+          'Reports tab — MCQ+DIF combined report card heading renamed from "Full report" to "MCQ+DIF report", consistent with the status strip label updated in build 20260725-03.',
+          'Feedback comment rows — "Move" button renamed to "Re-assign" throughout the Feedback tab for clarity; "Apply All Moves" renamed to "Apply All Re-assignments".',
+          'Session history empty state — text updated to "Session history and longitudinal item tracking are planned for the backend-enabled version of AQP."',
+        ]
+      },
+      {
+        build: '20260725-03',
+        date:  'July 25, 2026',
+        notes: [
+          'A1 — "Next step" banner wrong easy count fixed: eS.length (English student count, 133) was being passed as the easy-question count. Now computed correctly as G.mcq.filter(q.flag===\'Too easy\').length.',
+          'A2 — "Next step" banner pluralization fixed: "3 question need review" → "3 questions need review".',
+          'B1 — Session status strip: Feedback pill now shows correctly after combined run. applyAndConfirmFeedback() now calls esRecordFeedback() to keep ExamSession in sync; renderSessionStatus() also falls back to live FB.ready state as the truth source.',
+          'B2 — Session status strip: stale-state detection now reads G_DIRTY directly rather than inspecting DOM visibility of #stale-bar.',
+          'B3 — Session status strip: Feedback pill is now hidden in MCQ-only sessions and only shown when feedback mode was part of the session (combined or feedback-only).',
+          'B4 — Session status strip: "Full" report label renamed to "MCQ+DIF" to accurately describe the MCQ+DIF combined Word report and avoid confusion with a full MCQ+DIF+Feedback report.',
+          'C1 — Feedback toolbar sticky: #fb-toolbar-host now has position:sticky with a dynamic top offset calculated from #sticky-header height, so the filter tabs, search bar, and volume filter remain visible when scrolling through the By Question view.',
+          'C2 — "Feedback looks ready" banner: fixed wrong values (0 comments linked) caused by byQ using p.qNum which does not exist on FB.parsed entries. Now checks p.qNums/p.mappedQs/p.mappedQ correctly. Fixed space bug "comment s" → "comments".',
+          'C3 — Feedback parser: Q# prefix artifacts (Q2\\:, 4), 2 -, 6.) now stripped from stored comment text in both single-marker and multi-marker paths. stripped2 (already computed for length checks) is now used as the stored text when meaningfully shorter than the raw fragment.',
+          'C4 — Feedback parser: stray leading/trailing quote and smart-quote characters now stripped from comment text during splitCommentByQuestion.',
+        ]
+      },
+      {
+        build: '20260725-02',
+        date:  'July 25, 2026',
+        notes: [
+          'Parse Preview confirmation redesigned — clicking "Looks good" now collapses the preview card to a compact confirmed row showing source (QM/Scantron), question count, student count, DIF status, and threshold setting. In combined mode, the row includes a one-line instruction to upload feedback below. The × close button has been removed; explicit confirmation is now required to proceed. A "Re-validate ↓" button on the confirmed row allows corrections. The redundant "Ready to analyze" preflight bar is suppressed once confirmed.',
+          'Sticky footer redesigned — a two-row summary now appears on the left (Results row: question and student count with exceptions post-analysis; Feedback row: comment count and mapping status, visible in combined/feedback modes). A centred status pill cycles through: Upload results & key → Confirm MCQ data ↓ → Upload feedback file / Review unmatched comments → ✓ Ready to run (green). The Run button is on the right and activates only when the status pill reaches Ready.',
+          'Inline comment resolver (Session B) — in combined analysis mode, unmatched comments are now reviewed directly on the setup screen without navigating away. Clicking the amber "Review N comments →" button expands a resolver zone below the feedback card. Pending comments show Q# input and action buttons; resolved comments show a status badge with a "Change" button to re-route. A progress bar and counter track completion. "Apply & Confirm" is disabled until all comments are actioned, then locks in the feedback and shows a green validated banner with a "Re-open ↓" button. Zero-pending case shows "All N comments auto-mapped" with Apply & Confirm directly.',
+          'Upload zone polish — the green background fill has been removed from the two upload cards (Results Data and Answer Key) when loaded; the green colour is retained only on the "✓ Loaded" pill badge. All green confirmation banners normalized to white fill with a 2px #2e7d32 border and an outlined circle checkmark (stroke only, no fill). The upload grid is now forced to a single column so Results Data and Answer Key always stack vertically.',
+          'Standalone mapping screen button relabelled from "Apply & Generate Report →" to "Apply & confirm →".',
+        ]
+      },
+      {
+        build: '20260725-01',
+        date:  'July 25, 2026',
+        notes: [
+          'MCQ-only report (Word + preview), DIF standalone report (Word + preview) — both redesigned to match Full Combined Report standards. See previous session notes for full detail.',
+          'Report preview headers — \"Report generated\" timestamp removed from top of all three previews; already present in footer.',
+        ]
+      },
       {
         build: '20260717-08',
         date:  'July 17, 2026',
@@ -9663,7 +10275,12 @@ function splitLine(line) {
     for (var i = 0; i < markers.length; i++) {
       var end2 = i+1 < markers.length ? markers[i+1][0] : line.length;
       var frag2 = line.slice(markers[i][0], end2).trim();
-      if (frag2) frags2.push([markers[i][1], frag2]);
+      if (frag2) {
+        // Strip the leading Q# marker from the stored text
+        var frag2q = markers[i][1];
+        var frag2stripped = frag2.replace(new RegExp('^(?:#|[Qq](?:uestion)?\\s*\.?\\s*#?\\s*)?' + frag2q + '\\b\\s*(?:\\\\?[:\\-\\)\\.\\,]+)?'), '').trim();
+        frags2.push([frag2q, frag2stripped.length >= 4 ? frag2stripped : frag2]);
+      }
     }
     return frags2;
   }
@@ -9677,7 +10294,8 @@ function splitLine(line) {
     if (stripped2.length < 4 && pre3.length > 3) return [[q4, line]];
     var result = [];
     if (pre3.length > 3) result.push([null, pre3]);
-    result.push([q4, frag3]);
+    // Use stripped text so stored comments don't carry the Q# prefix artifact
+    result.push([q4, stripped2.length >= 4 ? stripped2 : frag3]);
     return result;
   }
 
@@ -9698,7 +10316,7 @@ function splitLine(line) {
 
 function splitCommentByQuestion(text) {
   var preambleRe = /^(?:in general|general|note|also)[^\d]{0,25}(?:\\?[:—\-])\s*/i;
-  var cleanText = text.trim().replace(preambleRe, '');
+  var cleanText = text.trim().replace(/^["'\u201C\u201D]+|["'\u201C\u201D]+$/g, '').trim().replace(preambleRe, '');
   var fragments = [];
   cleanText.split('\n').forEach(function(line) {
     line = line.trim();
@@ -9888,15 +10506,7 @@ function selectAnalysisType(type) {
 }
 
 function activateCombinedFeedbackZone() {
-  // Show validated banner
-  var banner = document.getElementById('combined-mcq-validated-banner');
-  if (banner) {
-    banner.style.display = 'flex';
-    var titleEl  = document.getElementById('combined-mcq-validated-title');
-    var detailEl = document.getElementById('combined-mcq-validated-detail');
-    if (titleEl)  titleEl.textContent  = 'MCQ data validated — ' + (G.nQ || '') + ' questions, ' + (G._lastN || '') + ' students';
-    if (detailEl) detailEl.textContent = 'Now upload your student feedback file below to continue.';
-  }
+  // Banner suppressed — instruction is embedded in the confirmed Parse Preview row
   // Unlock the feedback zone
   var fbBody = document.getElementById('combined-fb-body');
   var fbLock = document.getElementById('combined-fb-lock-label');
@@ -10242,23 +10852,207 @@ function runFeedbackAnalysis() {
 // Combined mode: validate feedback in setup (sets FB.ready) without navigating.
 // Called from the "Parse & validate" button in the combined feedback preflight.
 // Once this runs, checkRunReady() detects FB.ready===true and unlocks Analyze Exam.
+
+// ── Inline resolver (Session B) ──────────────────────────────────────────────
+function renderInlineResolver() {
+  var el = document.getElementById('combined-fb-inline-resolver');
+  if (!el) return;
+
+  var pending = FB.pending || [];
+  var total = pending.length;
+  var stillPending = pending.filter(function(i){ return FB.parsed[i].status === 'pending'; });
+  var resolved = total - stillPending.length;
+  var allDone = (stillPending.length === 0);
+  var pct = total > 0 ? Math.round(resolved / total * 100) : 100;
+
+  window._refreshMapScreen = function() { renderInlineResolver(); };
+  el.style.display = 'block';
+
+  // Zero-pending: all auto-mapped
+  if (total === 0) {
+    el.innerHTML =
+      '<div style="border:2px solid #2e7d32;border-radius:8px;overflow:hidden;margin-top:4px">' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff">' +
+          '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">' +
+            '<circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/>' +
+            '<path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg>' +
+          '<span style="flex:1;font-size:13px;font-weight:600;color:#1b5e20">All ' + (FB.parsed ? FB.parsed.length : 0) + ' comments auto-mapped \u2014 nothing to review.</span>' +
+          '<button onclick="applyAndConfirmFeedback()" ' +
+            'style="display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:8px;' +
+            'background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">' +
+            'Apply &amp; Confirm \u2713' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  // Build rows — show ALL (resolved with badge, unresolved with controls)
+  var rowsHtml = '';
+  pending.forEach(function(idx) {
+    var p = FB.parsed[idx];
+    var isResolved = p.status !== 'pending';
+    rowsHtml += '<div id="fb-map-row-' + idx + '" style="display:flex;flex-direction:column;align-items:stretch;padding:0;border-top:0.5px solid var(--c-border)">';
+    rowsHtml += '<div style="display:flex;align-items:center;gap:8px;padding:9px 14px">';
+    rowsHtml += '<div class="fb-map-comment" style="flex:1;font-size:12px;color:var(--c-primary);line-height:1.4">' + escHtml(p.text) + '</div>';
+    if (isResolved) {
+      var qList = (p.mappedQs || (p.mappedQ != null ? [p.mappedQ] : [])).map(function(n){ return 'Q' + n; }).join(', ');
+      var statusLabel = p.status === 'general'
+        ? '<span style="font-size:10px;font-weight:700;color:#0d7a7a;background:#e0f5f5;padding:2px 7px;border-radius:4px">\u2713 General</span>'
+        : p.status === 'discard'
+          ? '<span style="font-size:10px;font-weight:700;color:var(--c-muted);background:var(--c-surface);padding:2px 7px;border-radius:4px">\u2713 Discarded</span>'
+          : '<span style="font-size:10px;font-weight:700;color:#2e7d32;background:#e8f5eb;padding:2px 7px;border-radius:4px">\u2713 ' + qList + '</span>';
+      rowsHtml += '<div style="min-width:90px;text-align:center">' + statusLabel + '</div>';
+      rowsHtml += '<button onclick="fbInlineResetToPending(' + idx + ')" ' +
+        'style="font-size:10px;color:var(--c-muted);background:none;border:1px solid var(--c-border);' +
+        'border-radius:4px;cursor:pointer;padding:2px 8px;white-space:nowrap;flex-shrink:0">Change</button>';
+    } else {
+      rowsHtml += '<div style="width:128px;display:flex;justify-content:center">';
+      rowsHtml += '<input class="fb-map-input" id="fb-qinput-' + idx + '" type="text" placeholder="Q# or 12, 45" ' +
+        'oninput="FB.parsed[' + idx + ']._typed=this.value.replace(/[^0-9,;\\s]/g,\'\')" ' +
+        'onkeydown="if(event.key===\'Enter\'){event.preventDefault();fbInlineAssignQ(' + idx + ');}" ' +
+        'value="' + (p._typed || '') + '">';
+      rowsHtml += '</div>';
+      rowsHtml += '<div style="display:flex;gap:4px">';
+      rowsHtml += '<button class="btn-fb-gen" onclick="fbInlineStageAdd(' + idx + ')" style="padding:4px 8px">+</button>';
+      rowsHtml += '<button class="btn-fb-gen" onclick="fbInlineSetGeneral(' + idx + ')">General</button>';
+      rowsHtml += '<button class="btn-fb-disc" onclick="fbInlineDiscard(' + idx + ')">Discard</button>';
+      rowsHtml += '</div>';
+    }
+    rowsHtml += '</div>';
+    if (!isResolved) rowsHtml += fbBadgeTrayHtml(idx, p._staged || [], p._addErr || '', 'fbInlineStageRemove', 'fbInlineApplyStaged');
+    rowsHtml += '</div>';
+  });
+
+  var totalStaged = 0, stagedCount = 0;
+  pending.forEach(function(idx) {
+    if (FB.parsed[idx]._staged && FB.parsed[idx]._staged.length > 0) { totalStaged += FB.parsed[idx]._staged.length; stagedCount++; }
+  });
+  var stagedBarHtml = totalStaged > 0
+    ? '<div style="margin:8px 14px;padding:7px 12px;background:var(--c-fb-bg);border:1px solid var(--c-fb);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:10px">' +
+        '<span style="font-size:12px;color:var(--c-fb);font-weight:600">' + totalStaged + ' attribution' + (totalStaged===1?'':'s') + ' staged</span>' +
+        '<button onclick="fbInlineApplyAllStaged()" style="font-size:11px;font-weight:700;color:#fff;background:var(--c-fb);border:none;border-radius:6px;padding:5px 14px;cursor:pointer;white-space:nowrap">Apply All</button>' +
+      '</div>'
+    : '';
+
+  var borderColor = allDone ? '#2e7d32' : '#e8a000';
+  var applyBtnStyle = allDone
+    ? 'display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:8px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap'
+    : 'display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:8px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:not-allowed;white-space:nowrap;opacity:.4';
+
+  el.innerHTML =
+    '<div style="border:2px solid ' + borderColor + ';border-radius:8px;overflow:hidden;margin-top:4px">' +
+      '<div style="padding:9px 14px;background:' + (allDone ? '#f0faf0' : '#fff8e6') + ';border-bottom:1px solid ' + (allDone ? '#c3e6c3' : 'rgba(232,168,0,.3)') + ';display:flex;align-items:center;gap:10px">' +
+        (allDone
+          ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="flex:1;font-size:13px;font-weight:700;color:#1b5e20">All ' + total + ' comments resolved \u2014 click Apply &amp; Confirm to continue.</span>'
+          : '<span style="font-size:13px;font-weight:700;color:#7a4700">\u26A0 ' + stillPending.length + ' of ' + total + ' comment' + (total!==1?'s':'') + ' still need review</span>') +
+        '<div style="flex:1;background:var(--c-border);height:5px;border-radius:3px;margin:0 12px">' +
+          '<div style="width:' + pct + '%;height:5px;border-radius:3px;background:' + (allDone ? '#2e7d32' : '#0a5a9c') + ';transition:width .3s"></div>' +
+        '</div>' +
+        '<span style="font-size:11px;font-weight:700;color:' + (allDone ? '#1b5e20' : '#7a4700') + ';white-space:nowrap">' + resolved + '/' + total + ' resolved</span>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--c-surface);border-bottom:0.5px solid var(--c-border);font-size:11px;font-weight:700;color:var(--c-secondary)">' +
+        '<span style="flex:1">Comment</span><span style="width:128px;text-align:center">Q#</span><span style="width:140px;text-align:center">Action</span>' +
+      '</div>' +
+      rowsHtml + stagedBarHtml +
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--c-surface);border-top:0.5px solid var(--c-border);gap:8px;flex-wrap:wrap">' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn" onclick="fbInlineRouteAllGeneral()">Route all \u2192 General</button>' +
+          '<button class="btn" onclick="fbInlineDiscardAll()">Discard all remaining</button>' +
+        '</div>' +
+        '<button ' + (allDone ? 'onclick="applyAndConfirmFeedback()"' : 'disabled') + ' style="' + applyBtnStyle + '">' +
+          'Apply &amp; Confirm' + (allDone ? ' \u2713' : '') +
+        '</button>' +
+      '</div>' +
+    '</div>';
+
+  if (el.getBoundingClientRect().top > window.innerHeight) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ── Inline resolver action wrappers ──────────────────────────────────────────
+function _irRefresh() { renderInlineResolver(); }
+function fbInlineAssignQ(idx) {
+  window._refreshMapScreen = _irRefresh;
+  if ((FB.parsed[idx]._staged || []).length > 0) { fbStageAdd(idx); }
+  else { fbCommitStaged(idx); _irRefresh(); }
+}
+function fbInlineSetGeneral(idx)       { window._refreshMapScreen = _irRefresh; fbSetGeneral(idx); }
+function fbInlineDiscard(idx)          { window._refreshMapScreen = _irRefresh; fbDiscard(idx); }
+function fbInlineStageAdd(idx)         { window._refreshMapScreen = _irRefresh; fbStageAdd(idx); }
+function fbInlineStageRemove(idx, num) { window._refreshMapScreen = _irRefresh; fbStageRemove(idx, num); }
+function fbInlineApplyStaged(idx)      { window._refreshMapScreen = _irRefresh; fbApplyStaged(idx); }
+function fbInlineRouteAllGeneral()     { window._refreshMapScreen = _irRefresh; fbRouteAllGeneral(); }
+function fbInlineDiscardAll()          { window._refreshMapScreen = _irRefresh; fbDiscardAll(); }
+function fbInlineResetToPending(idx) {
+  FB.parsed[idx].status = 'pending';
+  delete FB.parsed[idx].mappedQs;
+  delete FB.parsed[idx]._typed;
+  delete FB.parsed[idx]._staged;
+  delete FB.parsed[idx]._addErr;
+  renderInlineResolver();
+}
+function fbInlineApplyAllStaged() {
+  window._refreshMapScreen = _irRefresh;
+  FB.pending.forEach(function(idx) {
+    if (FB.parsed[idx]._staged && FB.parsed[idx]._staged.length > 0) fbApplyStaged(idx);
+  });
+  _irRefresh();
+}
+
+// ── Apply & Confirm — commits feedback without navigating away ────────────────
+function applyAndConfirmFeedback() {
+  if (FB.pending && FB.pending.length) {
+    FB.pending.forEach(function(idx) {
+      if (FB.parsed[idx].status !== 'pending') return;
+      if (fbCommitStaged(idx)) return;
+      FB.parsed[idx].status = 'general';
+      delete FB.parsed[idx]._typed;
+      delete FB.parsed[idx]._staged;
+      delete FB.parsed[idx]._addErr;
+    });
+  }
+  groupComments();
+  autoCategorizeFb();
+  FB.ready = true;
+  esRecordFeedback(); // keep ExamSession in sync with new inline-resolver path
+  var resolverEl = document.getElementById('combined-fb-inline-resolver');
+  if (resolverEl) resolverEl.style.display = 'none';
+  var pf = document.getElementById('combined-fb-preflight');
+  if (pf) pf.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border:2px solid #2e7d32;border-radius:7px;font-size:12px;color:#1b5e20;margin-top:8px">' +
+    '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">' +
+    '<circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/>' +
+    '<path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>' +
+    '<span style="flex:1">Feedback validated \u2014 ' + fbAllQs().length + ' questions with comments. Ready to run combined analysis.</span>' +
+    '<button onclick="reopenFeedbackResolver()" ' +
+    'style="font-size:11px;color:#2e7d32;background:none;border:1px solid #c3e6c3;' +
+    'border-radius:5px;cursor:pointer;padding:3px 10px;white-space:nowrap;flex-shrink:0">' +
+    'Re-open \u2193</button>' +
+    '</div>';
+  checkRunReady();
+  var footer = document.getElementById('setup-run-footer');
+  if (footer) footer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function reopenFeedbackResolver() {
+  FB.ready = false;
+  var pf = document.getElementById('combined-fb-preflight');
+  if (pf) pf.innerHTML = '';
+  renderInlineResolver();
+  checkRunReady();
+}
+
+
 function combinedValidateFeedback() {
   FB.examTitle = (document.getElementById('exam-title')||{}).value || '';
   FB.examDate  = (document.getElementById('exam-date')||{}).value || '';
   FB.pending   = FB.parsed.reduce(function(acc,p,i){ if(p.status==='pending') acc.push(i); return acc; }, []);
-  if (FB.pending.length > 0) {
-    // Show mapping screen — finaliseFeedback in combined mode returns to setup
-    renderMappingScreen();
-  } else {
-    // No pending — finalise in place, stay in setup, unlock run button
-    groupComments();
-    autoCategorizeFb();
-    FB.ready = true;
-    checkRunReady();
-    // Show confirmation in combined preflight
-    var pf = document.getElementById('combined-fb-preflight');
-    if (pf) pf.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:7px;font-size:12px;color:#1b5e20;margin-top:8px"><span>✓</span><span>Feedback data validated — ' + fbAllQs().length + ' questions with comments. Ready to run combined analysis.</span></div>';
-  }
+  renderInlineResolver();
 }
 
 // Finalise feedback — group, show results tab
@@ -10635,7 +11429,7 @@ function finaliseFeedback() {
       var hp = document.getElementById('home-panel'); if (hp) hp.style.display = 'none';
       // Show confirmation in combined preflight
       var pf = document.getElementById('combined-fb-preflight');
-      if (pf) pf.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:7px;font-size:12px;color:#1b5e20;margin-top:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Feedback validated — ' + fbAllQs().length + ' questions with comments. Ready to run combined analysis.</span></div>';
+      if (pf) pf.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border:2px solid #2e7d32;border-radius:7px;font-size:12px;color:#1b5e20;margin-top:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Feedback validated — ' + fbAllQs().length + ' questions with comments. Ready to run combined analysis.</span></div>';
       checkRunReady();
       window.scrollTo({top:0, behavior:'instant'});
     }
@@ -10735,7 +11529,7 @@ function renderMappingScreen() {
     html += '<button class="btn" onclick="fbRouteAllGeneral()">Route all remaining → General</button>';
     html += '<button class="btn" onclick="fbDiscardAll()">Discard all remaining</button>';
     html += '</div>';
-    html += '<button class="btn-dl-primary" onclick="finaliseFeedback()">Apply &amp; Generate Report →</button>';
+    html += '<button class="btn-dl-primary" onclick="finaliseFeedback()">Apply &amp; confirm →</button>';
     html += '</div>';
     html += '</div>';
     return html;
@@ -11311,7 +12105,11 @@ function renderFeedbackTab(view) {
 
   tbHtml += '</div>'; // end flex row
   tbHtml += '</div>'; // end fb-toolbar
-  if (toolbarHost) toolbarHost.innerHTML = tbHtml;
+  if (toolbarHost) {
+    toolbarHost.innerHTML = tbHtml;
+    var _sh = document.getElementById('sticky-header');
+    toolbarHost.style.top = (_sh ? _sh.offsetHeight : 0) + 'px';
+  }
 
   // ── Content HTML (goes into #fb-results-content) ──
   var html = '';
@@ -11322,7 +12120,7 @@ function renderFeedbackTab(view) {
     html += '<span style="font-size:12px;color:var(--c-fb);font-weight:600">' +
       totalStaged + ' question attribution' + (totalStaged===1?'':'s') + ' staged across ' + stagedIdxs.length + ' comment' + (stagedIdxs.length===1?'':'s') +
       '</span>';
-    html += '<button onclick="fbApplyAllStaged()" style="font-size:11px;font-weight:700;color:#fff;background:var(--c-fb);border:none;border-radius:6px;padding:5px 14px;cursor:pointer;white-space:nowrap">Apply All Moves</button>';
+    html += '<button onclick="fbApplyAllStaged()" style="font-size:11px;font-weight:700;color:#fff;background:var(--c-fb);border:none;border-radius:6px;padding:5px 14px;cursor:pointer;white-space:nowrap">Apply All Re-assignments</button>';
     html += '</div>';
   }
 
@@ -11443,7 +12241,7 @@ function renderFeedbackTab(view) {
         html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px">';
         html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
         html += '</div>';
-        var _mvLabel = staged.length > 0 ? 'Move (' + staged.length + ')' : 'Move';
+        var _mvLabel = staged.length > 0 ? 'Re-assign (' + staged.length + ')' : 'Re-assign';
         html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:66px">';
         html += '<button onclick="fbReassign(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _mvLabel + '</button>';
         html += '</div>';
@@ -11505,7 +12303,7 @@ function renderFeedbackTab(view) {
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px">';
           html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add another question" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
           html += '</div>';
-          var _mvLabelG = staged.length > 0 ? 'Move (' + staged.length + ')' : 'Move';
+          var _mvLabelG = staged.length > 0 ? 'Re-assign (' + staged.length + ')' : 'Re-assign';
           html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:66px">';
           html += '<button onclick="fbReassign(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _mvLabelG + '</button>';
           html += '</div>';
@@ -11634,7 +12432,7 @@ function renderFeedbackTab(view) {
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:28px">';
             html += '<button onclick="fbStageAddReassign(' + c.idx + ')" title="Add" style="font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 6px;background:#fff;cursor:pointer">+</button>';
             html += '</div>';
-            var mvL = staged.length > 0 ? 'Move (' + staged.length + ')' : 'Move';
+            var mvL = staged.length > 0 ? 'Re-assign (' + staged.length + ')' : 'Re-assign';
             html += '<div style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:66px">';
             html += '<button onclick="fbReassign(' + c.idx + ')" style="width:100%;font-size:10px;font-weight:600;color:#0a5a9c;border:1px solid #0a5a9c;border-radius:4px;padding:2px 4px;background:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + mvL + '</button>';
             html += '</div>';
@@ -12472,8 +13270,10 @@ document.addEventListener('click', function(e) {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              After running an analysis, open the <strong>hamburger menu (≡)</strong> on the analysis screen and select <strong>Save Session Record</strong>. This downloads a structured CSV file with three sections: an exam summary row (student counts, averages, reliability, flagged counts), one row per question with all statistics (p-value, discrimination, flag reason, disposition, EN/FR correct rates, DIF result), and the analysis thresholds in effect.<br><br>
-              The file is named automatically using the exam title and date. It is designed to be imported into Excel, SharePoint, or other tools for longitudinal tracking. The Elentra ID column is included but blank for now — it will be populated in a future release once item ID linking is resolved.
+              Two options are available in the <strong>Session Reports</strong> section of the Reports tab.<br><br>
+              <strong>Session record (CSV)</strong> — a structured CSV with an exam summary, per-question statistics (difficulty, discrimination, flag, disposition, EN/FR correct rates, DIF results), and the analysis thresholds used. When feedback is loaded, it also includes a comment count per question and a feedback summary section. Import into Excel or SharePoint for local review and archiving.<br><br>
+              <strong>Session data export (JSON)</strong> — a complete machine-readable record of the session, including all question statistics, DIF detail, feedback summary, threshold configuration, and timestamps. Designed for longitudinal item tracking across exam cycles — each exam's JSON file uses a consistent schema so multiple files can be compared over time. This is also the format a future backend would ingest for session history and historical item analysis.<br><br>
+              Both files are named automatically using the exam title and date. The CSV is also accessible from the hamburger menu (≡) for quick access without navigating to the Reports tab.
             </div>
           </div>
 
@@ -12566,10 +13366,11 @@ document.addEventListener('click', function(e) {
             </div>
             <div class="faq-a">
               Combined analysis follows a staged setup to make sure both files are validated before running:<br><br>
-              <strong>Step 1 — MCQ files.</strong> Upload your QM results file and answer key. The upload panel will show a readiness summary. When everything looks correct, click <strong>Looks good</strong> to confirm. A green banner will appear and the feedback upload zone below will unlock.<br><br>
-              <strong>Step 2 — Feedback file.</strong> Upload your QM feedback export (.xlsx) in the feedback zone that has now unlocked. The footer hint will guide you: it shows <em>Step 2 — upload and validate feedback file to continue</em>.<br><br>
-              <strong>Step 3 — Validate feedback.</strong> After the file loads, a pre-flight panel appears. If there are pending items to review, click <strong>Review comments</strong> to assign or discard them, then click <strong>Apply &amp; Generate Report</strong> to return. If there are no pending items, the panel shows a validate button directly. The footer hint will change to <em>Step 3 — click Validate feedback to continue</em>.<br><br>
-              Once both are confirmed, the <strong>Run combined analysis</strong> button activates. Click it to run both analyses and land on the Item Analysis tab with all results loaded.
+              <strong>Step 1 — MCQ files.</strong> Upload your QM results file and answer key. The parse preview will show a readiness summary. When everything looks correct, click <strong>Looks good</strong> to confirm. The panel collapses to a compact green row showing question count, student count, DIF status, and threshold setting. The feedback upload zone below unlocks automatically.<br><br>
+              <strong>Step 2 — Feedback file.</strong> Upload your QM feedback export (.xlsx) in the feedback zone that has unlocked. The footer status pill will update to reflect what is still needed.<br><br>
+              <strong>Step 3 — Review comments.</strong> After the file loads, a pre-flight panel appears. If there are comments that could not be auto-mapped to a question, an amber <strong>Review N comments →</strong> button appears. Clicking it expands an inline resolver directly on the setup screen — no navigation away. For each comment, enter a question number, click <strong>General</strong> if it is not about a specific question, or <strong>Discard</strong> if it is not useful. Resolved comments show a status badge; click <strong>Change</strong> next to any badge to re-route it. If all comments were auto-mapped, the resolver shows a confirmation message immediately.<br><br>
+              <strong>Step 4 — Apply &amp; Confirm.</strong> Once all comments are resolved, the <strong>Apply &amp; Confirm</strong> button activates. Click it to lock in the feedback. A green validated banner appears with a <strong>Re-open ↓</strong> button in case you need to revisit your routing decisions.<br><br>
+              Once both MCQ and feedback are confirmed, the footer status pill shows <strong>✓ Ready to run</strong> and the <strong>Run combined analysis</strong> button activates. Click it to run both analyses and land on the Item Analysis tab with all results loaded.
             </div>
           </div>
 
@@ -12782,11 +13583,15 @@ document.addEventListener('click', function(e) {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              All reports are in the <strong>Reports</strong> tab. Use the report switcher at the top to select which report to preview, then click <strong>Download Word</strong> to export.<br><br>
-              <strong>MCQ Report</strong> — item-level statistics, flagged questions, and too-easy questions. The standard report sent to exam directors.<br><br>
-              <strong>DIF Report</strong> — differential item functioning analysis comparing English and French student performance. Only available when DIF is enabled.<br><br>
-              <strong>Full Report</strong> — combines the MCQ and DIF reports into a single Word document. Only available when DIF is enabled.<br><br>
-              <strong>Feedback Report</strong> — all student comments organised by question number in ascending order, with a summary and key findings section. Only available after running a feedback analysis. To preview any report before downloading, click the <strong>Preview</strong> link on its row — this opens a full-screen preview with an Export button inside. To download directly, click <strong>Export</strong> on the report row.
+              All reports are in the <strong>Reports</strong> tab, organised into two sections.<br><br>
+              <strong>Analysis Reports</strong> — formal Word (.docx) documents sent to exam directors and committee members. Each card has three actions: <strong>Preview</strong> (on-screen HTML preview), <strong>PDF</strong> (opens your browser's print dialog — choose Save as PDF), and <strong>Export</strong> (downloads the Word file directly).<br><br>
+              &bull; <strong>MCQ item analysis report</strong> — key findings narrative, flagged questions table, and all-questions summary.<br>
+              &bull; <strong>DIF report</strong> — EN/FR performance comparison per question. Only available when DIF is enabled.<br>
+              &bull; <strong>MCQ+DIF report</strong> — MCQ analysis and DIF combined in a single document. Only available when DIF is enabled.<br>
+              &bull; <strong>Feedback report</strong> — student comments organised by question with summary and categorisation. Only available after a feedback analysis.<br><br>
+              <strong>Session Reports</strong> — structured data exports for record-keeping and integration.<br><br>
+              &bull; <strong>Session record (CSV)</strong> — exam summary, per-question statistics, analysis thresholds, and (when feedback is loaded) a comment count per question and a feedback summary section. For Excel review and local archiving.<br>
+              &bull; <strong>Session data export (JSON)</strong> — complete structured session record including all question statistics, DIF sub-objects, feedback summary, threshold configuration, and timestamps. Designed for longitudinal item tracking across exam cycles and future backend integration.
             </div>
           </div>
 
@@ -12928,7 +13733,7 @@ document.addEventListener('click', function(e) {
             </div>
             <div class="faq-a">
               No — the current version stores no session data beyond your chosen colour theme. Closing the tab, refreshing, or a browser crash will lose all uploaded files, analysis results, question exceptions, and feedback categorisation for that session.<br><br>
-              <strong>Export your Word reports and CSV before closing the browser.</strong> Session persistence is planned for a future version.
+              <strong>Export your Word reports, CSV, and JSON session data before closing the browser.</strong> Session persistence is planned for a future version.
             </div>
           </div>
 
