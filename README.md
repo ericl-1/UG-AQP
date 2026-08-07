@@ -1,161 +1,128 @@
 # AQP — Assessment Quality Platform
 
-**University of Ottawa · Faculty of Medicine · Undergraduate Medical Education**
+**Version 3.0 · Build 20260728-10**  
+Undergraduate Medical Education
 
-AQP is a browser-based exam analysis tool that replaces a legacy SPSS workflow for MCQ item analysis, DIF (Differential Item Functioning) analysis, and student feedback review. It runs entirely client-side — no server, no accounts, no installation — and is deployed on GitHub Pages as a single HTML file.
+A browser-based tool for analyzing multiple-choice exam results and student feedback, replacing a former SPSS-based workflow for UGME exam coordinators.
 
-[![Version](https://img.shields.io/badge/version-3.0-garnet)](https://ericl-1.github.io/UG-AQP/)
-[![Build](https://img.shields.io/badge/build-20260727--03-lightgrey)](https://ericl-1.github.io/UG-AQP/)
-[![Deploy](https://img.shields.io/badge/deployed-GitHub%20Pages-brightgreen)](https://ericl-1.github.io/UG-AQP/)
+🔗 **Live app:** https://ericl-1.github.io/UG-AQP/
 
 ---
 
 ## What it does
 
-Upload a QuestionMark (or Scantron) results export and an answer key. AQP computes:
+AQP guides coordinators through a step-by-step wizard to upload exam data, run psychometric analysis, review results, and generate formatted Word reports — all without leaving the browser.
 
-- **Item statistics** — difficulty (p-value) and discrimination (point-biserial correlation) for every question
-- **Cronbach's alpha** — standard k/(k−1) formula, excluding deleted items from the item set
-- **DIF analysis** — Swaminathan–Rogers logistic regression method comparing EN and FR student performance, with Nagelkerke R² effect size and sparse-data guards
-- **Score distribution** — by language stream, with visual chart
-- **Flag cascade** — Too Easy → Difficult → Poor Discrimination → Check Key, with plain-language recommendations (RETAIN / CREDIT / DELETE / CHANGE THE KEY)
+**MCQ item analysis**
+- Per-question difficulty (p-value) and discrimination (point-biserial correlation)
+- Cronbach's alpha (reliability) for the exam as a whole
+- Automatic flagging: Too easy · Difficult · Poor discrimination · Low discrimination · Check key
+- Plain-language recommendations: RETAIN / CREDIT / DELETE / CHANGE THE KEY
+- Distractor analysis (answer distribution per question)
 
-Optionally pair with a QuestionMark feedback export to review, categorise, and export student comments by question.
+**Differential Item Functioning (DIF)**
+- Swaminathan–Rogers logistic-regression method (published standard)
+- Compares EN and FR stream performance per question after controlling for overall ability
+- Nagelkerke R² effect size with sparse-data guards (minimum 5 students per cell)
+- Supports QuestionMark stream codes and Scantron course codes
 
-All results are exportable as formatted **Word (.docx)** reports, **PDF** (via browser print), a structured **CSV** session record, and a **JSON** session data file for longitudinal tracking.
+**Student feedback analysis**
+- Parses free-text QM feedback exports and auto-maps comments to question numbers
+- Inline comment resolver for unmatched comments
+- Categorizes comments: Content · Translation · Other
+- Cross-references flagged MCQ questions in the feedback report
 
----
-
-## Features
-
-| Area | Detail |
-|---|---|
-| **MCQ Analysis** | Per-question difficulty, discrimination, flag type, recommendation, EN/FR breakdown |
-| **DIF Analysis** | Logistic regression per item; EN vs FR performance gap; p < 0.01 significance threshold |
-| **Feedback** | Parse, attribute, categorise, and review student free-text comments by question |
-| **Reports** | Word exports: MCQ, DIF, MCQ+DIF combined, Feedback — each also printable to PDF |
-| **Session exports** | CSV (question stats + feedback summary) and JSON (full structured session record) |
-| **Question Exceptions** | Delete, credit, or assign alternate answer keys with written justification required |
-| **Review Queue** | Collaborative review workflow for flagged items |
-| **Thresholds** | All 8 analysis thresholds configurable; UGME Standard defaults pre-loaded |
+**Combined analysis**
+- Runs MCQ item analysis and feedback parsing in a single session
+- Results cross-reference automatically across both analyses
 
 ---
 
-## Deployment
+## Key features
 
-The app is a single self-contained HTML file deployed on GitHub Pages.
-
-```
-https://ericl-1.github.io/UG-AQP/
-```
-
-No build step. No dependencies to install. No server. To update: replace `ugme_mcq_tool.html` and push. Changes are live within minutes.
+- **5-step wizard** — Exam details → Analysis type → Configure → MCQ upload → Feedback upload (combined)
+- **Question exceptions** — Delete, credit, or alternate-key individual questions with a required justification; exceptions applied at analysis time
+- **Elentra ID support** — Item bank IDs parsed from QM exports and surfaced in item table, DIF table, Review Queue, CSV, and all Word reports
+- **Review Queue** — Checklist of flagged items with coordinator review tracking
+- **Reports** — Word (.docx) exports for MCQ, DIF, MCQ+DIF, and Feedback; PDF via browser print; CSV and JSON session data exports
+- **Session status strip** — Live indicator of what's loaded and which reports are available
+- **Configurable thresholds** — All flagging thresholds adjustable in Settings; changes prompt re-analysis
+- **Two themes** — uOttawa garnet and Elentra purple
 
 ---
 
-## Data sources
+## Data and privacy
 
-| Source | Format | Notes |
+**No data ever leaves your browser.** AQP runs entirely client-side with no server, no database, and no authentication. Uploaded files are processed in memory and discarded when the tab is closed. The only item persisted to local storage is the selected colour theme.
+
+---
+
+## Supported data sources
+
+| Source | Results file | Answer key |
 |---|---|---|
-| QuestionMark results | `.xlsx` | Primary source — raw export from QM, one row per student |
-| QuestionMark answer key | `.xlsx` or `.csv` | Separate key export from QM |
-| QuestionMark feedback | `.xlsx` | One row per student, free-text comment column |
-| Scantron | `.txt` tab-delimited | Secondary source — MASTER row required for answer key |
+| QuestionMark (QM) | `.xlsx` raw export | `.xlsx` key export |
+| Scantron | `.txt` export (key embedded in MASTER row) | _(embedded)_ |
 
 ---
 
-## Architecture
+## Technical overview
 
-AQP is intentionally a single-file client-side application:
+| Property | Detail |
+|---|---|
+| Architecture | Single-file HTML application (HTML + CSS + JS, no build step) |
+| Deployment | GitHub Pages — zero server infrastructure |
+| Dependencies | JSZip · docx-js (Word export, in-browser) · html2canvas |
+| Statistics | Pure JS — no external stats library |
+| Browser support | Any modern browser (Chrome, Edge, Firefox, Safari) |
+| Data model | `ExamSession` envelope wrapping `G` (MCQ) and `FB` (feedback) globals; JSON-serializable for future backend |
 
-- **~14,000 lines** of HTML, CSS, and JavaScript in one file
-- **Zero server dependencies** — runs on any static host including GitHub Pages, SharePoint, local file system
-- **Zero npm/build pipeline** — drop the file anywhere and it works
-- **Session state in memory only** — no cookies, no localStorage (theme preference excepted)
-
-The psychometric engine (`cronbach`, `doDIF`, `logReg`, parsers) is effectively pure — it reads inputs and returns results with no DOM dependency. These are the durable assets for any future backend integration.
-
-### Why single-file?
-
-For a single-analyst, single-session tool this removes an entire class of deployment and versioning problems. The ceiling is hard — no session history, no multi-user access, no longitudinal tracking — but the core analysis is production-grade today.
+The psychometric core (Cronbach's alpha, logistic-regression DIF, item statistics) is implemented as pure functions that are DOM-free and portable to any future backend or shared module.
 
 ---
 
 ## Roadmap
 
-The platform is designed to grow. The single-file architecture is the right scaffold to deliberately grow out of.
+The current version is production-grade for single-session analysis. The following capabilities are planned for future releases, gated on backend infrastructure:
 
-**Near-term (v3.x)**
-- PDF exports matching the Word report format (requires a small server-side component)
-- Session history and longitudinal item tracking (requires backend persistence)
-- Scantron end-to-end validation
+**Near-term**
+- Session autosave and resume (currently, closing the tab clears the session)
+- Coordinator flag — manual question flagging with reason and recommended action, alongside stat-driven flags
+- Exception rationale surfaced in Word report documents
 
-**Medium-term**
-- SharePoint integration for institutional persistence and AD authentication
-- Multi-session JSON comparison — load multiple session exports and track item performance across exam cycles
-- Elentra item ID linking for stable cross-exam question identification
+**Backend-enabled (requires server + auth)**
+- Session history and longitudinal item tracking (keyed to Elentra item IDs)
+- Multi-user access and committee workflow
+- SharePoint integration — session storage, Word export pipeline, institutional document archiving
+- Elentra integration — item performance data fed back to the item bank
+- Backend-rendered PDF matching Word export fidelity
 
-**Longer-term**
-- SPFx web part for SharePoint-native embedding
-- Elentra integration — enhancing the existing item analysis report
-- Committee workflow and multi-user access
-
----
-
-## Session data schema
-
-Each exported JSON file follows a consistent schema designed for longitudinal comparison:
-
-```json
-{
-  "meta":      { "examTitle", "examDate", "coordinator", "source", "version", "build", "exportedAt" },
-  "summary":   { "totalStudents", "enStudents", "frStudents", "examAvgPct", "cronbachAlpha", ... },
-  "thresholds": { "difficult", "easy", "disc", "difPValue", ... },
-  "dif":       { "enabled", "enCode", "frCode", "flaggedCount" },
-  "questions": [ { "number", "elentraId", "difficulty", "discrimination", "flag", "disposition", "dif": { ... } } ],
-  "feedback":  { "totalComments", "attributedComments", "generalComments", "questionsTouched" },
-  "session":   { "createdAt", "lastMcqRunAt", "lastFeedbackAt" }
-}
-```
-
-Multiple JSON exports can be combined to track question performance over time. The `elentraId` field is included for future Elentra ID linking once that integration is resolved.
+**Platform vision**
+- Evidence Score — a converging-evidence signal per question synthesizing all flag types into a single weighted indicator
+- Historical item performance dashboard across exam cycles
+- Power BI reporting integration
 
 ---
 
-## Development
+## Usage
 
-All changes are made to `ugme_mcq_tool.html` directly. Version constants are at the top of the script block:
+1. Open https://ericl-1.github.io/UG-AQP/ in any modern browser
+2. Click **New Analysis Session**
+3. Follow the setup wizard (4 steps for MCQ or feedback-only; 5 steps for combined)
+4. Review results and export reports from the **Reports** tab
 
-```javascript
-var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260727-03';
-var APP_FAQ_VERSION = '3.2';
-```
-
-**Syntax check** (requires Node.js):
-```bash
-python3 -c "
-import re, subprocess
-content = open('ugme_mcq_tool.html').read()
-scripts = re.findall(r'<script[^>]*>(.*?)</script>', content, re.DOTALL)
-open('/tmp/check.js','w').write('\n'.join(scripts))
-r = subprocess.run(['node','--check','/tmp/check.js'], capture_output=True, text=True)
-print('RC:', r.returncode, r.stderr or 'clean')
-"
-```
-
-**Build numbering:** `YYYYMMDD-NN`, incrementing within a date. Five version constants must be updated on every close: `APP_VERSION`, `APP_BUILD`, `APP_FAQ_VERSION` (only when coordinator-facing FAQ content changes), `APP_FAQ_DATE` (same), `APP_RN_DATE` (every close).
+For full instructions, see the [User Guide](AQP_User_Guide.docx) (included in this repository).
 
 ---
 
-## Institutional context
+## Contact
 
-- **Faculty:** Faculty of Medicine, University of Ottawa
-- **Program:** Undergraduate Medical Education (UGME)
-- **Purpose:** Internal use only — not for distribution
-- **Replaces:** SPSS-based exam analysis workflow
-- **Primary users:** Exam coordinators and assistant-dean of assessments
+**Eric Larouche**  
+Supervisor, Project Management · Undergraduate Medical Education  
+[elarouch@uottawa.ca](mailto:elarouch@uottawa.ca)
+
+To report a bug, request a feature, or ask about the analysis methodology, please reach out by email. Include the exam name and a description of the issue.
 
 ---
 
-*© 2026 Faculty of Medicine, University of Ottawa. All rights reserved. Intended for internal use only — not meant for distribution.*
+*AQP — Assessment Quality Platform · Undergraduate Medical Education · v3.0*
