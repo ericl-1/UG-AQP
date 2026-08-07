@@ -99,6 +99,13 @@ h1{font-size:22px;font-weight:700;margin-bottom:2px;color:var(--c-accent-dark)}
 .field-input.field-error{border-color:var(--c-accent);box-shadow:0 0 0 3px rgba(163,21,21,.12)}
 :focus-visible{outline:3px solid var(--c-accent);outline-offset:2px;border-radius:3px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* ── Wizard panel transitions ──────────────────────────────────────────── */
+.section-card.upload-collapsed .section-hdr{display:none}
+.section-card.upload-collapsed .section-body{padding:6px 14px!important}
+@keyframes wSlideOutL{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-24px)}}
+@keyframes wSlideOutR{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(24px)}}
+@keyframes wSlideInR {from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes wSlideInL {from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
 
 .section-card{border:1px solid var(--c-border);border-radius:12px;overflow:hidden;margin-bottom:14px;background:var(--c-bg)}
 .section-hdr{background:#fafafa;padding:11px 18px;border-bottom:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -519,8 +526,6 @@ th{position:relative;white-space:normal}
   function anim(el, props, duration, easing, delay) {
     if (!el) return;
     setTimeout(function() {
-      el.style.transition = Object.keys(props).join(',' ).split(',').map(function(p){ return p + ' ' + duration + 'ms ' + (easing||'ease'); }).join(',');
-      // apply transition string properly
       var transArr = Object.keys(props).map(function(p){ return p + ' ' + duration + 'ms ' + (easing||'ease'); });
       el.style.transition = transArr.join(',');
       Object.keys(props).forEach(function(p){ el.style[p] = props[p]; });
@@ -530,78 +535,81 @@ th{position:relative;white-space:normal}
   // ── AQP Logo animation sequence ──────────────────────────────────────────
   var logo = document.getElementById('splash-logo');
   if (logo) { logo.style.opacity='0'; logo.style.transform='translateY(10px)'; }
-  anim(logo, {opacity:'1', transform:'translateY(0)'}, 500, 'ease', 100);
+  anim(logo, {opacity:'1', transform:'translateY(0)'}, 400, 'ease', 100);
 
   // Progress bar fades in early
   var pw = document.getElementById('sp-prog-wrap');
-  anim(pw, {opacity:'1'}, 400, 'ease', 400);
+  anim(pw, {opacity:'1'}, 300, 'ease', 300);
 
-  // Version string
+  // Version string — appears mid-sequence after full name is visible
   setTimeout(function() {
     var vEl = document.getElementById('sp-ver');
     if (vEl) {
       if (typeof APP_VERSION !== 'undefined') {
-        vEl.textContent = 'v' + APP_VERSION + ' \u00B7 build ' + APP_BUILD + ' \u00B7 Faculty of Medicine \u00B7 University of Ottawa';
+        vEl.textContent = 'v' + APP_VERSION + ' \u00B7 build ' + APP_BUILD + ' \u00B7 Undergraduate Medical Education';
       }
-      anim(vEl, {opacity:'1'}, 400, 'ease', 0);
+      anim(vEl, {opacity:'1'}, 300, 'ease', 0);
     }
-  }, 5500);
+  }, 2100);
 
-  // ── Progress steps — each draws the next logo element ────────────────────
+  // ── Progress steps ────────────────────────────────────────────────────────
+  // Sequence: magnifier → A → Q → P+badge → full name → bars+trend
+  // All animations complete ~3580ms; TOTAL_MS 3700ms; exit done ~5230ms
   var steps = [
-    { pct: 12, label: 'Loading theme\u2026',       delay: 600,  draw: function() {
-        // 1. Magnifier — ring draws + handle fades in
+    { pct: 17, label: 'Loading theme\u2026',       delay: 150,  draw: function() {
+        // 1. Magnifier ring draws + handle fades in
         var ring = document.getElementById('sp-ring');
         if (ring) {
-          ring.style.transition = 'stroke-dashoffset 900ms cubic-bezier(.4,0,.2,1)';
+          ring.style.transition = 'stroke-dashoffset 500ms cubic-bezier(.4,0,.2,1)';
           ring.style.strokeDashoffset = '0';
         }
-        anim(document.getElementById('sp-handle'), {opacity:'1'}, 500, 'ease', 100);
+        anim(document.getElementById('sp-handle'), {opacity:'1'}, 300, 'ease', 100);
     }},
-    { pct: 28, label: 'Loading libraries\u2026',   delay: 1800, draw: function() {
-        // 2. AQP letters A, Q, P
-        anim(document.getElementById('sp-letter-a'), {opacity:'1'}, 350, 'ease', 0);
-        anim(document.getElementById('sp-letter-q'), {opacity:'1'}, 350, 'ease', 450);
-        anim(document.getElementById('sp-letter-p'), {opacity:'1'}, 350, 'ease', 900);
+    { pct: 33, label: 'Loading libraries\u2026',   delay: 750,  draw: function() {
+        // 2. A
+        anim(document.getElementById('sp-letter-a'), {opacity:'1'}, 250, 'ease', 0);
     }},
-    { pct: 50, label: 'Preparing workspace\u2026', delay: 2900, draw: function() {
-        // 3. Bars one by one inside magnifier, then trend line draws after
-        anim(document.getElementById('sp-bar-1'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 0);
-        anim(document.getElementById('sp-bar-2'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 380);
-        anim(document.getElementById('sp-bar-3'), {transform:'scaleY(1)'}, 550, 'cubic-bezier(.4,0,.2,1)', 760);
+    { pct: 50, label: 'Preparing workspace\u2026', delay: 1100, draw: function() {
+        // 3. Q
+        anim(document.getElementById('sp-letter-q'), {opacity:'1'}, 250, 'ease', 0);
+    }},
+    { pct: 67, label: 'Building interface\u2026',  delay: 1500, draw: function() {
+        // 4. P + green quality badge (badge is visually attached to P)
+        anim(document.getElementById('sp-letter-p'), {opacity:'1'}, 250, 'ease', 0);
+        anim(document.getElementById('sp-check-circle'), {opacity:'1'}, 300, 'ease', 100);
+        setTimeout(function() {
+          var ck = document.getElementById('sp-checkmark');
+          if (ck) {
+            ck.style.opacity = '1';
+            ck.style.transition = 'stroke-dashoffset 350ms cubic-bezier(.4,0,.2,1)';
+            ck.style.strokeDashoffset = '0';
+          }
+        }, 200);
+    }},
+    { pct: 83, label: 'Configuring tool\u2026',    delay: 1950, draw: function() {
+        // 5. Full app name subtitle
+        anim(document.getElementById('sp-fullname'), {opacity:'1'}, 250, 'ease', 0);
+    }},
+    { pct: 100, label: 'Ready',                    delay: 2350, draw: function() {
+        // 6. Bars one by one, then trend line + dot
+        anim(document.getElementById('sp-bar-1'), {transform:'scaleY(1)'}, 350, 'cubic-bezier(.4,0,.2,1)', 0);
+        anim(document.getElementById('sp-bar-2'), {transform:'scaleY(1)'}, 350, 'cubic-bezier(.4,0,.2,1)', 230);
+        anim(document.getElementById('sp-bar-3'), {transform:'scaleY(1)'}, 350, 'cubic-bezier(.4,0,.2,1)', 460);
         setTimeout(function() {
           var tg = document.getElementById('sp-trend-group');
           var tl = document.getElementById('sp-trend-line');
           var td = document.getElementById('sp-trend-dot');
           if (tg) tg.style.opacity = '1';
           if (tl) {
-            tl.style.transition = 'stroke-dashoffset 700ms cubic-bezier(.4,0,.2,1)';
+            tl.style.transition = 'stroke-dashoffset 450ms cubic-bezier(.4,0,.2,1)';
             tl.style.strokeDashoffset = '0';
           }
-          setTimeout(function() { anim(td, {opacity:'1'}, 250, 'ease', 0); }, 720);
-        }, 1200);
-    }},
-    { pct: 70, label: 'Building interface\u2026',  delay: 5000, draw: function() {
-        // 4. Full name fades in
-        anim(document.getElementById('sp-fullname'), {opacity:'1'}, 500, 'ease', 0);
-    }},
-    { pct: 88, label: 'Configuring tool\u2026',    delay: 5800, draw: function() {
-        // 5. Green circle appears
-        anim(document.getElementById('sp-check-circle'), {opacity:'1'}, 400, 'ease', 0);
-    }},
-    { pct: 100, label: 'Ready',                    delay: 6500, draw: function() {
-        // 6. Checkmark draws on
-        var ck = document.getElementById('sp-checkmark');
-        if (ck) {
-          ck.style.opacity = '1';
-          setTimeout(function() {
-            ck.style.transition = 'stroke-dashoffset 500ms cubic-bezier(.4,0,.2,1)';
-            ck.style.strokeDashoffset = '0';
-          }, 50);
-        }
+          setTimeout(function() { anim(td, {opacity:'1'}, 180, 'ease', 0); }, 350);
+        }, 700);
     }},
   ];
-    var fill  = document.getElementById('sp-fill');
+
+  var fill  = document.getElementById('sp-fill');
   var label = document.getElementById('sp-label');
   var pct   = document.getElementById('sp-pct');
   steps.forEach(function(s) {
@@ -620,12 +628,12 @@ th{position:relative;white-space:normal}
   });
 
   // ── Exit: content fades out, home panel fades in beneath ─────────────────
-  var TOTAL_MS = 7500; // when to start exit (after all animations done)
+  // Last animation (trend dot) finishes ~3580ms; 120ms buffer before exit starts
+  var TOTAL_MS = 3700;
   setTimeout(function() {
     var screen = document.getElementById('splash-screen');
     if (!screen) return;
 
-    // Pre-position home panel visible but transparent behind the splash
     var homePanel = document.getElementById('home-panel');
     if (homePanel) {
       homePanel.style.opacity = '0';
@@ -782,21 +790,31 @@ th{position:relative;white-space:normal}
     </div>
   </div>
 
-  <!-- ── Step bar — always at top, shows current step ── -->
-  <div id="setup-step-bar" style="display:flex;align-items:center;gap:0;padding:12px 0 18px;margin-bottom:4px">
-    <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600">
-      <div id="setup-step-dot-1" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--c-accent);color:#fff">1</div>
-      <span id="setup-step-lbl-1" style="color:var(--c-accent);font-weight:700">Exam details</span>
+  <!-- ── Wizard step rail ── -->
+  <div id="setup-step-bar" style="display:flex;align-items:center;padding:18px 0 22px;gap:0">
+    <div id="wz-s1" onclick="wizardBackTo(1)" style="display:flex;align-items:center;gap:7px;flex-shrink:0;cursor:default">
+      <div id="setup-step-dot-1" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--c-accent);color:#fff;transition:background .2s,color .2s">1</div>
+      <span id="setup-step-lbl-1" style="font-size:12.5px;font-weight:700;color:var(--c-accent);white-space:nowrap;transition:color .2s">Exam details</span>
     </div>
-    <div id="setup-step-conn-2" style="width:32px;height:1px;background:rgba(0,0,0,.12);margin:0 8px;flex-shrink:0"></div>
-    <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600">
-      <div id="setup-step-dot-2" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.12);color:var(--c-muted)">2</div>
-      <span id="setup-step-lbl-2" style="color:var(--c-muted);font-weight:500">Analysis type</span>
+    <div id="setup-step-conn-2" style="flex:1;height:2px;background:rgba(0,0,0,.1);margin:0 10px;min-width:16px;border-radius:2px;transition:background .3s"></div>
+    <div id="wz-s2" onclick="wizardBackTo(2)" style="display:flex;align-items:center;gap:7px;flex-shrink:0;cursor:default">
+      <div id="setup-step-dot-2" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.1);color:var(--c-muted);transition:background .2s,color .2s">2</div>
+      <span id="setup-step-lbl-2" style="font-size:12.5px;font-weight:500;color:var(--c-muted);white-space:nowrap;transition:color .2s">Analysis type</span>
     </div>
-    <div id="setup-step-conn-3" style="width:32px;height:1px;background:rgba(0,0,0,.12);margin:0 8px;flex-shrink:0"></div>
-    <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600">
-      <div id="setup-step-dot-3" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.12);color:var(--c-muted)">3</div>
-      <span id="setup-step-lbl-3" style="color:var(--c-muted);font-weight:500">Upload &amp; configure</span>
+    <div id="setup-step-conn-3" style="flex:1;height:2px;background:rgba(0,0,0,.1);margin:0 10px;min-width:16px;border-radius:2px;transition:background .3s"></div>
+    <div id="wz-s3" onclick="wizardBackTo(3)" style="display:flex;align-items:center;gap:7px;flex-shrink:0;cursor:default">
+      <div id="setup-step-dot-3" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.1);color:var(--c-muted);transition:background .2s,color .2s">3</div>
+      <span id="setup-step-lbl-3" style="font-size:12.5px;font-weight:500;color:var(--c-muted);white-space:nowrap;transition:color .2s">Configure</span>
+    </div>
+    <div id="setup-step-conn-4" style="flex:1;height:2px;background:rgba(0,0,0,.1);margin:0 10px;min-width:16px;border-radius:2px;transition:background .3s"></div>
+    <div id="wz-s4" onclick="wizardBackTo(4)" style="display:flex;align-items:center;gap:7px;flex-shrink:0;cursor:default">
+      <div id="setup-step-dot-4" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.1);color:var(--c-muted);transition:background .2s,color .2s">4</div>
+      <span id="setup-step-lbl-4" style="font-size:12.5px;font-weight:500;color:var(--c-muted);white-space:nowrap;transition:color .2s">MCQ upload</span>
+    </div>
+    <div id="setup-step-conn-5" style="flex:1;height:2px;background:rgba(0,0,0,.1);margin:0 10px;min-width:16px;border-radius:2px;transition:background .3s;display:none"></div>
+    <div id="wz-s5" style="display:none;align-items:center;gap:7px;flex-shrink:0;cursor:default">
+      <div id="setup-step-dot-5" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.1);color:var(--c-muted);transition:background .2s,color .2s">5</div>
+      <span id="setup-step-lbl-5" style="font-size:12.5px;font-weight:500;color:var(--c-muted);white-space:nowrap;transition:color .2s">Feedback upload</span>
     </div>
   </div>
 
@@ -836,6 +854,12 @@ th{position:relative;white-space:normal}
 
   <!-- ── Step 2: Analysis type (hidden until Continue clicked) ── -->
   <div id="setup-step2-block" style="display:none">
+  <div style="margin-bottom:14px">
+    <button onclick="wizardBackTo(1)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-secondary);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s" onmouseover="this.style.borderColor='var(--c-accent)';this.style.color='var(--c-accent)'" onmouseout="this.style.borderColor='';this.style.color='var(--c-secondary)'">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to exam details
+    </button>
+  </div>
     <div class="section-card" style="margin-bottom:20px">
       <div class="section-hdr">
         <span class="section-hdr-title">Select an analysis type</span>
@@ -866,12 +890,14 @@ th{position:relative;white-space:normal}
     </div>
   </div>
 
-  <!-- ── MCQ Analysis tab content ── -->
-  <div id="setup-tab-mcq" style="display:none">
-
-  <!-- Step 3 contextual title — injected by selectAnalysisType() -->
-  <div id="setup-step3-title" style="display:none;font-size:18px;font-weight:700;color:var(--c-primary);margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--c-accent);letter-spacing:-.2px"></div>
-
+  <!-- ── Step 3: Configure (wizard panel 3) ── -->
+  <div id="wizard-p3" style="display:none">
+    <div style="margin-bottom:14px">
+    <button onclick="wizardBackTo(2)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-secondary);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s" onmouseover="this.style.borderColor='var(--c-accent)';this.style.color='var(--c-accent)'" onmouseout="this.style.borderColor='';this.style.color='var(--c-secondary)'">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to analysis type
+    </button>
+  </div>
   <!-- ── Data Source & DIF ── -->
   <div class="section-card">
     <div class="section-hdr">
@@ -924,6 +950,28 @@ th{position:relative;white-space:normal}
     </div>
   </div>
 
+  <div style="margin-top:22px;display:flex;align-items:center;justify-content:flex-end">
+    <button onclick="wizardGoTo(4)" style="display:inline-flex;align-items:center;gap:6px;padding:9px 22px;border-radius:10px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s">
+      Continue
+      <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  </div><!-- /wizard-p3 -->
+
+  <!-- ── Step 4: Upload & run (wizard panel 4) ── -->
+  <div id="wizard-p4" style="display:none">
+  <div style="margin-bottom:14px">
+    <button onclick="wizardBackTo(3)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-secondary);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s" onmouseover="this.style.borderColor='var(--c-accent)';this.style.color='var(--c-accent)'" onmouseout="this.style.borderColor='';this.style.color='var(--c-secondary)'">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to configure
+    </button>
+  </div>
+  <!-- ── MCQ Analysis tab content ── -->
+  <div id="setup-tab-mcq" style="display:none">
+
+  <!-- Step 3 contextual title — injected by selectAnalysisType() -->
+  <div id="setup-step3-title" style="display:none;font-size:18px;font-weight:700;color:var(--c-primary);margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--c-accent);letter-spacing:-.2px"></div>
+
   <!-- Dirty state banner -->
   <div id="dirty-banner" style="display:none;margin:10px 0;padding:12px 18px;background:#fff8e6;border-left:3px solid #e8a800;border-radius:6px;font-size:13px;color:#5a3a00;font-weight:500">
     <span style="font-size:14px;margin-right:6px">⚠</span>Settings have changed since your last analysis. Use the <strong>Update Analysis</strong> button below to refresh your results.
@@ -933,11 +981,22 @@ th{position:relative;white-space:normal}
   <div id="upload-grid" style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px">
 
     <!-- Results file -->
-    <div class="section-card" style="margin-bottom:0">
+    <div class="section-card" id="results-card" style="margin-bottom:0">
       <div class="section-hdr">
         <span class="section-hdr-title">Results Data</span>
       </div>
       <div class="section-body" style="padding:14px 16px">
+        <div id="results-card-collapsed" style="display:none">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 4px">
+            <div style="width:28px;height:28px;border-radius:50%;background:#e8f5eb;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-7" stroke="#1b5e20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="flex:1;min-width:0">
+              <div id="results-collapse-title" style="font-size:13px;font-weight:700;color:#1b5e20"></div>
+              <div id="results-collapse-detail" style="font-size:11.5px;color:var(--c-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            </div>
+            <button onclick="expandUploadCard('results')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s;flex-shrink:0">Change</button>
+          </div>
+        </div>
+        <div id="results-upload-expand">
         <div id="ua-main" role="button" tabindex="0" aria-label="Upload results file" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fi-main').click()}" onclick="document.getElementById(&quot;fi-main&quot;).click()"
           ondragover="event.preventDefault();this.style.borderColor='var(--c-accent)';this.style.background='var(--c-accent-tint)'" ondragleave="this.style.borderColor='';this.style.background=''" ondrop="this.style.borderColor='';this.style.background='';handleDrop(event,'fi-main',parseResults)"
           class="upload-row-item">
@@ -957,6 +1016,7 @@ th{position:relative;white-space:normal}
         </div>
         <div id="scantron-preview" style="display:none;margin-top:10px"></div>
         <div id="dbg-main" class="debug" style="display:none"></div>
+        </div><!-- /results-upload-expand -->
       </div>
     </div>
 
@@ -966,6 +1026,17 @@ th{position:relative;white-space:normal}
         <span class="section-hdr-title">Answer Key</span>
       </div>
       <div class="section-body" style="padding:14px 16px">
+        <div id="key-card-collapsed" style="display:none">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 4px">
+            <div style="width:28px;height:28px;border-radius:50%;background:#e8f5eb;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-7" stroke="#1b5e20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="flex:1;min-width:0">
+              <div id="key-collapse-title" style="font-size:13px;font-weight:700;color:#1b5e20"></div>
+              <div id="key-collapse-detail" style="font-size:11.5px;color:var(--c-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            </div>
+            <button onclick="expandUploadCard('key')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s;flex-shrink:0">Change</button>
+          </div>
+        </div>
+        <div id="key-upload-expand">
         <div id="ua-key" role="button" tabindex="0" aria-label="Upload answer key file" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fi-key').click()}" onclick="document.getElementById('fi-key').click()"
           ondragover="event.preventDefault();this.style.borderColor='var(--c-accent)';this.style.background='var(--c-accent-tint)'" ondragleave="this.style.borderColor='';this.style.background=''" ondrop="this.style.borderColor='';this.style.background='';handleDrop(event,'fi-key',parseKey)"
           class="upload-row-item">
@@ -982,6 +1053,7 @@ th{position:relative;white-space:normal}
           <a href="#" onclick="downloadTemplate('key');return false;" style="font-size:11.5px;color:var(--c-muted);text-decoration:none;border-bottom:1px dashed var(--c-border)">Don't have a file? Download template</a>
         </div>
         <div id="dbg-key" class="debug" style="display:none"></div>
+        </div><!-- /key-upload-expand -->
       </div>
     </div>
 
@@ -1007,63 +1079,6 @@ th{position:relative;white-space:normal}
     <span>Custom analysis thresholds are active — results may differ from the UGME Exam Standard. <a href="#" onclick="openSettings();return false;" style="color:#b85c00;font-weight:700;text-decoration:underline">Review in Settings</a></span>
   </div>
 
-  <!-- ── Combined: MCQ validated banner (hidden until MCQ validated in combined mode) ── -->
-  <div id="combined-mcq-validated-banner" style="display:none;margin-bottom:14px;padding:12px 18px;background:#fff;border:2px solid #2e7d32;border-radius:10px;display:none;align-items:center;gap:12px">
-    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#2e7d32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div style="flex:1">
-      <div style="font-size:13px;font-weight:700;color:#1b5e20" id="combined-mcq-validated-title">MCQ data validated</div>
-      <div style="font-size:12px;color:#2e7d32;margin-top:2px" id="combined-mcq-validated-detail">Upload your feedback file below to continue.</div>
-    </div>
-  </div>
-
-  <!-- ── Combined: Feedback upload zone (dimmed until MCQ validated) ── -->
-  <div id="combined-fb-zone" style="display:none">
-    <div class="section-card" style="margin-bottom:14px" id="combined-fb-card">
-      <div class="section-hdr" style="background:var(--c-surface)">
-        <span class="section-hdr-title" style="color:var(--c-muted)">💬 Student feedback</span>
-        <span id="combined-fb-lock-label" style="font-size:12px;color:var(--c-muted);display:flex;align-items:center;gap:5px">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="4" y="7" width="8" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M6 7V5a2 2 0 0 1 4 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Validate MCQ data first
-        </span>
-      </div>
-      <div id="combined-fb-body" style="padding:16px 18px 20px;pointer-events:none;opacity:.4">
-        <div id="combined-fb-upload-zone" class="upload-row-item"
-          onclick="document.getElementById('combined-fb-file-input').click()"
-          ondragover="event.preventDefault();this.style.borderColor='var(--c-accent)';this.style.background='var(--c-accent-tint)'"
-          ondragleave="this.style.borderColor='';this.style.background=''"
-          ondrop="this.style.borderColor='';this.style.background='';handleFeedbackDrop(event)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
-          <div style="flex:1;min-width:0">
-            <div class="upload-label" id="combined-fb-upload-label">Drop file here or click to browse</div>
-            <div class="upload-hint">QuestionMark feedback export (.xlsx) — one row per student</div>
-          </div>
-          <div class="add-pill" id="combined-fb-upload-pill">+ Add</div>
-        </div>
-        <input type="file" id="combined-fb-file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFeedbackUpload(this)">
-        <div id="combined-fb-parse-info" style="display:none;margin-top:10px"></div>
-        <!-- Question count for combined mode — mirrors fb-qcount in standalone tab -->
-        <div style="margin-top:14px" id="combined-qcount-wrap">
-          <div id="combined-fb-qcount-editable">
-            <label for="combined-fb-max-q" class="field-label">Number of questions in this exam</label>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <input type="number" id="combined-fb-max-q" class="field-input" style="max-width:120px" min="1" placeholder="e.g. 83" oninput="fbSetManualMaxQ(this.value);document.getElementById('fb-max-q').value=this.value;">
-              <span style="font-size:12px;color:var(--c-muted)">Optional — default 150</span>
-            </div>
-          </div>
-          <div id="combined-fb-qcount-locked" style="display:none">
-            <label class="field-label">Number of questions in this exam</label>
-            <div style="display:flex;align-items:center;gap:8px;background:var(--c-bg);border-radius:8px;padding:9px 12px;width:fit-content">
-              <span style="font-size:14px">&#128274;</span>
-              <span id="combined-fb-qcount-locked-text" style="font-size:13px;color:var(--c-secondary)">Using question count from MCQ analysis</span>
-            </div>
-          </div>
-        </div>
-        <div id="combined-fb-preflight" style="margin-top:10px"></div>
-        <div id="combined-fb-inline-resolver" style="display:none;margin-top:8px"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- Sticky MCQ Run footer — inside MCQ tab so it hides when FB tab is active -->
   <div id="setup-run-footer" style="position:sticky;bottom:0;margin:0 -16px;padding:0 16px;background:#fff;border-top:1px solid rgba(0,0,0,.08);box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:100">
     <div class="run-bar-inner" style="padding:12px 4px;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px">
@@ -1087,6 +1102,11 @@ th{position:relative;white-space:normal}
             View previous results &#8594;
           </button>
         </div>
+        <button id="btn-continue-to-fb" onclick="onContinueToFeedback()" disabled
+          style="display:none;padding:10px 22px;border-radius:10px;background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:700;cursor:not-allowed;white-space:nowrap;transition:all .2s;flex-shrink:0;opacity:.35">
+          Continue to feedback
+          <svg width="10" height="10" viewBox="0 0 14 14" fill="none" style="display:inline-block;vertical-align:middle;margin-left:4px"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <button id="btn-run" class="btn btn-primary" onclick="runAnalysis()" disabled
           style="padding:10px 26px;font-size:14px;font-weight:700;opacity:.35;cursor:not-allowed;border-radius:10px;white-space:nowrap;transition:all .2s;flex-shrink:0">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>Run Analysis
@@ -1179,6 +1199,68 @@ th{position:relative;white-space:normal}
     </div>
 
   </div><!-- /setup-tab-fb -->
+
+  </div><!-- /wizard-p4 -->
+  <!-- Step 5: Feedback upload & run (combined only) -->
+  <div id="wizard-p5" style="display:none">
+  <div style="margin-bottom:14px">
+    <button onclick="wizardBackTo(4)" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-secondary);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s" onmouseover="this.style.borderColor='var(--c-accent)';this.style.color='var(--c-accent)'" onmouseout="this.style.borderColor='';this.style.color='var(--c-secondary)'">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to MCQ upload
+    </button>
+  </div>
+  <div id="combined-fb-zone">
+    <div class="section-card" style="margin-bottom:14px" id="combined-fb-card">
+      <div class="section-hdr">
+        <span class="section-hdr-title">💬 Student feedback</span>
+      </div>
+      <div id="combined-fb-body" style="padding:16px 18px 20px">
+        <div id="combined-fb-upload-zone" class="upload-row-item"
+          onclick="document.getElementById('combined-fb-file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--c-accent)';this.style.background='var(--c-accent-tint)'"
+          ondragleave="this.style.borderColor='';this.style.background=''"
+          ondrop="this.style.borderColor='';this.style.background='';handleFeedbackDrop(event)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
+          <div style="flex:1;min-width:0">
+            <div class="upload-label" id="combined-fb-upload-label">Drop file here or click to browse</div>
+            <div class="upload-hint">QuestionMark feedback export (.xlsx) — one row per student</div>
+          </div>
+          <div class="add-pill" id="combined-fb-upload-pill">+ Add</div>
+        </div>
+        <input type="file" id="combined-fb-file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFeedbackUpload(this)">
+        <div id="combined-fb-parse-info" style="display:none;margin-top:10px"></div>
+        <div style="margin-top:14px" id="combined-qcount-wrap">
+          <div id="combined-fb-qcount-editable">
+            <label for="combined-fb-max-q" class="field-label">Number of questions in this exam</label>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <input type="number" id="combined-fb-max-q" class="field-input" style="max-width:120px" min="1" placeholder="e.g. 83" oninput="fbSetManualMaxQ(this.value);document.getElementById('fb-max-q').value=this.value;">
+              <span style="font-size:12px;color:var(--c-muted)">Optional — default 150</span>
+            </div>
+          </div>
+          <div id="combined-fb-qcount-locked" style="display:none">
+            <label class="field-label">Number of questions in this exam</label>
+            <div style="display:flex;align-items:center;gap:8px;background:var(--c-bg);border-radius:8px;padding:9px 12px;width:fit-content">
+              <span style="font-size:14px">&#128274;</span>
+              <span id="combined-fb-qcount-locked-text" style="font-size:13px;color:var(--c-secondary)">Using question count from MCQ analysis</span>
+            </div>
+          </div>
+        </div>
+        <div id="combined-fb-preflight" style="margin-top:10px"></div>
+        <div id="combined-fb-inline-resolver" style="display:none;margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+  <div id="setup-run-footer-p5" style="position:sticky;bottom:0;margin:0 -16px;padding:0 16px;background:#fff;border-top:1px solid rgba(0,0,0,.08);box-shadow:0 -4px 16px rgba(0,0,0,.06);z-index:100">
+    <div style="padding:12px 4px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <span id="p5-status-text" style="font-size:13px;color:var(--c-muted)">Upload a feedback file to continue</span>
+      <button id="btn-run-p5" class="btn btn-primary" onclick="runAnalysis()" disabled
+        style="padding:10px 26px;font-size:14px;font-weight:700;opacity:.35;cursor:not-allowed;border-radius:10px;white-space:nowrap;transition:all .2s;flex-shrink:0">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>Run Analysis
+      </button>
+    </div>
+  </div>
+  </div><!-- /wizard-p5 -->
+
 
 </div><!-- /setup-panel -->
 
@@ -1591,7 +1673,7 @@ th{position:relative;white-space:normal}
     <!-- Centre: copyright, centred in the footer -->
     <div style="flex:1;text-align:center;min-width:200px">
       <div style="font-size:11px;color:var(--c-muted);line-height:1.7">
-        &copy; 2026 Faculty of Medicine, University of Ottawa. All rights reserved.<br>
+        &copy; 2026 Undergraduate Medical Education. All rights reserved.<br>
         <span style="color:var(--c-muted)">Intended for internal use only &nbsp;&middot;&nbsp; Not meant for distribution</span>
       </div>
     </div>
@@ -1927,10 +2009,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260727-03';
+var APP_BUILD       = '20260728-10';
 var APP_FAQ_VERSION = '3.2';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'July 27, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 27, 2026'; // Update each version close
+var APP_RN_DATE     = 'July 28, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -1957,6 +2039,57 @@ function setUploadRowLoaded(rowId, loaded) {
   row.classList.toggle('ur-loaded', !!loaded);
   var pill = row.querySelector('.add-pill');
   if (pill) pill.textContent = loaded ? '✓ Loaded' : '+ Add';
+
+  // Collapse / expand the card around the upload zone
+  var isMain = rowId === 'ua-main';
+  var isKey  = rowId === 'ua-key';
+  if (!isMain && !isKey) return;
+
+  var expandId    = isMain ? 'results-upload-expand' : 'key-upload-expand';
+  var collapsedId = isMain ? 'results-card-collapsed' : 'key-card-collapsed';
+  var titleId     = isMain ? 'results-collapse-title' : 'key-collapse-title';
+  var detailId    = isMain ? 'results-collapse-detail' : 'key-collapse-detail';
+  var inputId     = isMain ? 'fi-main' : 'fi-key';
+
+  var expandEl    = document.getElementById(expandId);
+  var collapsedEl = document.getElementById(collapsedId);
+  var cardEl      = document.getElementById(isMain ? 'results-card' : 'key-card');
+  if (expandEl)    expandEl.style.display    = loaded ? 'none' : '';
+  if (collapsedEl) collapsedEl.style.display = loaded ? '' : 'none';
+  if (cardEl)      cardEl.classList.toggle('upload-collapsed', !!loaded);
+
+  if (loaded && collapsedEl) {
+    // Populate collapsed row
+    var inp   = document.getElementById(inputId);
+    var fname = inp && inp.files && inp.files[0] ? inp.files[0].name : '';
+    var titleEl  = document.getElementById(titleId);
+    var detailEl = document.getElementById(detailId);
+    if (titleEl)  titleEl.textContent  = isMain ? 'Results loaded' : 'Answer key loaded';
+    if (detailEl) {
+      var detail = fname;
+      if (isMain) {
+        var nQ   = (typeof G !== 'undefined' && G.nQ)  ? G.nQ  : 0;
+        var nStu = (typeof G !== 'undefined' && G.students) ? G.students.length : ((typeof G !== 'undefined' && G._lastN) || 0);
+        if (nQ)   detail += ' · ' + nQ   + ' question'  + (nQ   !== 1 ? 's' : '');
+        if (nStu) detail += ' · ' + nStu + ' student'   + (nStu !== 1 ? 's' : '');
+      } else {
+        var nAns = (typeof G !== 'undefined' && G.key) ? G.key.length : 0;
+        if (nAns) detail += ' · ' + nAns + ' answer'  + (nAns  !== 1 ? 's' : '');
+      }
+      detailEl.textContent = detail;
+    }
+  }
+}
+
+function expandUploadCard(type) {
+  var rowId   = type === 'results' ? 'ua-main' : 'ua-key';
+  var inputId = type === 'results' ? 'fi-main' : 'fi-key';
+  setUploadRowLoaded(rowId, false);
+  // Clear input value so selecting the same file again fires onchange
+  var inp = document.getElementById(inputId);
+  if (inp) inp.value = '';
+  var zone = document.getElementById(rowId);
+  if (zone) setTimeout(function() { zone.focus(); }, 60);
 }
 function showFeedback(id, type, lines, dbgText) {
   var el=document.getElementById(id);
@@ -3804,7 +3937,7 @@ function exportSessionRecord() {
   function cr(arr){return arr.map(function(v){var s=String(v===null||v===undefined?'':v);if(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)s='"'+s.replace(/"/g,'""')+'"';return s;}).join(',');}
   var lines=[
     'AQP — Assessment Quality Platform',
-    'University of Ottawa · Faculty of Medicine · Undergraduate Medical Education',
+    'Undergraduate Medical Education',
     '',
     'EXAM SUMMARY',cr(s1H),cr(s1R),
     '',
@@ -3879,7 +4012,7 @@ function brandMarkHtml() {
 function docxBrandMark() {
   return '<w:p><w:pPr><w:pStyle w:val="NoSpacing"/><w:spacing w:before="200" w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="right"/></w:pPr>' +
     '<w:r><w:rPr><w:color w:val="cccccc"/><w:sz w:val="14"/><w:szCs w:val="14"/></w:rPr>' +
-    '<w:t xml:space="preserve">AQP — Assessment Quality Platform · uOttawa Faculty of Medicine</w:t>' +
+    '<w:t xml:space="preserve">AQP — Assessment Quality Platform · Undergraduate Medical Education</w:t>' +
     '</w:r></w:p>';
 }
 
@@ -4097,7 +4230,7 @@ function confirmParsePreview(source) {
       'Re-validate \u2193</button>' +
       '</div>';
   }
-  if (G_ANALYSIS_TYPE === 'both') activateCombinedFeedbackZone();
+  // For combined: enable the Continue to feedback button via checkRunReady
   checkRunReady();
 }
 
@@ -4449,6 +4582,7 @@ function _runAnalysis() {
   var _nEasy2 = G.mcq.filter(function(q){ return q.flag === 'Too easy'; }).length;
   showAnalysisSummary(n, nQEffective, _nFlagged2, _nEasy2, _nDIF2, G_DIF_ENABLED && G._hasStream);
   esRecordMcq(n, nQEffective, _nFlagged2, _nEasy2, _nDIF2);
+  renderSessionStatus(); // re-render now that ExamSession.hasMcq is true
   renderWhatsNext(_nFlagged2, _nEasy2, _nDIF2, G_DIF_ENABLED && G._hasStream);
   _reviewState = {}; _reviewSort = 'flag'; _reviewFloatDone = false; // Reset review state for new analysis
   updateReviewTabLabel();
@@ -7847,20 +7981,58 @@ function checkRunReady() {
   }
 
   // ── Run button ────────────────────────────────────────────────────────────
-  if (ready) {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.style.cursor  = 'pointer';
-    var btnLabel = isCombined ? 'Run combined analysis' : (G_DIRTY ? 'Update Analysis' : 'Analyze Exam');
-    btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>' + btnLabel;
-    btn.style.background  = 'var(--c-accent)';
-    btn.style.borderColor = 'var(--c-accent)';
-    if(exclWrap) exclWrap.style.display = isCombined ? 'none' : 'block';
+  // Combined: show Continue button (step 4) instead of Run; Run is in step 5
+  var btnContFb = document.getElementById('btn-continue-to-fb');
+  if (btnContFb) {
+    btnContFb.style.display = isCombined ? 'inline-flex' : 'none';
+    if (isCombined) {
+      btnContFb.disabled      = !mcqReady;
+      btnContFb.style.opacity = mcqReady ? '1' : '.35';
+      btnContFb.style.cursor  = mcqReady ? 'pointer' : 'not-allowed';
+    }
+  }
+  if (btn) btn.style.display = isCombined ? 'none' : '';
+  if (!isCombined) {
+    if (ready) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor  = 'pointer';
+      var btnLabel = G_DIRTY ? 'Update Analysis' : 'Analyze Exam';
+      btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>' + btnLabel;
+      btn.style.background  = 'var(--c-accent)';
+      btn.style.borderColor = 'var(--c-accent)';
+      if(exclWrap) exclWrap.style.display = 'block';
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = '0.35';
+      btn.style.cursor  = 'not-allowed';
+      if(exclWrap) exclWrap.style.display = 'none';
+    }
   } else {
-    btn.disabled = true;
-    btn.style.opacity = '0.35';
-    btn.style.cursor  = 'not-allowed';
     if(exclWrap) exclWrap.style.display = 'none';
+  }
+  // Combined step 5: update p5 Run button and status text
+  var btnRunP5 = document.getElementById('btn-run-p5');
+  var p5Status = document.getElementById('p5-status-text');
+  if (isCombined && btnRunP5) {
+    btnRunP5.disabled      = !ready;
+    btnRunP5.style.opacity = ready ? '1' : '.35';
+    btnRunP5.style.cursor  = ready ? 'pointer' : 'not-allowed';
+    if (ready) {
+      btnRunP5.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="1,1 9,5 1,9"/></svg>Run Analysis';
+      btnRunP5.style.background = 'var(--c-accent)';
+      btnRunP5.style.borderColor = 'var(--c-accent)';
+    }
+  }
+  if (isCombined && p5Status) {
+    if (ready) {
+      p5Status.textContent = '✓ Ready to run analysis';
+      p5Status.style.color = '#1a5c1a';
+    } else {
+      var fbParsedP5 = !!(FB && FB.parsed && FB.parsed.length > 0);
+      p5Status.textContent = fbParsedP5 ? 'Review unmatched comments ↓' : 'Upload a feedback file to continue';
+      p5Status.style.color = 'var(--c-muted)';
+    }
   }
   renderPreflightPanel();
   updateThresholdIndicators();
@@ -8056,7 +8228,7 @@ function exportSessionJSON() {
   var payload = {
     meta: {
       tool:        'AQP \u2014 Assessment Quality Platform',
-      institution: 'University of Ottawa \u00B7 Faculty of Medicine \u00B7 Undergraduate Medical Education',
+      institution: 'Undergraduate Medical Education',
       version:     APP_VERSION,
       build:       APP_BUILD,
       exportedAt:  ts,
@@ -8390,10 +8562,32 @@ function resetSetupSteps() {
   var dot3 = document.getElementById('setup-step-dot-3'); if (dot3) { dot3.style.background = 'rgba(0,0,0,.12)'; dot3.style.color = 'var(--c-muted)'; }
   var lbl3 = document.getElementById('setup-step-lbl-3'); if (lbl3) { lbl3.style.color = 'var(--c-muted)'; lbl3.style.fontWeight = '500'; }
   var conn3 = document.getElementById('setup-step-conn-3'); if (conn3) conn3.style.background = 'rgba(0,0,0,.12)';
+  var dot4  = document.getElementById('setup-step-dot-4'); if (dot4)  { dot4.style.background  = 'rgba(0,0,0,.1)';  dot4.style.color  = 'var(--c-muted)'; }
+  var lbl4  = document.getElementById('setup-step-lbl-4'); if (lbl4)  { lbl4.style.color  = 'var(--c-muted)'; lbl4.style.fontWeight  = '500'; }
+  var conn4 = document.getElementById('setup-step-conn-4'); if (conn4) conn4.style.background = 'rgba(0,0,0,.1)';
+  var dot5  = document.getElementById('setup-step-dot-5'); if (dot5)  { dot5.style.background  = 'rgba(0,0,0,.1)';  dot5.style.color  = 'var(--c-muted)'; }
+  var lbl5  = document.getElementById('setup-step-lbl-5'); if (lbl5)  { lbl5.style.color  = 'var(--c-muted)'; lbl5.style.fontWeight  = '500'; }
+  var conn5r = document.getElementById('setup-step-conn-5'); if (conn5r) { conn5r.style.background = 'rgba(0,0,0,.1)'; conn5r.style.display = 'none'; }
+  var wzs5r  = document.getElementById('wz-s5'); if (wzs5r) wzs5r.style.display = 'none';
   // Hide step 2 and 3 blocks
   var s2 = document.getElementById('setup-step2-block'); if (s2) s2.style.display = 'none';
   var mcqDiv = document.getElementById('setup-tab-mcq'); if (mcqDiv) mcqDiv.style.display = 'none';
   var fbDiv  = document.getElementById('setup-tab-fb');  if (fbDiv)  fbDiv.style.display  = 'none';
+  // Reset wizard to step 1
+  G_WIZARD_STEP = 1;
+  var wp3 = document.getElementById('wizard-p3'); if (wp3) { wp3.style.display = 'none'; wp3.style.animation = ''; }
+  var wp4 = document.getElementById('wizard-p4'); if (wp4) { wp4.style.display = 'none'; wp4.style.animation = ''; }
+  var wp5 = document.getElementById('wizard-p5'); if (wp5) { wp5.style.display = 'none'; wp5.style.animation = ''; }
+  var wp1 = document.getElementById('setup-step1-block'); if (wp1) { wp1.style.display = 'block'; wp1.style.animation = ''; }
+  var wp2el = document.getElementById('setup-step2-block'); if (wp2el) wp2el.style.animation = '';
+  var rd1 = document.getElementById('setup-step-dot-1'); if (rd1) rd1.innerHTML = '1';
+  var rd2 = document.getElementById('setup-step-dot-2'); if (rd2) rd2.innerHTML = '2';
+  var rd3 = document.getElementById('setup-step-dot-3'); if (rd3) rd3.innerHTML = '3';
+  var rd4 = document.getElementById('setup-step-dot-4'); if (rd4) rd4.innerHTML = '4';
+  var rd5 = document.getElementById('setup-step-dot-5'); if (rd5) rd5.innerHTML = '5';
+  var rc5 = document.getElementById('setup-step-conn-5'); if (rc5) rc5.style.display = 'none';
+  var rs5 = document.getElementById('wz-s5'); if (rs5) rs5.style.display = 'none';
+  updateWizardRailClickability(1);
   // Reset type cards
   ['mcq','fb','both'].forEach(function(t) {
     var card = document.getElementById('type-card-' + t);
@@ -8627,7 +8821,13 @@ var RELEASE_NOTES = [
         build: '20260727-02',
         date:  'July 27, 2026',
         notes: [
-          'Splash screen duration reverted to 7.5 seconds — animations were designed for this timing.',
+          'Step 4/5 split for combined mode: combined feedback upload extracted from wizard-p4 into new wizard-p5; rail gains a 5th step (Feedback upload) shown only for combined analysis; step 4 label renamed to MCQ upload. wizard-p4 Continue button (btn-continue-to-fb) replaces Run in combined mode — enabled when G_MCQ_CONFIRMED; clicking calls onContinueToFeedback() which unlocks the feedback zone and navigates to step 5. wizard-p5 has its own sticky Run footer (btn-run-p5, p5-status-text). checkRunReady updated: combined mode shows Continue btn and p5 Run btn; MCQ-only shows original Run btn. activateCombinedFeedbackZone scrollIntoView removed. confirmParsePreview no longer calls activateCombinedFeedbackZone directly. wizardBackTo, updateWizardRailClickability, and reset all extended for step 5.',
+          'Phase 2 wizard — configure step extracted: Data Source & DIF section moved out of upload panel into dedicated wizard step 3; upload panel becomes step 4. Rail updated to 4 steps (Exam details → Analysis type → Configure → Upload & run). New wizard-p3 panel contains DIF toggles and stream code fields plus a Continue button. wizard-p3 renamed to wizard-p4 with updated back button (Back to configure). Feedback-only analysis skips configure step — wizardGoTo(4) called directly from selectAnalysisType for fb type; wizardBackTo(3) redirects to step 2 for fb. wizardBackTo, updateWizardRailClickability, reset all updated for 4-step structure.',
+          'Wizard back buttons — explicit “← Back” text button added at top of panels 2 and 3; calls wizardBackTo() which resets rail and slides back. Hover state darkens from muted to primary. Complements the clickable checkmark steps already in the rail.',
+          'Phase 1 wizard — setup screen shell: step rail redesigned (26px dots, flex connectors, transitions); wizard-p3 wrapper added around upload tabs; wizardGoTo() handles sequential out/in panel animations (180ms out + 200ms in, slide left/right); wizardBackTo() resets rail state and navigates backward; updateWizardRailClickability() shows checkmark on completed steps with pointer cursor; advanceToStep2() and selectAnalysisType() now call wizardGoTo() instead of direct show/scroll; reset() restores wizard to step 1. No logic changes — all state, upload, run, and combined-flow code unchanged.',
+          'G1 — Splash screen resequenced and compressed: animation order changed to magnifier → A → Q → P+badge → full app name → bars+trend line. All step delays and durations compressed; TOTAL_MS reduced from 7500ms to 3700ms. Last animation completes ~3580ms; exit (dissolve + fade) completes ~5230ms total — under 5.5 seconds.',
+          'G2 — Institutional branding removed from user-facing surfaces: version string, About modal heading, About modal description, footer and About copyright, CSV export header, Word brand mark, and JSON institution field all updated to "Undergraduate Medical Education". Report headers (FACULTY OF MEDICINE — UNDERGRADUATE MEDICAL EDUCATION) retained as-is per design decision. UGME Exam Standard threshold label, uOttawa Theme label, DIF text, and release notes history unchanged.',
+                    'Splash screen duration reverted to 7.5 seconds — animations were designed for this timing.',
           '"Next step" bar removed — the persistent amber guidance bar below the session strip has been removed. The post-analysis toast (auto-dismisses after 8 seconds) continues to surface this summary information.',
           'Session status strip redesigned — now shows a "Session" label, green checkmark pills for loaded components (MCQ Analysis, DIF, Feedback), grey pills for unloaded/not-configured components, and a distinct "Available reports" section listing exportable report types (MCQ, DIF, MCQ+DIF, Feedback). DIF pill only shows when DIF is enabled or was run. Feedback pill only shows in combined/feedback sessions. Stale (G_DIRTY) state now shows an amber warning icon on the MCQ pill.',
         ]
@@ -10418,6 +10618,103 @@ function updateSetupContinueBtn() {
   if (hint)  { hint.textContent = 'Enter a title to continue'; hint.style.color = ''; hint.style.fontWeight = ''; }
 }
 
+// ── Wizard panel navigation ───────────────────────────────────────────────
+var G_WIZARD_STEP = 1;
+// Panel element IDs for each wizard step
+var WZ_PANELS = ['setup-step1-block', 'setup-step2-block', 'wizard-p3', 'wizard-p4', 'wizard-p5'];
+
+function wizardGoTo(step) {
+  if (step === G_WIZARD_STEP) return;
+  var isBack = step < G_WIZARD_STEP;
+  var fromEl = document.getElementById(WZ_PANELS[G_WIZARD_STEP - 1]);
+  var toEl   = document.getElementById(WZ_PANELS[step - 1]);
+  G_WIZARD_STEP = step;
+  updateWizardRailClickability(step);
+  if (!fromEl || !toEl) return;
+  // Phase 1: animate out current panel
+  fromEl.style.animation = isBack ? 'wSlideOutR .18s ease forwards' : 'wSlideOutL .18s ease forwards';
+  setTimeout(function() {
+    // Phase 2: switch panels
+    fromEl.style.display  = 'none';
+    fromEl.style.animation = '';
+    toEl.style.display = 'block';
+    // Phase 3: animate in new panel
+    toEl.style.animation = isBack ? 'wSlideInL .2s ease forwards' : 'wSlideInR .2s ease forwards';
+    setTimeout(function() { toEl.style.animation = ''; }, 200);
+    // Scroll to top of page so rail is visible
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, 180);
+}
+
+function wizardBackTo(step) {
+  if (step >= G_WIZARD_STEP) return; // only navigate backward
+  // Feedback-only skips configure — back from step 4 goes to step 2
+  if (step === 3 && G_ANALYSIS_TYPE === 'fb') step = 2;
+  // Reset rail indicators for steps beyond target
+  if (step < 5) {
+    var d5 = document.getElementById('setup-step-dot-5');
+    var l5 = document.getElementById('setup-step-lbl-5');
+    var c5 = document.getElementById('setup-step-conn-5');
+    if (d5) { d5.style.background = 'rgba(0,0,0,.1)'; d5.style.color = 'var(--c-muted)'; d5.innerHTML = '5'; }
+    if (l5) { l5.style.color = 'var(--c-muted)'; l5.style.fontWeight = '500'; }
+    if (c5) c5.style.background = 'rgba(0,0,0,.1)';
+  }
+  if (step < 4) {
+    var d4 = document.getElementById('setup-step-dot-4');
+    var l4 = document.getElementById('setup-step-lbl-4');
+    var c4 = document.getElementById('setup-step-conn-4');
+    if (d4) { d4.style.background = 'rgba(0,0,0,.1)'; d4.style.color = 'var(--c-muted)'; d4.innerHTML = '4'; }
+    if (l4) { l4.style.color = 'var(--c-muted)'; l4.style.fontWeight = '500'; }
+    if (c4) c4.style.background = 'rgba(0,0,0,.1)';
+  }
+  if (step < 3) {
+    var d3 = document.getElementById('setup-step-dot-3');
+    var l3 = document.getElementById('setup-step-lbl-3');
+    var c3 = document.getElementById('setup-step-conn-3');
+    if (d3) { d3.style.background = 'rgba(0,0,0,.1)'; d3.style.color = 'var(--c-muted)'; d3.innerHTML = '3'; }
+    if (l3) { l3.style.color = 'var(--c-muted)'; l3.style.fontWeight = '500'; }
+    if (c3) c3.style.background = 'rgba(0,0,0,.1)';
+  }
+  if (step < 2) {
+    var d2 = document.getElementById('setup-step-dot-2');
+    var l2 = document.getElementById('setup-step-lbl-2');
+    var c2 = document.getElementById('setup-step-conn-2');
+    if (d2) { d2.style.background = 'rgba(0,0,0,.1)'; d2.style.color = 'var(--c-muted)'; d2.innerHTML = '2'; }
+    if (l2) { l2.style.color = 'var(--c-muted)'; l2.style.fontWeight = '500'; }
+    if (c2) c2.style.background = 'rgba(0,0,0,.1)';
+    var d1 = document.getElementById('setup-step-dot-1'); if (d1) { d1.innerHTML = '1'; }
+    var l1 = document.getElementById('setup-step-lbl-1');
+    if (l1) { l1.style.color = 'var(--c-accent)'; l1.style.fontWeight = '700'; }
+  }
+  wizardGoTo(step);
+}
+
+function updateWizardRailClickability(currentStep) {
+  var checkSvg = '<svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var stepMeta = [
+    {wrap:'wz-s1', dot:'setup-step-dot-1', num:'1'},
+    {wrap:'wz-s2', dot:'setup-step-dot-2', num:'2'},
+    {wrap:'wz-s3', dot:'setup-step-dot-3', num:'3'},
+    {wrap:'wz-s4', dot:'setup-step-dot-4', num:'4'},
+    {wrap:'wz-s5', dot:'setup-step-dot-5', num:'5'}
+  ];
+  stepMeta.forEach(function(s, i) {
+    var stepNum = i + 1;
+    var wrapEl = document.getElementById(s.wrap);
+    var dotEl  = document.getElementById(s.dot);
+    if (!wrapEl) return;
+    if (stepNum < currentStep) {
+      // Completed — show checkmark and pointer cursor
+      wrapEl.style.cursor = 'pointer';
+      if (dotEl) dotEl.innerHTML = checkSvg;
+    } else {
+      // Active or future — no pointer
+      wrapEl.style.cursor = 'default';
+      if (dotEl && dotEl.innerHTML.indexOf('<svg') >= 0) dotEl.innerHTML = s.num;
+    }
+  });
+}
+
 function advanceToStep2() {
   // Guard — exam title is required
   var title = document.getElementById('exam-title');
@@ -10444,12 +10741,8 @@ function advanceToStep2() {
   if (dot2)  { dot2.style.background = 'var(--c-accent)'; dot2.style.color = '#fff'; }
   if (lbl2)  { lbl2.style.color = 'var(--c-accent)'; lbl2.style.fontWeight = '700'; }
   if (conn2) { conn2.style.background = 'var(--c-accent)'; }
-  // Show step 2 block
-  var s2 = document.getElementById('setup-step2-block');
-  if (s2) {
-    s2.style.display = 'block';
-    setTimeout(function() { s2.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
-  }
+  // Advance to wizard step 2
+  wizardGoTo(2);
 }
 
 // Track current analysis type selection
@@ -10499,10 +10792,21 @@ function selectAnalysisType(type) {
     var cbz3 = document.getElementById('combined-fb-zone'); if (cbz3) cbz3.style.display = 'block';
     var cvb3 = document.getElementById('combined-mcq-validated-banner'); if (cvb3) cvb3.style.display = 'none';
   }
-  // Scroll to the upload section
-  var mcqDiv = document.getElementById('setup-tab-mcq');
-  var target = mcqDiv && mcqDiv.style.display !== 'none' ? mcqDiv : document.getElementById('setup-tab-fb');
-  if (target) setTimeout(function() { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+  // Show/hide step 5 rail elements (combined only)
+  var conn5 = document.getElementById('setup-step-conn-5');
+  var wzS5  = document.getElementById('wz-s5');
+  if (conn5) conn5.style.display = type === 'both' ? '' : 'none';
+  if (wzS5)  wzS5.style.display  = type === 'both' ? 'flex' : 'none';
+  // Update step 4 label to reflect what uploads there
+  var lbl4 = document.getElementById('setup-step-lbl-4');
+  if (lbl4) lbl4.textContent = type === 'fb' ? 'Feedback upload' : 'MCQ upload';
+  // Configure step for MCQ/combined; feedback-only skips configure
+  wizardGoTo(type === 'fb' ? 4 : 3);
+}
+
+function onContinueToFeedback() {
+  activateCombinedFeedbackZone();
+  wizardGoTo(5);
 }
 
 function activateCombinedFeedbackZone() {
@@ -10527,9 +10831,6 @@ function activateCombinedFeedbackZone() {
     if (czEd) czEd.style.display = 'block';
     if (czLk) czLk.style.display = 'none';
   }
-  // Scroll to feedback zone
-  var fbZone = document.getElementById('combined-fb-zone');
-  if (fbZone) setTimeout(function(){ fbZone.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
 }
 
 
@@ -13002,7 +13303,7 @@ document.addEventListener('click', function(e) {
             <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2"/>
           </svg>
           <div>
-            <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px">Faculty of Medicine · Undergraduate Medical Education</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px">Undergraduate Medical Education</div>
             <div id="about-modal-title" style="font-size:26px;font-weight:700;color:#fff;line-height:1.1;font-family:'Aptos Display','Aptos',Calibri,sans-serif">AQP</div>
             <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,.9);line-height:1.1;font-family:'Aptos Display','Aptos',Calibri,sans-serif;letter-spacing:1px">ASSESSMENT QUALITY PLATFORM</div>
             <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
@@ -13024,7 +13325,7 @@ document.addEventListener('click', function(e) {
       <div>
         <div style="font-size:11px;font-weight:700;color:var(--c-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">About</div>
         <p style="font-size:13px;line-height:1.75;color:var(--c-secondary);margin:0">
-          The <strong style="color:var(--c-primary)">Assessment Quality Platform (AQP)</strong> automates the generation and reporting of MCQ item, DIF, and student feedback analyses for UGME-related exams at the Faculty of Medicine of the University of Ottawa. The application allows uploading raw data from a QuestionMark or Scantron export and generates item statistics, score distributions, and formatted Word reports in seconds. For methodology details, instructions or guidance, see the <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none">FAQ / Help</a> page.
+          The <strong style="color:var(--c-primary)">Assessment Quality Platform (AQP)</strong> automates the generation and reporting of MCQ item, DIF, and student feedback analyses for UGME-related exams. The application allows uploading raw data from a QuestionMark or Scantron export and generates item statistics, score distributions, and formatted Word reports in seconds. For methodology details, instructions or guidance, see the <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none">FAQ / Help</a> page.
         </p>
         <p style="font-size:12px;line-height:1.6;color:var(--c-muted);margin:10px 0 0;font-style:italic">Note: session history, multi-user access, and report archiving require a future backend integration — see the <a href="#" onclick="closeAbout();openFAQ();return false;" style="color:var(--c-accent);font-weight:600;text-decoration:none;font-style:normal">FAQ</a> for current limitations.</p>
       </div>
@@ -13056,7 +13357,7 @@ document.addEventListener('click', function(e) {
 
       <!-- Footer -->
       <div class="banner-edit-row" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="font-size:11.5px;color:var(--c-muted)">© 2026 Faculty of Medicine, University of Ottawa. All rights reserved.</div>
+        <div style="font-size:11.5px;color:var(--c-muted)">© 2026 Undergraduate Medical Education. All rights reserved.</div>
         <div style="font-size:11.5px;color:var(--c-muted)">For internal use only · <span data-appversion></span></div>
       </div>
 
