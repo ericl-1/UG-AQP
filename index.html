@@ -3081,7 +3081,7 @@ function parseResults(text, xlsxRows, isCsv) {
   var wordingRow = rows[1] || [];
   for (var wi = 0; wi < wordingRow.length; wi++) {
     var wCell = String(wordingRow[wi] || '');
-    var eidMatch = wCell.match(/Question\s+ID:\s*(\d+)/i);
+    var eidMatch = wCell.match(/(?:Question\s+)?ID:\s*(\d+(?:\/\d+)?)/i);
     if (eidMatch) elentraIdByCol[wi] = eidMatch[1];
   }
   // Map to question order: questions[qi].scoreCol → elentraId
