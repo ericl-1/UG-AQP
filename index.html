@@ -2009,10 +2009,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260728-10';
+var APP_BUILD       = '20260812-01';
 var APP_FAQ_VERSION = '3.2';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'July 27, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'July 28, 2026'; // Update each version close
+var APP_RN_DATE     = 'August 12, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -8812,6 +8812,24 @@ var RELEASE_NOTES = [
   {
     version: '3.0',
     builds: [
+      {
+        build: '20260812-01',
+        date:  'August 12, 2026',
+        notes: [
+          'Fixed: diagnostics modal body now scrolls correctly — missing min-height:0 on the flex body prevented overflow-y:auto from activating, making full diagnostic text unreachable.',
+          'Upload feedback (Results card): stream warning and badge now gated on DIF being enabled. When DIF is off, the upload card shows OK regardless of stream detection, the "Language stream not detected" warning is suppressed, and the student count no longer shows empty parentheses.',
+          'Parse preview (MCQ data validation): all stream-related elements now hidden when DIF is off. EN/FR KPI tiles removed; KPI row collapses from 4 columns to 2 (Students and Questions only). Stream code and Stream badge columns removed from student table. Unmatched code warning and yellow row highlighting suppressed.',
+          'Fixed: "&amp;" double-escape in upload diagnostics text — the Data Source & DIF reference now renders correctly as "&" instead of displaying the literal entity.',
+        ]
+      },
+      {
+        build: '20260728-10',
+        date:  'July 28, 2026',
+        notes: [
+          'Upload cards collapse on successful parse — on file load, the Results and Answer Key card headers hide and body padding compresses; upload zone is replaced by a compact confirmed row showing a green checkmark, filename, and question/student count. A Change button re-expands the card and clears the file input so the same file can be re-uploaded.',
+          'Fixed: session status strip "Available reports" was not updating after analysis — renderSessionStatus() was called before esRecordMcq() set ExamSession.hasMcq to true. Now called immediately after, ensuring the strip reflects the correct state for all analysis types.',
+        ]
+      },
       {
         build: '20260727-03',
         date:  'July 27, 2026',
