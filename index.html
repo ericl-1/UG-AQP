@@ -3139,7 +3139,7 @@ function parseResults(text, xlsxRows, isCsv) {
   var notes = [];
   if (G._hasDisclosure) notes.push('Non-disclosure agreement question excluded.');
   if (skippedUnscoredResults > 0) notes.push(skippedUnscoredResults + ' unscored or placeholder question'+(skippedUnscoredResults!==1?'s':'')+' excluded.');
-  if (!hasStream) notes.push('⚠ Language stream not detected — DIF analysis will be unavailable.');
+  if (G_DIF_ENABLED && !hasStream) notes.push('⚠ Language stream not detected — DIF analysis will be unavailable.');
   if (isCsv) notes.push('ℹ CSV uploaded — question labels are sequential. Merged-cell headers from QM may not be present.');
 
   var lines = [
@@ -3166,7 +3166,7 @@ function parseResults(text, xlsxRows, isCsv) {
   // Visible human-readable lines
   var visibleLines = [
     'Results file ready.',
-    'Students scanned: '+G.students.length+' total  ('+streamBreakdown+')',
+    'Students scanned: '+G.students.length+' total'+(G_DIF_ENABLED && streamBreakdown ? '  ('+streamBreakdown+')' : ''),
     'Questions included in analysis: '+G.nQ,
     exclusions.length ? 'Excluded: '+exclusions.join('; ') : 'No questions excluded.',
     'Sample responses — first student, Q1-Q10:',
@@ -3189,17 +3189,19 @@ function parseResults(text, xlsxRows, isCsv) {
     '\n' +
     'STUDENTS\n' +
     G.students.length+' students loaded.\n' +
-    (hasStream
+    (G_DIF_ENABLED && hasStream
       ? 'Stream breakdown: '+streamCodes.map(function(sc){return sc+': '+G.students.filter(function(s){return s.stream===sc;}).length+' students';}).join(', ')+'.\n'
       : '') +
-    (unmatchedCount > 0
-      ? unmatchedCount+' row'+(unmatchedCount!==1?'s':'')+' had a stream code that did not match EN ("'+engCode+'") or FR ("'+freCode+'"). These students are included in overall stats but will not be assigned to a stream for DIF analysis. Check the stream codes in the Data Source &amp; DIF section if this is unexpected.\n'
-      : 'All student rows matched a recognised stream code.\n') +
+    (G_DIF_ENABLED
+      ? (unmatchedCount > 0
+          ? unmatchedCount+' row'+(unmatchedCount!==1?'s':'')+' had a stream code that did not match EN ("'+engCode+'") or FR ("'+freCode+'"). These students are included in overall stats but will not be assigned to a stream for DIF analysis. Check the stream codes in the Data Source & DIF section if this is unexpected.\n'
+          : 'All student rows matched a recognised stream code.\n')
+      : '') +
     '\n' +
     'ANSWER PREVIEW (first student, Q1–Q10)\n' +
     q10preview;
 
-  showFeedback('feedback-main', hasStream ? 'ok' : 'warn', visibleLines, dbg);
+  showFeedback('feedback-main', (G_DIF_ENABLED && !hasStream) ? 'warn' : 'ok', visibleLines, dbg);
   document.getElementById('key-card').style.display = 'block';
   checkRunReady();
   if (G_SOURCE !== 'scantron') updateQMPreview();
@@ -3678,7 +3680,7 @@ function renderQMPreview(el) {
       : isFR
         ? '<span style="display:inline-block;font-size:10px;font-weight:600;color:#3b6d11;background:#eaf3de;border-radius:4px;padding:1px 7px">FR</span>'
         : '<span style="display:inline-block;font-size:10px;font-weight:600;color:#856404;background:#fff3cd;border-radius:4px;padding:1px 7px">? unmatched</span>';
-    var rowBg = isUnmatched ? 'background:#fffbf0' : '';
+    var rowBg = (G_DIF_ENABLED && isUnmatched) ? 'background:#fffbf0' : '';
     var p = compact ? '5px 12px' : '7px 12px';
     var ansShort = s.outcomes ? s.outcomes.slice(0,5).map(function(a){ return a ? a.toUpperCase() : '—'; }).join(' ') : '—';
     var ansFull  = s.outcomes ? s.outcomes.map(function(a){ return a ? a.toUpperCase() : '—'; }).join(' ') : '—';
@@ -3687,8 +3689,8 @@ function renderQMPreview(el) {
       '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);color:var(--c-muted);font-size:12px">'+(idx+1)+'</td>' +
       '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-size:12px">'+(s.id||'—')+'</td>' +
       '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-size:12px">'+(s.last&&s.first?s.last+', '+s.first:s.last||s.first||'—')+'</td>' +
-      '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-family:monospace;font-size:12px">'+(s.stream||'—')+'</td>' +
-      '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-size:12px">'+streamBadge+'</td>' +
+      (G_DIF_ENABLED ? '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-family:monospace;font-size:12px">'+(s.stream||'—')+'</td>' : '') +
+      (G_DIF_ENABLED ? '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-size:12px">'+streamBadge+'</td>' : '') +
       '<td style="padding:'+p+';border-bottom:0.5px solid var(--c-border);font-family:monospace;font-size:12px">'+ansCell+'</td></tr>';
   }
 
@@ -3696,8 +3698,11 @@ function renderQMPreview(el) {
   var studentRowsHtml    = G.students.slice(0, PREVIEW_N).map(function(s,i){ return buildStudentRow(s,i,false); }).join('');
   var allStudentRowsHtml = G.students.map(function(s,i){ return buildStudentRow(s,i,true); }).join('');
 
+  var colHeaders = G_DIF_ENABLED
+    ? ['Row','Student ID','Name','Stream code','Stream','Q1–Q5 answers']
+    : ['Row','Student ID','Name','Q1–Q5 answers'];
   var thHtml = '<thead><tr style="background:var(--c-surface)">' +
-    ['Row','Student ID','Name','Stream code','Stream','Q1–Q5 answers'].map(function(h,i,arr){
+    colHeaders.map(function(h,i,arr){
       var cls = (i===arr.length-1) ? ' class="qm-ans-header"' : '';
       return '<th'+cls+' style="padding:7px 12px;text-align:left;font-size:11px;font-weight:500;color:var(--c-muted);border-bottom:0.5px solid var(--c-border)">'+h+'</th>';
     }).join('') + '</tr></thead>';
@@ -3710,7 +3715,7 @@ function renderQMPreview(el) {
 
   // Unmatched summary
   var unmatchedSummary = '';
-  if (unmatchedCodes.length > 0) {
+  if (G_DIF_ENABLED && unmatchedCodes.length > 0) {
     unmatchedSummary =
       '<div style="padding:10px 14px;background:#fffbf0;border-top:0.5px solid #f0e0a0">' +
         '<div style="font-size:11px;font-weight:600;color:#856404;margin-bottom:6px">⚠ '+nUnmatched+' student'+(nUnmatched!==1?'s':'')+' had unrecognised stream codes — breakdown below. These students will be prompted for stream assignment when you run the analysis.</div>' +
@@ -3755,11 +3760,11 @@ function renderQMPreview(el) {
     // Mismatch warning (if any)
     mismatchWarning +
     // KPI row
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:0.5px solid var(--c-border)">' +
+    '<div style="display:grid;grid-template-columns:repeat('+(G_DIF_ENABLED?'4':'2')+',1fr);gap:0;border-bottom:0.5px solid var(--c-border)">' +
       _previewKPI('Students', G.students.length, 'rows detected') +
       _previewKPI('Questions', qCount, 'in results file') +
-      _previewKPI('EN stream', nEN, enCode||'—', '#185fa5') +
-      _previewKPI('FR stream', nFR, frCode||'—', '#3b6d11') +
+      (G_DIF_ENABLED ? _previewKPI('EN stream', nEN, enCode||'—', '#185fa5') : '') +
+      (G_DIF_ENABLED ? _previewKPI('FR stream', nFR, frCode||'—', '#3b6d11') : '') +
     '</div>' +
     // Key section
     '<div style="border-bottom:0.5px solid var(--c-border)">' +
@@ -14334,7 +14339,7 @@ document.addEventListener('click', function(e) {
       <button onclick="closeDiagnosticsModal()" aria-label="Close" title="Close" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <!-- Sections -->
-    <div id="diag-modal-body" style="overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px;flex:1"></div>
+    <div id="diag-modal-body" style="overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0"></div>
     <!-- Footer -->
     <div style="padding:14px 28px;border-top:1px solid var(--c-border);flex-shrink:0;display:flex;justify-content:flex-end">
       <button onclick="closeDiagnosticsModal()" style="font-size:13px;font-weight:600;padding:7px 20px;border-radius:6px;border:1px solid var(--c-border);background:#fff;color:var(--c-secondary);cursor:pointer">Close</button>
