@@ -724,10 +724,10 @@ th{position:relative;white-space:normal}
     </button>
   </div>
 
-  <!-- Session history — empty state (history requires backend, planned for v3.0) -->
+  <!-- Session history — populated by renderSessionHistory() when a localStorage draft exists -->
   <div style="margin:0 auto 32px;width:75%;max-width:100%">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--c-muted);margin-bottom:10px">Session history</div>
-    <div style="border:1px dashed var(--c-border);border-radius:10px;padding:32px 20px;text-align:center;background:var(--c-surface)">
+    <div id="session-history-content" style="border:1px dashed var(--c-border);border-radius:10px;padding:32px 20px;text-align:center;background:var(--c-surface)">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--c-muted)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;opacity:.6">
         <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/>
       </svg>
@@ -815,6 +815,26 @@ th{position:relative;white-space:normal}
     <div id="wz-s5" style="display:none;align-items:center;gap:7px;flex-shrink:0;cursor:default">
       <div id="setup-step-dot-5" style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.1);color:var(--c-muted);transition:background .2s,color .2s">5</div>
       <span id="setup-step-lbl-5" style="font-size:12.5px;font-weight:500;color:var(--c-muted);white-space:nowrap;transition:color .2s">Feedback upload</span>
+    </div>
+  </div>
+
+  <!-- Draft resume banner — hidden until checkForDraft() finds a saved session -->
+  <div id="draft-resume-banner" role="alert" style="display:none;margin-bottom:16px;padding:12px 16px;background:#fef7f7;border-left:3px solid var(--c-accent)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13.5px;color:var(--c-primary);margin-bottom:2px">
+          💾 <span id="draft-banner-title">Draft session found</span>
+        </div>
+        <div id="draft-banner-meta" style="font-size:12.5px;color:var(--c-muted)"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;align-items:center">
+        <button onclick="resumeSession()" class="btn-dl-primary">Resume session</button>
+        <button onclick="discardDraft()"
+          style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--font);white-space:nowrap"
+          onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">
+          Start fresh
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2009,9 +2029,9 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260820-01';
-var APP_FAQ_VERSION = '3.2';           // Update when FAQ content changes
-var APP_FAQ_DATE    = 'July 27, 2026'; // Update when FAQ content changes
+var APP_BUILD       = '20260820-02';
+var APP_FAQ_VERSION = '3.3';           // Update when FAQ content changes
+var APP_FAQ_DATE    = 'August 20, 2026'; // Update when FAQ content changes
 var APP_RN_DATE     = 'August 20, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
@@ -2250,6 +2270,266 @@ function applyTheme(theme) {
   try { saved = localStorage.getItem('ugme-theme') || ''; } catch(e) {}
   if (saved) applyTheme(saved);
 })();
+// ── C1: Session persistence ───────────────────────────────────────────────
+// Saves G, FB (minus raw rows), ExamSession, flags, and key DOM fields to
+// localStorage['aqp-draft']. Called after every significant action.
+// On page load, checkForDraft() shows a resume banner if a draft is found.
+
+var _DRAFT_KEY = 'aqp-draft';
+
+function saveSession() {
+  if (!G._lastN) return; // nothing analysed yet — nothing worth saving
+  try {
+    var thresholds = {};
+    ['difficult','easy','disc','checkp','checkr','dif','gapamber','gapred'].forEach(function(id) {
+      var el = document.getElementById('thr-' + id);
+      thresholds[id] = el ? parseFloat(el.value) : THRESH_DEFAULTS[id];
+    });
+    var fbToSave = null;
+    if (FB && FB.ready) {
+      fbToSave = {
+        parsed:      FB.parsed,
+        pending:     FB.pending,
+        grouped:     FB.grouped,
+        bareRefs:    FB.bareRefs,
+        general:     FB.general,
+        examTitle:   FB.examTitle,
+        examDate:    FB.examDate,
+        manualMaxQ:  FB.manualMaxQ,
+        maxQUsed:    FB.maxQUsed,
+        maxQSource:  FB.maxQSource,
+        ready:       FB.ready
+        // raw[] intentionally excluded — not needed after parse
+      };
+    }
+    var payload = JSON.stringify({
+      savedAt:     new Date().toISOString(),
+      build:       APP_BUILD,
+      fields: {
+        examTitle:   (document.getElementById('exam-title')  || {}).value || '',
+        examDate:    (document.getElementById('exam-date')   || {}).value || '',
+        coordinator: (document.getElementById('coordinator') || {}).value || '',
+        engCode:     (document.getElementById('eng-code')    || {}).value || '',
+        freCode:     (document.getElementById('fre-code')    || {}).value || '',
+        thresholds:  thresholds
+      },
+      flags: {
+        G_SOURCE:        G_SOURCE,
+        G_DIF_ENABLED:   G_DIF_ENABLED,
+        G_ANALYSIS_TYPE: (typeof G_ANALYSIS_TYPE !== 'undefined') ? G_ANALYSIS_TYPE : 'mcq'
+      },
+      G:           G,
+      FB:          fbToSave,
+      ExamSession: ExamSession
+    });
+    localStorage.setItem(_DRAFT_KEY, payload);
+  } catch(e) {
+    // Quota exceeded or serialisation error — show a quiet toast and move on
+    var t = document.getElementById('draft-save-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'draft-save-toast';
+      t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;font-size:13px;padding:8px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .3s';
+      document.body.appendChild(t);
+    }
+    t.textContent = 'Session could not be auto-saved (file too large for browser storage).';
+    t.style.opacity = '1';
+    setTimeout(function() { t.style.opacity = '0'; }, 4000);
+  }
+}
+
+function checkForDraft() {
+  try {
+    var raw = localStorage.getItem(_DRAFT_KEY);
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    if (!d || !d.G || !d.G._lastN) return; // no real analysis data
+
+    var banner  = document.getElementById('draft-resume-banner');
+    var elTitle = document.getElementById('draft-banner-title');
+    var elMeta  = document.getElementById('draft-banner-meta');
+    if (!banner) return;
+
+    var title   = (d.fields && d.fields.examTitle) ? d.fields.examTitle : 'Untitled exam';
+    var nQ      = d.G.nQ || 0;
+    var nStu    = d.G._lastN || 0;
+    var hasFb   = !!(d.FB && d.FB.ready);
+
+    // Format time-ago
+    var saved   = new Date(d.savedAt);
+    var diffMs  = Date.now() - saved.getTime();
+    var diffMin = Math.round(diffMs / 60000);
+    var timeAgo;
+    if (diffMin < 2)       timeAgo = 'just now';
+    else if (diffMin < 60) timeAgo = diffMin + ' minutes ago';
+    else if (diffMin < 120) timeAgo = '1 hour ago';
+    else if (diffMin < 1440) timeAgo = Math.floor(diffMin/60) + ' hours ago';
+    else                    timeAgo = Math.floor(diffMin/1440) + ' day' + (Math.floor(diffMin/1440)===1?'':'s') + ' ago';
+
+    var metaParts = [nQ + ' questions', nStu + ' students'];
+    if (hasFb) metaParts.push('feedback loaded');
+    metaParts.push('Saved ' + timeAgo);
+
+    elTitle.textContent = title;
+    elMeta.textContent  = metaParts.join(' · ');
+    banner.style.display = 'block';
+    renderSessionHistory(d); // also populate home page session history card
+  } catch(e) { /* corrupt draft — ignore */ }
+}
+
+function resumeSession() {
+  try {
+    var raw = localStorage.getItem(_DRAFT_KEY);
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    if (!d || !d.G || !d.G._lastN) return;
+
+    // 1. Restore DOM fields
+    var f = d.fields || {};
+    var setVal = function(id, val) { var el = document.getElementById(id); if (el && val != null) el.value = val; };
+    setVal('exam-title',  f.examTitle);
+    setVal('exam-date',   f.examDate);
+    setVal('coordinator', f.coordinator);
+    setVal('eng-code',    f.engCode);
+    setVal('fre-code',    f.freCode);
+
+    // 2. Restore thresholds to DOM + sync sliders
+    if (f.thresholds) {
+      Object.keys(f.thresholds).forEach(function(id) {
+        var el = document.getElementById('thr-' + id);
+        if (el) el.value = f.thresholds[id];
+        syncSlider(id, f.thresholds[id]);
+      });
+    }
+
+    // 3. Restore G_* flags
+    var flags = d.flags || {};
+    if (typeof flags.G_SOURCE      !== 'undefined') G_SOURCE      = flags.G_SOURCE;
+    if (typeof flags.G_DIF_ENABLED !== 'undefined') G_DIF_ENABLED = flags.G_DIF_ENABLED;
+    if (typeof G_ANALYSIS_TYPE     !== 'undefined' &&
+        typeof flags.G_ANALYSIS_TYPE !== 'undefined') G_ANALYSIS_TYPE = flags.G_ANALYSIS_TYPE;
+
+    // 4. Restore G and ExamSession
+    var savedG = d.G;
+    G.students   = savedG.students   || [];
+    G.key        = savedG.key        || [];
+    G.nQ         = savedG.nQ        || 0;
+    G.qLabels    = savedG.qLabels    || [];
+    G.qStatus    = savedG.qStatus    || [];
+    G.exclusions = savedG.exclusions || {};
+    // _lastN, _lastAlpha, _hasStream etc. restored for guard checks,
+    // then overwritten by runAnalysis()
+    G._lastN     = savedG._lastN;
+    G._lastAlpha = savedG._lastAlpha;
+    G._hasStream = savedG._hasStream;
+    if (d.ExamSession) {
+      Object.keys(d.ExamSession).forEach(function(k) {
+        if (k === 'reset') return; // method — skip
+        try { ExamSession[k] = d.ExamSession[k]; } catch(e) { /* getter-only property — skip */ }
+      });
+    }
+
+    // 5. Restore FB if present
+    if (d.FB && d.FB.ready) {
+      FB.parsed     = d.FB.parsed     || [];
+      FB.pending    = d.FB.pending    || [];
+      FB.grouped    = d.FB.grouped    || {};
+      FB.bareRefs   = d.FB.bareRefs   || {};
+      FB.general    = d.FB.general    || [];
+      FB.examTitle  = d.FB.examTitle  || '';
+      FB.examDate   = d.FB.examDate   || '';
+      FB.manualMaxQ = d.FB.manualMaxQ || null;
+      FB.maxQUsed   = d.FB.maxQUsed   || null;
+      FB.maxQSource = d.FB.maxQSource || null;
+      FB.ready      = true;
+    }
+
+    // 6. Hide banner, re-run analysis (recomputes + re-renders)
+    discardDraft();  // clears storage so a crash during render doesn't loop
+    var banner = document.getElementById('draft-resume-banner');
+    if (banner) banner.style.display = 'none';
+
+    runAnalysis();
+
+  } catch(e) {
+    alert('Could not restore session: ' + e.message + '. Starting fresh.');
+    discardDraft();
+  }
+}
+
+function discardDraft() {
+  try { localStorage.removeItem(_DRAFT_KEY); } catch(e) {}
+  var banner = document.getElementById('draft-resume-banner');
+  if (banner) banner.style.display = 'none';
+  renderSessionHistory(null); // clear card, revert to empty state
+}
+
+function renderSessionHistory(d) {
+  var el = document.getElementById('session-history-content');
+  if (!el) return;
+
+  if (!d || !d.G || !d.G._lastN) {
+    // Empty state
+    el.style.cssText = 'border:1px dashed var(--c-border);border-radius:10px;padding:32px 20px;text-align:center;background:var(--c-surface)';
+    el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--c-muted)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;opacity:.6"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>' +
+      '<div style="font-size:13px;font-weight:600;color:var(--c-secondary);margin-bottom:6px">No session history yet</div>' +
+      '<div style="font-size:12px;color:var(--c-muted);line-height:1.6;max-width:340px;margin:0 auto">Session history and longitudinal item tracking are planned for the backend-enabled version of AQP.</div>';
+    return;
+  }
+
+  var title  = (d.fields && d.fields.examTitle) ? d.fields.examTitle : 'Untitled exam';
+  var nQ     = d.G.nQ || 0;
+  var nStu   = d.G._lastN || 0;
+  var hasFb  = !!(d.FB && d.FB.ready);
+  var nFlag  = d.ExamSession && d.ExamSession.nFlagged != null ? d.ExamSession.nFlagged : null;
+
+  // Format saved date
+  var saved    = new Date(d.savedAt);
+  var diffMs   = Date.now() - saved.getTime();
+  var diffMin  = Math.round(diffMs / 60000);
+  var timeAgo;
+  if (diffMin < 2)        timeAgo = 'just now';
+  else if (diffMin < 60)  timeAgo = diffMin + ' minutes ago';
+  else if (diffMin < 120) timeAgo = '1 hour ago';
+  else if (diffMin < 1440) timeAgo = Math.floor(diffMin/60) + ' hours ago';
+  else                     timeAgo = Math.floor(diffMin/1440) + ' day' + (Math.floor(diffMin/1440)===1?'':'s') + ' ago';
+
+  var pills = [
+    nQ + ' questions',
+    nStu + ' students',
+    nFlag != null ? nFlag + ' flagged' : null,
+    hasFb ? 'feedback loaded' : null
+  ].filter(Boolean).map(function(t) {
+    return '<span style="display:inline-block;padding:2px 8px;border-radius:20px;background:var(--c-surface);border:1px solid var(--c-border-2);font-size:11px;color:var(--c-secondary);font-weight:600">' + t + '</span>';
+  }).join(' ');
+
+  el.style.cssText = 'border:1px solid var(--c-border-2);border-radius:10px;padding:0;background:var(--c-bg);overflow:hidden';
+  el.innerHTML =
+    '<div style="display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap">' +
+      '<div style="flex:1;min-width:0;text-align:left">' +
+        '<div style="font-size:14px;font-weight:700;color:var(--c-primary);margin-bottom:5px">💾 ' + title + '</div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">' + pills + '</div>' +
+        '<div style="font-size:11.5px;color:var(--c-muted)">Saved ' + timeAgo + ' · build ' + (d.build || '—') + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;align-items:center;flex-shrink:0">' +
+        '<button onclick="goSetupAndResume()" class="btn-dl-primary">Resume session</button>' +
+        '<button onclick="discardDraft()"' +
+          ' style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;color:var(--c-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap">' +
+          'Discard' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function goSetupAndResume() {
+  // Navigate to setup panel then trigger resume
+  var hp = document.getElementById('home-panel');
+  var sp = document.getElementById('setup-panel');
+  if (hp) hp.style.display = 'none';
+  if (sp) { sp.style.display = 'block'; sp.style.visibility = 'visible'; }
+  resumeSession();
+}
+// ── End C1 ───────────────────────────────────────────────────────────────
 
 function openSettings() {
   updateSettingsProfileLabel();
@@ -4621,6 +4901,7 @@ function _runAnalysis() {
   fbRefreshQCountField();
   // Update report cards visibility
   updateReportCards();
+  saveSession(); // C1 — autosave after MCQ analysis
   // Combined mode: auto-run feedback analysis after MCQ completes
   if (typeof G_ANALYSIS_TYPE !== 'undefined' && G_ANALYSIS_TYPE === 'both' && FB.parsed && FB.parsed.length > 0) {
     setTimeout(function() { runFeedbackAnalysis(); }, 200);
@@ -8448,6 +8729,7 @@ function doReportDownload() {
 
 
 function resetAll() {
+  discardDraft(); // C1 — clear draft on reset
   G={students:[],key:[],nQ:0,qLabels:[],qStatus:[],mcq:[],dif:[],exclusions:{}};
   ExamSession.reset();
   _reviewState = {}; _reviewSort = 'flag'; _reviewFloatDone = false;
@@ -8833,6 +9115,15 @@ var RELEASE_NOTES = [
   {
     version: '3.0',
     builds: [
+      {
+        build: '20260820-02',
+        date:  'August 20, 2026',
+        notes: [
+          'C1 — Session persistence: the tool now auto-saves the active session (MCQ data, feedback, exceptions, exam details, and threshold settings) to browser local storage after every analysis run, feedback finalisation, and exception change. If the tab is closed or the browser crashes mid-session, a resume banner appears above the exam details form on next load showing the exam name, question and student counts, and time since save. Clicking Resume session restores the full session and re-runs analysis. Clicking Start fresh clears the draft.',
+          'Session history card on the home screen now displays the saved draft when one exists, with exam title, question/student/flag counts, build reference, and time saved. Includes Resume session and Discard actions. Reverts to the empty state when the draft is discarded or the session is reset.',
+          'Start Over (Reset) now clears the saved draft as part of the reset flow.',
+        ]
+      },
       {
         build: '20260820-01',
         date:  'August 20, 2026',
@@ -9951,6 +10242,7 @@ function saveExclusions() {
   closeExclusionsModal();
   // Update link label to show active exclusions
   updateExclLink();
+  saveSession(); // C1 — autosave after exception change
 }
 
 function updateExclLink() {
@@ -11377,6 +11669,7 @@ function applyAndConfirmFeedback() {
   groupComments();
   autoCategorizeFb();
   FB.ready = true;
+  saveSession(); // C1 — autosave after feedback finalised (combined)
   esRecordFeedback(); // keep ExamSession in sync with new inline-resolver path
   var resolverEl = document.getElementById('combined-fb-inline-resolver');
   if (resolverEl) resolverEl.style.display = 'none';
@@ -11714,6 +12007,7 @@ function finaliseFeedback() {
   groupComments();
   autoCategorizeFb();
   FB.ready = true;
+  saveSession(); // C1 — autosave after feedback finalised (standalone)
   renderFbKpiZone();
   // Populate the banner card using the unified renderBanner (handles MCQ-only,
   // feedback-only, and combined states automatically)
@@ -13336,6 +13630,8 @@ document.addEventListener('click', function(e) {
 });
 
 // ── END FEEDBACK MODULE ───────────────────────────────────────────────────
+
+checkForDraft(); // C1 — called here so _DRAFT_KEY and all globals are fully initialised
 </script>
 <!-- ── About overlay ─────────────────────────────────────────────────── -->
 <div id="about-overlay" role="dialog" aria-modal="true" aria-labelledby="about-modal-title" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:5vh 7.5vw">
@@ -14091,8 +14387,8 @@ document.addEventListener('click', function(e) {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              No — the current version stores no session data beyond your chosen colour theme. Closing the tab, refreshing, or a browser crash will lose all uploaded files, analysis results, question exceptions, and feedback categorisation for that session.<br><br>
-              <strong>Export your Word reports, CSV, and JSON session data before closing the browser.</strong> Session persistence is planned for a future version.
+              Yes — as of build 20260820-02, the tool automatically saves your session to your browser's local storage after every analysis run, feedback finalisation, and exception change. If you close the tab, refresh, or the browser crashes, a <strong>Draft found</strong> banner will appear the next time you open the tool, showing your exam name and question and student counts. Click <strong>Resume session</strong> to restore everything and re-run the analysis automatically.<br><br>
+              <strong>Note:</strong> The draft is stored in this browser only — it will not carry over to a different browser or a different device. It also does not survive clearing your browser data. Exporting your Word reports, CSV, and JSON at the end of a session is still recommended for your permanent record.
             </div>
           </div>
 
@@ -14102,7 +14398,8 @@ document.addEventListener('click', function(e) {
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              Not yet. Once a session ends, the results are not retrievable through the tool. If you need to keep a record of past analyses, export the Word reports and CSV at the end of every session and save them to your usual file storage. A session history feature is planned for a future version that includes a backend system.
+              Yes, with one limitation: the tool saves one draft session at a time in your browser's local storage. If you closed the tab or the browser crashed during your last session, re-opening the tool will show a <strong>Draft found</strong> banner on the setup screen and a session card on the home screen. Click <strong>Resume session</strong> to restore your data.<br><br>
+              If you have already started a new session since then, the previous draft will have been overwritten. For a permanent retrievable record, export the Word reports, CSV, and JSON session data at the end of every session. Full multi-session history is planned for the backend-enabled version of AQP.
             </div>
           </div>
 
