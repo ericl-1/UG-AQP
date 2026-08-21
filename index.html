@@ -2009,10 +2009,10 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260812-01';
+var APP_BUILD       = '20260820-01';
 var APP_FAQ_VERSION = '3.2';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'July 27, 2026'; // Update when FAQ content changes
-var APP_RN_DATE     = 'August 12, 2026'; // Update each version close
+var APP_RN_DATE     = 'August 20, 2026'; // Update each version close
 
 // ── Feedback module global ────────────────────────────────────────────────
 var FB = {
@@ -3906,7 +3906,7 @@ function exportSessionRecord() {
   var creditedCount   = G.mcq ? G.mcq.filter(function(r){return r.excluded==='credit';}).length : 0;
   var deletedCount    = G.mcq ? G.mcq.filter(function(r){return r.excluded==='delete';}).length : 0;
   var flaggedCount    = G.mcq ? G.mcq.filter(function(r){return r.flag&&!r.excluded;}).length : 0;
-  var difFlaggedCount = G.dif ? G.dif.filter(function(d){return d.important;}).length : 0;
+  var difFlaggedCount = G.dif ? G.dif.filter(function(d){return d.imp;}).length : 0;
   var s1H = ['Export Version','Tool Version','Exported At','Source','Exam Title','Exam Date','Total Students','EN Students','FR Students','Total Questions','Effective Questions','Exam Avg %','EN Avg %','FR Avg %','Cronbach Alpha','Flagged Count','DIF Flagged Count','Credited Count','Deleted Count'];
   var s1R = ['1.0',APP_VERSION,ts,source,examTitle,examDate,G._lastN,G._lastNE||'',G._lastNF||'',G.nQ,G.nQ-deletedCount,G._lastAvg,G._lastEAvg||'',G._lastFAvg||'',G._lastAlpha?(Math.round(G._lastAlpha*100)/100).toFixed(2):'',flaggedCount,difFlaggedCount,creditedCount,deletedCount];
   // Build feedback comment count map
@@ -3920,19 +3920,23 @@ function exportSessionRecord() {
     });
   }
   var hasFbData = Object.keys(fbCommentMap).length > 0;
-  var s2H = ['Q #','Elentra ID','Key','Alt Keys','Difficulty (p)','Discrimination (rpbis)','Flag','Disposition','Reason','EN % Correct','FR % Correct','EN-FR Gap %','DIF Flagged','DIF p-value','Comments'].concat(hasFbData ? ['Feedback Comments'] : []);
+  var s2H = ['Q #','Elentra ID','Elentra Version','Key','Alt Keys','Difficulty (p)','Discrimination (rpbis)','Flag','Disposition','Reason','EN % Correct','FR % Correct','EN-FR Gap %','DIF Flagged','DIF p-value','Comments'].concat(hasFbData ? ['Feedback Comments'] : []);
   var s2R = (G.mcq||[]).map(function(r) {
-    var dif = (G.dif||[]).find(function(d){return d.qi===r.num-1;});
+    var dif = (G.dif||[]).find(function(d){return d.num===r.num;});
     var isDel = r.excluded==='delete';
-    return [r.num,r.elentraId||'',r.key||'',(r.altKeys&&r.altKeys.length)?r.altKeys.join('+'):'',
+    var eidRaw = r.elentraId || '';
+    var eidParts = eidRaw.indexOf('/') !== -1 ? eidRaw.split('/') : null;
+    var eidId  = eidParts ? eidParts[0] : eidRaw;
+    var eidVer = eidParts ? parseInt(eidParts[1], 10) : '';
+    return [r.num,eidId,eidVer,r.key||'',(r.altKeys&&r.altKeys.length)?r.altKeys.join('+'):'',
       isDel?'':(r.p!=null?(Math.round(r.p*100)/100).toFixed(2):''),
       isDel?'':(r.rpbis!=null?(Math.round(r.rpbis*100)/100).toFixed(2):''),
       r.flag||'',r.excluded==='credit'?'Credit':isDel?'Delete':'Include',r.reason||'',
       (isDel||!dif)?'':(dif.ePct!=null?dif.ePct:''),
       (isDel||!dif)?'':(dif.fPct!=null?dif.fPct:''),
-      (isDel||!dif)?'':(dif.gap!=null?Math.abs(dif.gap):''),
-      (isDel||!dif)?'':(dif.important?'Yes':'No'),
-      (isDel||!dif)?'':(dif.pval!=null?dif.pval.toFixed(3):''),
+      (isDel||!dif)?'':Math.abs(dif.ePct - dif.fPct),
+      (isDel||!dif)?'':(dif.imp?'Yes':'No'),
+      (isDel||!dif)?'':(dif.sig!=null?parseFloat(dif.sig).toFixed(3):''),
       r.reason&&r.excluded?'Reason: '+r.reason+(r.altReason?' | '+r.altReason:''):
         (r.altKeys&&r.altKeys.length?'Alt. answer(s) accepted: '+r.altKeys.join(', ')+(r.altReason?' — '+r.altReason:''):'')
     ].concat(hasFbData ? [fbCommentMap[r.num] || 0] : []);
@@ -6260,12 +6264,12 @@ function doExport(type) {
   var filename, rows=[], i, r;
   if(type==='mcq'){
     filename=safe+'_MCQ_Analysis.csv';
-    rows=[['Question #','Key','Difficulty','Discrimination','Reason for Flag','Best Students Chose','Recommendation']];
-    for(i=0;i<G.mcq.length;i++){r=G.mcq[i];rows.push([r.num,r.key,fmt(r.p,3),fmt(r.rpbis,3),r.flag,r.topWrong,r.rec]);}
+    rows=[['Question #','Elentra ID','Elentra Version','Key','Difficulty','Discrimination','Reason for Flag','Best Students Chose','Recommendation']];
+    for(i=0;i<G.mcq.length;i++){r=G.mcq[i];var eidM=r.elentraId||'';var eidMP=eidM.indexOf('/')!==-1?eidM.split('/'):null;rows.push([r.num,eidMP?eidMP[0]:eidM,eidMP?parseInt(eidMP[1],10):'',r.key,fmt(r.p,3),fmt(r.rpbis,3),r.flag,r.topWrong,r.rec]);}
   } else {
     filename=safe+'_DIF_Analysis.csv';
-    rows=[['Question #','B1 χ²','B1 R²','B3 χ²','B3 R²','χ² diff','R² diff','p-value','Important','EN% correct','FR% correct','Δ Gap']];
-    for(i=0;i<G.dif.length;i++){r=G.dif[i];rows.push([r.num,r.chi1,r.r1,r.chi3,r.r3,r.cd,r.rd,r.sig,r.imp?'Yes':'No',r.ePct+'%',r.fPct+'%',(r.ePct-r.fPct)+'%']);}
+    rows=[['Question #','Elentra ID','Elentra Version','B1 χ²','B1 R²','B3 χ²','B3 R²','χ² diff','R² diff','p-value','Important','EN% correct','FR% correct','Δ Gap']];
+    for(i=0;i<G.dif.length;i++){r=G.dif[i];var mqD=G.mcq[r.num-1];var eidD=mqD?(mqD.elentraId||''):'';var eidDP=eidD.indexOf('/')!==-1?eidD.split('/'):null;rows.push([r.num,eidDP?eidDP[0]:eidD,eidDP?parseInt(eidDP[1],10):'',r.chi1,r.r1,r.chi3,r.r3,r.cd,r.rd,r.sig,r.imp?'Yes':'No',r.ePct+'%',r.fPct+'%',(r.ePct-r.fPct)+'%']);}
   }
   var csv='\uFEFF';
   for(i=0;i<rows.length;i++){
@@ -8185,27 +8189,44 @@ function exportSessionJSON() {
   var filename  = safeTitle + (examDate ? '_'+examDate : '') + '_aqp-session.json';
 
   // Summarise questions
+  var fbLoaded = !!(FB && FB.ready);
   var questions = (G.mcq || []).map(function(r) {
-    var dif = (G.dif || []).find(function(d){ return d.qi === r.num - 1; }) || null;
+    var dif = (G.dif || []).find(function(d){ return d.num === r.num; }) || null;
+    // J4 — answer distribution: uppercase keys + noResponse
+    var answerDist = {};
+    if (r.distCounts) {
+      Object.keys(r.distCounts).forEach(function(k) { answerDist[k.toUpperCase()] = r.distCounts[k]; });
+    }
+    answerDist.noResponse = r.noResp || 0;
     return {
       number:          r.num,
-      elentraId:       r.elentraId || null,
+      elentraId:       r.elentraId ? r.elentraId.split('/')[0] : null,                    // J5
+      elentraVersion:  r.elentraId && r.elentraId.indexOf('/') !== -1 ? parseInt(r.elentraId.split('/')[1], 10) : null,  // J5
       key:             r.key || null,
       altKeys:         (r.altKeys && r.altKeys.length) ? r.altKeys : [],
       difficulty:      r.p != null ? parseFloat(r.p.toFixed(4)) : null,
       discrimination:  r.rpbis != null ? parseFloat(r.rpbis.toFixed(4)) : null,
       flag:            r.flag || null,
+      recommendation:  r.rec  || null,                                                              // J6
+      topPerformerChoice: r.topWrong || null,                                                       // J6
       disposition:     r.excluded === 'credit' ? 'credit' : r.excluded === 'delete' ? 'delete' : 'include',
       reason:          r.reason || null,
       altReason:       r.altReason || null,
-      feedbackCount:   (FB && FB.byQ) ? (FB.byQ[r.num] || 0) : null,
+      feedbackCount:   fbLoaded ? ((FB.grouped && FB.grouped[r.num]) ? FB.grouped[r.num].length : 0) : null,  // J1
+      mentionsWithoutCommentCount: fbLoaded ? (FB.bareRefs[r.num] || 0) : null,                    // J2
+      answerDistribution: answerDist,                                                               // J4
       dif: dif ? {
-        enPctCorrect:  dif.ePct != null ? dif.ePct : null,
-        frPctCorrect:  dif.fPct != null ? dif.fPct : null,
-        gapPct:        dif.gap  != null ? Math.abs(dif.gap) : null,
-        nagelkerkeR2:  dif.r2   != null ? parseFloat(dif.r2.toFixed(4))   : null,
-        pValue:        dif.pval != null ? parseFloat(dif.pval.toFixed(4)) : null,
-        flagged:       !!(dif.important || dif.imp)
+        enPctCorrect:  dif.ePct  != null ? dif.ePct  : null,
+        frPctCorrect:  dif.fPct  != null ? dif.fPct  : null,
+        gapPct:        (dif.ePct != null && dif.fPct != null) ? Math.abs(dif.ePct - dif.fPct) : null,  // J3
+        nagelkerkeR2:  dif.r3    != null ? parseFloat(parseFloat(dif.r3).toFixed(4))  : null,           // J3
+        pValue:        dif.sig   != null ? parseFloat(parseFloat(dif.sig).toFixed(4)) : null,           // J3
+        flagged:       !!dif.imp,                                                                        // J3
+        chi1:          dif.chi1  != null ? parseFloat(dif.chi1) : null,
+        r1:            dif.r1    != null ? parseFloat(dif.r1)   : null,
+        chi3:          dif.chi3  != null ? parseFloat(dif.chi3) : null,
+        cd:            dif.cd    != null ? parseFloat(dif.cd)   : null,
+        rd:            dif.rd    != null ? parseFloat(dif.rd)   : null
       } : null
     };
   });
@@ -8254,7 +8275,7 @@ function exportSessionJSON() {
       cronbachAlpha:      G._lastAlpha != null ? parseFloat(G._lastAlpha.toFixed(4)) : null,
       flaggedCount:       (G.mcq||[]).filter(function(r){return r.flag&&!r.excluded;}).length,
       easyCount:          (G.mcq||[]).filter(function(r){return r.flag==='Too easy';}).length,
-      difFlaggedCount:    (G.dif||[]).filter(function(d){return d.important||d.imp;}).length,
+      difFlaggedCount:    (G.dif||[]).filter(function(d){return d.imp;}).length,
       creditedCount:      (G.mcq||[]).filter(function(r){return r.excluded==='credit';}).length,
       deletedCount:       (G.mcq||[]).filter(function(r){return r.excluded==='delete';}).length
     },
@@ -8272,7 +8293,7 @@ function exportSessionJSON() {
       enabled:      !!(G_DIF_ENABLED && G._hasStream),
       enCode:       (document.getElementById('eng-code')||{value:''}).value || null,
       frCode:       (document.getElementById('fre-code')||{value:''}).value || null,
-      flaggedCount: (G.dif||[]).filter(function(d){return d.important||d.imp;}).length
+      flaggedCount: (G.dif||[]).filter(function(d){return d.imp;}).length
     },
     questions: questions,
     feedback:  fbSummary,
@@ -8813,6 +8834,19 @@ var RELEASE_NOTES = [
     version: '3.0',
     builds: [
       {
+        build: '20260820-01',
+        date:  'August 20, 2026',
+        notes: [
+          'Fixed: feedbackCount in JSON export was always null — FB.byQ does not exist on the FB object; now computed from FB.grouped[r.num].length. Returns 0 (not null) when feedback is loaded but no comments exist for that question; null only when no feedback is loaded.',
+          'Added: mentionsWithoutCommentCount per question to JSON export — exposes FB.bareRefs[r.num], the count of bare question references with no accompanying comment. Same null/0 logic as feedbackCount.',
+          'Fixed: per-question dif object in JSON export was always null due to five field name mismatches. Lookup fixed (d.qi → d.num); dif.gap computed as Math.abs(ePct − fPct); dif.r2 → dif.r3; dif.pval → dif.sig; dif.important → dif.imp. Same five mismatches fixed in Session Record CSV DIF columns. DIF Analysis CSV was already using correct field names.',
+          'Added: full DIF model statistics to JSON per-question dif object — chi1, r1 (B1 χ²/R²), chi3 (B3 χ²), cd (χ² diff), rd (R² diff). JSON is now a complete superset of the DIF Analysis CSV.',
+          'Added: answerDistribution per question to JSON export — option counts from distCounts (keys uppercased to A–E) plus noResponse from noResp. noResponse covers both actively-skipped and never-reached answers, which are indistinguishable in QM source data.',
+          'Added: recommendation and topPerformerChoice per question to JSON export — exposes r.rec (e.g. RETAIN, CREDIT, DELETE, CHANGE THE KEY) and r.topWrong (the option most chosen by top performers). JSON now matches MCQ Analysis CSV on these fields.',
+          'Added: Elentra ID split across all machine-readable exports (JSON, Session Record CSV, MCQ Analysis CSV, DIF Analysis CSV). elentraId now exports the question ID portion only; elentraVersion exports the version as an integer (or null/blank if not present). Combined display string retained in all UI surfaces, Review Queue, and Word reports.',
+        ]
+      },
+      {
         build: '20260812-01',
         date:  'August 12, 2026',
         notes: [
@@ -8820,6 +8854,7 @@ var RELEASE_NOTES = [
           'Upload feedback (Results card): stream warning and badge now gated on DIF being enabled. When DIF is off, the upload card shows OK regardless of stream detection, the "Language stream not detected" warning is suppressed, and the student count no longer shows empty parentheses.',
           'Parse preview (MCQ data validation): all stream-related elements now hidden when DIF is off. EN/FR KPI tiles removed; KPI row collapses from 4 columns to 2 (Students and Questions only). Stream code and Stream badge columns removed from student table. Unmatched code warning and yellow row highlighting suppressed.',
           'Fixed: "&amp;" double-escape in upload diagnostics text — the Data Source & DIF reference now renders correctly as "&" instead of displaying the literal entity.',
+          'Elentra ID parser updated — now recognises both the legacy format (Question ID: 123) and the versioned Elentra format (ID: 344/2, where 344 is the question ID and 2 is the version number). The full ID including version is stored and surfaced in the item table, DIF table, Review Queue, and all exports. Files using either format are parsed automatically with no configuration required.',
         ]
       },
       {
