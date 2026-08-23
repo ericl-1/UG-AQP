@@ -411,7 +411,7 @@ th{position:relative;white-space:normal}
 .fb-freq-table tr:hover td{background:rgba(0,0,0,.018)}
 .fb-section{background:var(--c-bg);border:1px solid var(--c-border);border-radius:10px;margin-bottom:10px}
 #whats-next-bar{display:none !important}
-#fb-toolbar-host{position:sticky;top:0;z-index:20;background:var(--c-bg);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--c-border);box-shadow:0 4px 8px var(--c-bg)}
+#fb-toolbar-host{position:sticky;top:0;z-index:20;will-change:transform;background:var(--c-bg);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--c-border);box-shadow:0 4px 8px var(--c-bg)}
 #fb-toolbar{background:var(--c-bg)}
 .fb-section-hdr{padding:10px 14px;background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--c-border);flex-wrap:wrap;gap:4px}
 .fb-section-q{font-size:13.5px;font-weight:700;color:var(--c-primary)}
@@ -1034,9 +1034,9 @@ th{position:relative;white-space:normal}
         <div style="margin-top:8px;text-align:center">
           <a href="#" onclick="downloadTemplate('results');return false;" id="btn-tpl-main" style="font-size:11.5px;color:var(--c-muted);text-decoration:none;border-bottom:1px dashed var(--c-border)">Don't have a file? Download template</a>
         </div>
-        <div id="scantron-preview" style="display:none;margin-top:10px"></div>
         <div id="dbg-main" class="debug" style="display:none"></div>
         </div><!-- /results-upload-expand -->
+        <div id="scantron-preview" style="display:none;margin-top:10px"></div>
       </div>
     </div>
 
@@ -2029,7 +2029,7 @@ th{position:relative;white-space:normal}
 
 // ── App version — single source of truth ─────────────────────────────────
 var APP_VERSION     = '3.0';
-var APP_BUILD       = '20260820-02';
+var APP_BUILD       = '20260820-04';
 var APP_FAQ_VERSION = '3.3';           // Update when FAQ content changes
 var APP_FAQ_DATE    = 'August 20, 2026'; // Update when FAQ content changes
 var APP_RN_DATE     = 'August 20, 2026'; // Update each version close
@@ -9085,10 +9085,6 @@ function toggleHamburger(btn) {
   if (dd.style.display !== 'none' && dd._anchor === btn) {
     closeHamburger(); return;
   }
-  // Show Save Session Record only on analysis page
-  var srItem = document.getElementById('hm-session-record');
-  var onAnalysis = document.getElementById('results-panel') && document.getElementById('results-panel').style.display !== 'none';
-  if (srItem) srItem.style.display = (onAnalysis && G._lastN) ? 'flex' : 'none';
   var r = btn.getBoundingClientRect();
   dd.style.top  = (r.bottom + 6) + 'px';
   dd.style.left = 'auto';
@@ -9115,6 +9111,22 @@ var RELEASE_NOTES = [
   {
     version: '3.0',
     builds: [
+      {
+        build: '20260820-04',
+        date:  'August 20, 2026',
+        notes: [
+          'Feedback toolbar: added will-change:transform to force GPU compositing layer pre-allocation. Bleed-through on second scroll remains an open bug — logged for future investigation.',
+        ]
+      },
+      {
+        build: '20260820-03',
+        date:  'August 20, 2026',
+        notes: [
+          'D4 — Removed the Save Session Record link from the hamburger menu. Session Record CSV is now accessible from the Reports tab only.',
+          'Bug fix — Feedback toolbar bleed-through: added explicit stacking context (position:relative; z-index:0) to #fb-results-content so the sticky filter toolbar correctly paints above scrolling feedback content in the By Question view.',
+          'Bug fix — Scantron preview collapse conflict: moved #scantron-preview outside of #results-upload-expand so the Scantron data preview remains visible when the upload card collapses after a file is loaded.',
+        ]
+      },
       {
         build: '20260820-02',
         date:  'August 20, 2026',
@@ -14276,7 +14288,7 @@ checkForDraft(); // C1 — called here so _DRAFT_KEY and all globals are fully i
               <span class="faq-icon">+</span>
             </div>
             <div class="faq-a">
-              Not currently — the tool runs entirely in your browser and does not save session data between visits. If you close the tab or browser, you’ll need to re-upload and re-run the analysis. Make sure to download your Word and CSV exports before closing. A session history feature is shown as a preview on the home screen and is planned for a future version.
+              Yes — as of build 20260820-02 the tool auto-saves your session to browser local storage after every analysis run, feedback finalisation, and exception change. If you close the tab or browser, re-opening the tool will show a <strong>Draft found</strong> banner and a session card on the home screen. Click <strong>Resume session</strong> to restore your work and re-run the analysis automatically.<br><br>The draft is stored in this browser only and does not survive clearing browser data. Exporting your Word reports and CSV at the end of each session is still recommended as a permanent record. See also Q49 and Q50.
             </div>
           </div>
 
@@ -14500,14 +14512,6 @@ checkForDraft(); // C1 — called here so _DRAFT_KEY and all globals are fully i
       onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='transparent'">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="1" width="10" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="9" width="10" height="6" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M3 7h10" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="8" r=".8" fill="currentColor"/></svg>
       Print / Save as PDF
-    </a>
-
-    <!-- Save Session Record -->
-    <a id="hm-session-record" href="#" onclick="exportSessionRecord();return false;"
-      style="display:none;align-items:center;gap:8px;padding:9px 16px;font-size:12px;font-weight:600;color:var(--c-secondary);text-decoration:none;font-family:var(--font);transition:background .12s"
-      onmouseover="this.style.background='var(--c-surface)'" onmouseout="this.style.background='transparent'">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 0 1 1-1h7l4 4v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3z" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 9h6M5 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Save Session Record
     </a>
 
     <!-- Release Notes -->

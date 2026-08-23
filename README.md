@@ -1,6 +1,6 @@
 # AQP — Assessment Quality Platform
 
-**Version 3.0 · Build 20260728-10**  
+**Version 3.0 · Build 20260820-04**  
 Undergraduate Medical Education
 
 A browser-based tool for analyzing multiple-choice exam results and student feedback, replacing a former SPSS-based workflow for UGME exam coordinators.
@@ -41,10 +41,13 @@ AQP guides coordinators through a step-by-step wizard to upload exam data, run p
 ## Key features
 
 - **5-step wizard** — Exam details → Analysis type → Configure → MCQ upload → Feedback upload (combined)
+- **Session persistence** — Session data (MCQ results, feedback, exceptions, thresholds) is auto-saved to browser local storage after every analysis run, feedback finalisation, and exception change. A resume banner appears on next load; click **Resume session** to restore. One active draft at a time.
+- **Session history card** — Home screen displays the saved draft session with exam name, question/student/flag counts, and time since save.
 - **Question exceptions** — Delete, credit, or alternate-key individual questions with a required justification; exceptions applied at analysis time
-- **Elentra ID support** — Item bank IDs parsed from QM exports and surfaced in item table, DIF table, Review Queue, CSV, and all Word reports
+- **Elentra ID support** — Item bank IDs parsed from QM exports (legacy `Question ID: 123` and versioned `ID: 344/2` formats) and surfaced in the item table, DIF table, Review Queue, and all exports. Machine-readable exports split the combined display string into separate `elentraId` and `elentraVersion` fields.
 - **Review Queue** — Checklist of flagged items with coordinator review tracking
-- **Reports** — Word (.docx) exports for MCQ, DIF, MCQ+DIF, and Feedback; PDF via browser print; CSV and JSON session data exports
+- **Reports** — Word (.docx) exports for MCQ, DIF, MCQ+DIF, and Feedback; PDF via browser print; Session Record CSV; MCQ Analysis CSV; DIF Analysis CSV; JSON session data export
+- **JSON session export** — Complete superset of all three CSVs. Includes per-question `feedbackCount`, `mentionsWithoutCommentCount`, `answerDistribution`, `recommendation`, `topPerformerChoice`, full DIF model statistics (`chi1`, `r1`, `chi3`, `cd`, `rd`), and split Elentra ID fields. Suitable as a single ingest source for downstream pipelines (Power Automate, etc.)
 - **Session status strip** — Live indicator of what's loaded and which reports are available
 - **Configurable thresholds** — All flagging thresholds adjustable in Settings; changes prompt re-analysis
 - **Two themes** — uOttawa garnet and Elentra purple
@@ -53,7 +56,13 @@ AQP guides coordinators through a step-by-step wizard to upload exam data, run p
 
 ## Data and privacy
 
-**No data ever leaves your browser.** AQP runs entirely client-side with no server, no database, and no authentication. Uploaded files are processed in memory and discarded when the tab is closed. The only item persisted to local storage is the selected colour theme.
+**No data ever leaves your browser.** AQP runs entirely client-side with no server, no database, and no authentication. Uploaded files are processed in memory only.
+
+The following are persisted to browser local storage:
+- **Selected colour theme** — always
+- **Active session draft** — after every analysis run, feedback finalisation, and exception change; cleared on reset or when explicitly discarded
+
+The session draft does not leave the browser, does not sync across devices, and does not survive clearing browser data. For a permanent record, export Word reports and CSV/JSON at the end of every session.
 
 ---
 
@@ -74,6 +83,7 @@ AQP guides coordinators through a step-by-step wizard to upload exam data, run p
 | Deployment | GitHub Pages — zero server infrastructure |
 | Dependencies | JSZip · docx-js (Word export, in-browser) · html2canvas |
 | Statistics | Pure JS — no external stats library |
+| Session persistence | Browser `localStorage` — one active draft; auto-save after key actions |
 | Browser support | Any modern browser (Chrome, Edge, Firefox, Safari) |
 | Data model | `ExamSession` envelope wrapping `G` (MCQ) and `FB` (feedback) globals; JSON-serializable for future backend |
 
@@ -83,22 +93,22 @@ The psychometric core (Cronbach's alpha, logistic-regression DIF, item statistic
 
 ## Roadmap
 
-The current version is production-grade for single-session analysis. The following capabilities are planned for future releases, gated on backend infrastructure:
+The current version is production-grade for single-session analysis. The following capabilities are planned for future releases.
 
-**Near-term**
-- Session autosave and resume (currently, closing the tab clears the session)
+**Near-term (no backend required)**
 - Coordinator flag — manual question flagging with reason and recommended action, alongside stat-driven flags
+- Evidence Score — a converging-evidence signal per question synthesizing all flag types into a single weighted indicator
 - Exception rationale surfaced in Word report documents
+- Results screen redesign — orientation and density improvements
 
 **Backend-enabled (requires server + auth)**
-- Session history and longitudinal item tracking (keyed to Elentra item IDs)
-- Multi-user access and committee workflow
+- Multi-session history and longitudinal item tracking (keyed to Elentra item IDs)
+- Multi-user access and committee workflow layer — decisions made and recorded inside AQP
 - SharePoint integration — session storage, Word export pipeline, institutional document archiving
 - Elentra integration — item performance data fed back to the item bank
 - Backend-rendered PDF matching Word export fidelity
 
 **Platform vision**
-- Evidence Score — a converging-evidence signal per question synthesizing all flag types into a single weighted indicator
 - Historical item performance dashboard across exam cycles
 - Power BI reporting integration
 
@@ -125,4 +135,4 @@ To report a bug, request a feature, or ask about the analysis methodology, pleas
 
 ---
 
-*AQP — Assessment Quality Platform · Undergraduate Medical Education · v3.0*
+*AQP — Assessment Quality Platform · Undergraduate Medical Education · v3.0 · build 20260820-04*
